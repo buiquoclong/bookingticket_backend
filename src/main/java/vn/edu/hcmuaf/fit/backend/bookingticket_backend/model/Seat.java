@@ -22,6 +22,7 @@ public class Seat {
     private String name;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "phuongtien_id") //
     private Vehicle vehicle;
 

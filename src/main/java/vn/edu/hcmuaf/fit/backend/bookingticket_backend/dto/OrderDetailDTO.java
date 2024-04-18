@@ -11,7 +11,7 @@ public class OrderDetailDTO {
     private String OrderDetailId;
     private int orderId;
     private int numSeat;
-    private int seatId;
+    private String seatName;
     private int price;
     private int total;
     private LocalDateTime createdAt = LocalDateTime.now();

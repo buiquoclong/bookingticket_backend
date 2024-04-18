@@ -4,7 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Data
@@ -26,8 +29,11 @@ public class Trip {
     @JoinColumn(name = "phuongtien_id", referencedColumnName = "id")
     private Vehicle vehicle;
 
-    @Column(name = "thoigiankhoihanh")
-    private LocalDateTime timeStart;
+    @Column(name = "ngaykhoihanh")
+    private LocalDate dayStart;
+
+    @Column(name = "giokhoihanh")
+    private LocalTime timeStart;
 
     @Column(name = "giave")
     private int price;

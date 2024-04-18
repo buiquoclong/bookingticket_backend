@@ -19,16 +19,14 @@ public class OrderDetail {
     private String id;
 
     @OneToOne
-    @JsonIgnore
     @JoinColumn(name = "order_id", referencedColumnName = "id")
     private Order order;
 
     @Column(name = "soghe")
     private int numSeat;
 
-    @ManyToOne
-    @JoinColumn(name = "seat_id")
-    private Seat seat;
+    @Column(name = "seat_name")
+    private String seatName;
 
     @Column(name = "gia")
     private int price;

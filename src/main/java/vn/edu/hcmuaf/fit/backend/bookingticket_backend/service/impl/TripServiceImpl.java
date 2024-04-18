@@ -1,11 +1,14 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.impl;
 
 import org.springframework.stereotype.Service;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.TripSearchDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Trip;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.TripRepository;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.TripService;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -42,5 +45,16 @@ public class TripServiceImpl implements TripService {
         tripRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("Trip", "Id", id));
         tripRepository.deleteById(id);
+    }
+
+    @Override
+    public List<Trip> searchTrips(TripSearchDTO tripSearchDTO) {
+        // Lấy thông tin từ DTO
+        int diemDiId = tripSearchDTO.getDiemDiId();
+        int diemDenId = tripSearchDTO.getDiemDenId();
+        LocalDate dayStart = tripSearchDTO.getDayStart();
+
+        // Gọi repository để thực hiện truy vấn
+        return tripRepository.findTripsByRoute_DiemDi_IdAndRoute_DiemDen_IdAndDayStart(diemDiId, diemDenId, dayStart);
     }
 }
