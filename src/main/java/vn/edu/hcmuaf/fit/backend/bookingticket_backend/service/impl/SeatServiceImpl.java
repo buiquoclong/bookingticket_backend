@@ -3,9 +3,11 @@ package vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.impl;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Seat;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Vehicle;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.SeatRepository;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.SeatService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -34,6 +36,16 @@ public class SeatServiceImpl implements SeatService {
 
     @Override
     public Seat updateSeatByID(Seat seat, int id) {
+        Seat existingSeat = seatRepository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("Seat", "Id", id));
+
+        existingSeat.setName(seat.getName());
+//        existingSeat.setVehicle(seat.getVehicle());
+        existingSeat.setStatus(seat.getStatus());
+        existingSeat.setUpdatedAt(LocalDateTime.now());
+
+        seatRepository.save(existingSeat);
+
         return null;
     }
 

@@ -11,6 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/seatbooked")
+@CrossOrigin("http://localhost:3000")
 public class SeatBookedController {
     private SeatBookedService seatBookedService;
 

@@ -17,6 +17,7 @@ public class OrderDTO {
     private int status;
     private String pointCatch;
     private String note;
+    private String kindPay;
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt;
 }

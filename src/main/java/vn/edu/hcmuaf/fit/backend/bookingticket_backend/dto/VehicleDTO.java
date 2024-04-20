@@ -12,6 +12,7 @@ public class VehicleDTO {
     private String name;
     private String vehicleNumber;
     private int value;
+    private int emptySeat;
     private int status;
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt;

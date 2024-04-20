@@ -49,8 +49,8 @@ public class Trip {
     private LocalDateTime updatedAt;
 
     @JsonIgnore
-    @OneToOne(mappedBy = "trip", cascade = CascadeType.ALL)
-    private SeatBooked seatBooked;
+    @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL)
+    private List<SeatBooked> seatBookedList;
 
     @JsonIgnore
     @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL)

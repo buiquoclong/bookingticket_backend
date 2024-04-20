@@ -28,6 +28,9 @@ public class Vehicle {
     @Column(name = "succhua")
     private int value;
 
+    @Column(name = "controng")
+    private int emptySeat;
+
     @Column(name = "trangthai")
     private int status;
 

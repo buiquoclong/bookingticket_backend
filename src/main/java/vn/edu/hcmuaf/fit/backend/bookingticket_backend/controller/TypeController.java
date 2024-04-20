@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/type")
+@CrossOrigin("http://localhost:3000")
 public class TypeController {
     private TypeService typeService;
 

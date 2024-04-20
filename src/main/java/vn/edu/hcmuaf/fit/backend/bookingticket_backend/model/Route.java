@@ -23,12 +23,10 @@ public class Route {
     private String name;
 
     @ManyToOne
-    @JsonIgnore
     @JoinColumn(name = "diemdi") // đây là khóa ngoại liên kết với City
     private City diemDi;
 
     @ManyToOne
-    @JsonIgnore
     @JoinColumn(name = "diemden") // đây là khóa ngoại liên kết với City
     private City diemDen;
 

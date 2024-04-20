@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 public class SeatDTO {
     private int seatId;
     private String name;
-    private int vehicleId;
+    private int vehicle;
     private int status;
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt;

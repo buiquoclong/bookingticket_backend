@@ -11,6 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/log")
+@CrossOrigin("http://localhost:3000")
 public class LogController {
     private LogService logService;
 

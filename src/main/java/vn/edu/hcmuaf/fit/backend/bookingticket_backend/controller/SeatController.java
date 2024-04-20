@@ -10,6 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/seat")
+@CrossOrigin("http://localhost:3000")
 public class SeatController {
     private SeatService seatService;
 

@@ -22,7 +22,7 @@ public class SeatBooked {
     @JoinColumn(name = "ghe_id", referencedColumnName = "id")
     private Seat seat;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "trip_id", referencedColumnName = "id")
     private Trip trip;
 

@@ -23,7 +23,6 @@ public class Order {
     private Trip trip;
 
     @ManyToOne
-    @JsonIgnore
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -41,6 +40,9 @@ public class Order {
 
     @Column(name = "ghichu")
     private String note;
+
+    @Column(name = "payment")
+    private String kindPay;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
