@@ -9,5 +9,4 @@ public class TripSearchDTO {
     private int diemDiId;
     private int diemDenId;
     private LocalDate dayStart;
-//    private LocalDate timeStart;
 }

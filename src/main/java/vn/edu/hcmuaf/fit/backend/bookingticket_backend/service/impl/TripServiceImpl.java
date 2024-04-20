@@ -10,6 +10,7 @@ import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.TripService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TripServiceImpl implements TripService {
@@ -47,14 +48,25 @@ public class TripServiceImpl implements TripService {
         tripRepository.deleteById(id);
     }
 
+//    @Override
+//    public List<Trip> searchTrips(TripSearchDTO tripSearchDTO) {
+//        // Lấy thông tin từ DTO
+//        int diemDiId = tripSearchDTO.getDiemDiId();
+//        int diemDenId = tripSearchDTO.getDiemDenId();
+//        LocalDate dayStart = tripSearchDTO.getDayStart();
+//
+//        // Gọi repository để thực hiện truy vấn
+//        return tripRepository.findTripsByRoute_DiemDi_IdAndRoute_DiemDen_IdAndDayStart(diemDiId, diemDenId, dayStart);
+//    }
     @Override
     public List<Trip> searchTrips(TripSearchDTO tripSearchDTO) {
-        // Lấy thông tin từ DTO
         int diemDiId = tripSearchDTO.getDiemDiId();
         int diemDenId = tripSearchDTO.getDiemDenId();
         LocalDate dayStart = tripSearchDTO.getDayStart();
 
-        // Gọi repository để thực hiện truy vấn
-        return tripRepository.findTripsByRoute_DiemDi_IdAndRoute_DiemDen_IdAndDayStart(diemDiId, diemDenId, dayStart);
+        List<Trip> allTrips = tripRepository.findTripsByRoute_DiemDi_IdAndRoute_DiemDen_IdAndDayStart(diemDiId, diemDenId, dayStart);
+        return allTrips.stream()
+                .filter(trip -> trip.getVehicle().getEmptySeat() > 0)
+                .collect(Collectors.toList());
     }
 }
