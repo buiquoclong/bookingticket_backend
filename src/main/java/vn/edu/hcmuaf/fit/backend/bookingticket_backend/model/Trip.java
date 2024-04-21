@@ -54,5 +54,5 @@ public class Trip {
 
     @JsonIgnore
     @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL)
-    private List<Order> orders;
+    private List<OrderDetail> orderDetails;
 }

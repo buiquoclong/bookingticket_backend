@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -18,9 +19,9 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne
-    @JoinColumn(name = "chuyendi_id")
-    private Trip trip;
+//    @ManyToOne
+//    @JoinColumn(name = "chuyendi_id")
+//    private Trip trip;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -29,20 +30,14 @@ public class Order {
     @Column(name = "ngaydat")
     private LocalDateTime dayBook = LocalDateTime.now();
 
-    @Column(name = "thoigiandi")
-    private LocalDateTime timeStart;
-
-    @Column(name = "trangthai")
-    private int status;
-
-    @Column(name = "noidon")
-    private String pointCatch;
-
-    @Column(name = "ghichu")
-    private String note;
+    @Column(name = "tongtien")
+    private int total;
 
     @Column(name = "payment")
     private String kindPay;
+
+    @Column(name = "trangthai")
+    private int status;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -50,7 +45,17 @@ public class Order {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @JsonIgnore
-    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
-    private OrderDetail orderDetail;
+
+
+
+
+
+
+
+
+
+
+//    @JsonIgnore
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<OrderDetail> orderDetails;
 }

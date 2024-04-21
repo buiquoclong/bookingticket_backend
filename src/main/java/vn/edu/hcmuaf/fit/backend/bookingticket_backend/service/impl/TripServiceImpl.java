@@ -69,4 +69,42 @@ public class TripServiceImpl implements TripService {
                 .filter(trip -> trip.getVehicle().getEmptySeat() > 0)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<Trip> searchTripsByTime(TripSearchDTO tripSearchDTO) {
+        return tripRepository.findTripsByRoute_DiemDi_IdAndRoute_DiemDen_IdAndDayStartAndTimeStartBetween(
+                        tripSearchDTO.getDiemDiId(),
+                        tripSearchDTO.getDiemDenId(),
+                        tripSearchDTO.getDayStart(),
+                        tripSearchDTO.getTimeStartFrom(),
+                        tripSearchDTO.getTimeStartTo()
+                ).stream()
+                .filter(trip -> trip.getVehicle().getEmptySeat() > 0)
+                .collect(Collectors.toList());
+    }
+    @Override
+    public List<Trip> searchTripsByVehicleType(TripSearchDTO tripSearchDTO) {
+        int diemDiId = tripSearchDTO.getDiemDiId();
+        int diemDenId = tripSearchDTO.getDiemDenId();
+        LocalDate dayStart = tripSearchDTO.getDayStart();
+        String vehicleName = tripSearchDTO.getVehicleName();
+
+        return tripRepository.findByRouteDiemDiIdAndRouteDiemDenIdAndDayStartAndVehicleName(diemDiId, diemDenId, dayStart, vehicleName).stream()
+                .filter(trip -> trip.getVehicle().getEmptySeat() > 0)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Trip> searchTripsByTimeAndVehicleType(TripSearchDTO tripSearchDTO) {
+        return tripRepository.findTripsByRoute_DiemDi_IdAndRoute_DiemDen_IdAndDayStartAndTimeStartBetweenAndVehicleName(
+                        tripSearchDTO.getDiemDiId(),
+                        tripSearchDTO.getDiemDenId(),
+                        tripSearchDTO.getDayStart(),
+                        tripSearchDTO.getTimeStartFrom(),
+                        tripSearchDTO.getTimeStartTo(),
+                        tripSearchDTO.getVehicleName()
+                ).stream()
+                .filter(trip -> trip.getVehicle().getEmptySeat() > 0)
+                .collect(Collectors.toList());
+    }
 }

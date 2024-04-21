@@ -18,14 +18,21 @@ public class OrderDetail {
     @Id
     private String id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "order_id", referencedColumnName = "id")
     private Order order;
+
+    @ManyToOne
+    @JoinColumn(name = "chuyendi_id")
+    private Trip trip;
+
+    @Column(name = "thoigiandi")
+    private LocalDateTime timeStart;
 
     @Column(name = "soghe")
     private int numSeat;
 
-    @Column(name = "seat_name")
+    @Column(name = "tenghe")
     private String seatName;
 
     @Column(name = "gia")
@@ -33,6 +40,12 @@ public class OrderDetail {
 
     @Column(name = "tongtien")
     private int total;
+
+    @Column(name = "noidon")
+    private String pointCatch;
+
+    @Column(name = "ghichu")
+    private String note;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
