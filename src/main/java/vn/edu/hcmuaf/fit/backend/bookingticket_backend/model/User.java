@@ -31,17 +31,14 @@ public class User {
     @Column(name = "phone")
     private String phone;
 
-    @OneToOne
-    @JoinColumn(name = "role", referencedColumnName ="id" )
-    private Role role;
+    @Column(name = "role")
+    private int role;
 
-    @OneToOne
-    @JoinColumn(name = "status", referencedColumnName ="id" )
-    private Status status;
+    @Column(name = "status")
+    private int status;
 
-    @OneToOne
-    @JoinColumn(name = "type", referencedColumnName ="id" )
-    private Type type;
+    @Column(name = "type")
+    private String type;
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

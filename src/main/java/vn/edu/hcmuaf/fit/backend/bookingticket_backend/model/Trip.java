@@ -19,8 +19,6 @@ public class Trip {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-
-
     @ManyToOne
     @JoinColumn(name = "tuyen_id")
     private Route route;
@@ -41,6 +39,9 @@ public class Trip {
     @ManyToOne
     @JoinColumn(name = "taixe_id", referencedColumnName = "id")
     private Driver driver;
+
+    @Column(name = "controng")
+    private int emptySeat;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();

@@ -30,6 +30,9 @@ public class SeatBooked {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
+    @Column(name = "status")
+    private int status;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 

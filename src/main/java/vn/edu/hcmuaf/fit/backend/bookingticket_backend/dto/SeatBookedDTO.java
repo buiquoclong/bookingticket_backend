@@ -8,10 +8,11 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class SeatBookedDTO {
-    private int seatBookedId;
+    private int id;
     private int seatId;
     private int tripId;
     private int userId;
+    private int status;
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt;
 

@@ -8,14 +8,14 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class UserDTO {
-    private int userId;
+    private int id;
     private String name;
     private String password;
     private String email;
     private String phone;
-    private int roleId;
-    private int statusId;
-    private int typeId;
+    private int role;
+    private int status;
+    private String type;
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt;
 }
