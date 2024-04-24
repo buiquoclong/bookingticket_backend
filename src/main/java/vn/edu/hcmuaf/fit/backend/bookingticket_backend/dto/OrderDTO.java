@@ -9,15 +9,12 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class OrderDTO {
-    private int orderId;
-    private int tripId;
+    private int id;
     private int userId;
-    private LocalDateTime dayBook = LocalDateTime.now();
-    private LocalDateTime timeStart;
-    private int status;
-    private String pointCatch;
-    private String note;
+    private LocalDateTime dayBook;
+    private int total;
     private String kindPay;
+    private int status;
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt;
 }

@@ -8,12 +8,14 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class OrderDetailDTO {
-    private String OrderDetailId;
+    private String id;
     private int orderId;
+    private int tripId;
     private int numSeat;
     private String seatName;
     private int price;
     private int total;
+    private String pointCatch;
+    private String note;
     private LocalDateTime createdAt = LocalDateTime.now();
-
 }

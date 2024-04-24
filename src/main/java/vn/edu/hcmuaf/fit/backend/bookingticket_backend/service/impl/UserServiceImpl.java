@@ -44,25 +44,17 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(id);
     }
 
-//    @Override
-//    public String login(String email, String pass) {
-//        User u = userRepository.findByEmailAndPassword(email, pass);
-//        if(u != null) {
-//            return String.valueOf(u.getId());
-//        }
-//        return "Không tìm thấy người dùng";
-//    }
-@Override
-public String login(String email, String pass) {
-    User u = userRepository.findByEmail(email);
-    if(u != null) {
-        if(u.getPassword().equals(pass)) {
-            return String.valueOf(u.getId()); // Trả về ID nếu email và pass đều đúng
+    @Override
+    public String login(String email, String pass) {
+        User u = userRepository.findByEmail(email);
+        if(u != null) {
+            if(u.getPassword().equals(pass)) {
+                return String.valueOf(u.getId()); // Trả về ID nếu email và pass đều đúng
+            } else {
+                return "Mật khẩu không đúng"; // Thông báo nếu pass không đúng
+            }
         } else {
-            return "Mật khẩu không đúng"; // Thông báo nếu pass không đúng
+            return "Không tìm thấy người dùng"; // Thông báo nếu không tìm thấy email
         }
-    } else {
-        return "Không tìm thấy người dùng"; // Thông báo nếu không tìm thấy email
     }
-}
 }

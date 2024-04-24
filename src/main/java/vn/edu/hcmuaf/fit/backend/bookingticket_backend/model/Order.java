@@ -1,6 +1,7 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -45,17 +46,8 @@ public class Order {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-
-
-
-
-
-
-
-
-
-
 //    @JsonIgnore
+    @JsonManagedReference
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderDetail> orderDetails;
 }
