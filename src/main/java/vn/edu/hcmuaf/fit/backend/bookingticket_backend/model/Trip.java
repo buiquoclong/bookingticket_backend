@@ -23,7 +23,7 @@ public class Trip {
     @JoinColumn(name = "tuyen_id")
     private Route route;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "phuongtien_id", referencedColumnName = "id")
     private Vehicle vehicle;
 

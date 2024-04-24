@@ -45,6 +45,6 @@ public class Vehicle {
     private List<Seat> seats;
 
     @JsonIgnore
-    @OneToOne(mappedBy = "vehicle", cascade = CascadeType.ALL)
-    private Trip trip;
+    @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL)
+    private List<Trip> trips;
 }

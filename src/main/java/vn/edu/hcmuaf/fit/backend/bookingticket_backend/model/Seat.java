@@ -1,6 +1,6 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
