@@ -41,7 +41,7 @@ public class VehicleServiceImpl implements VehicleService {
         existingVehicle.setName(vehicle.getName());
         existingVehicle.setVehicleNumber(vehicle.getVehicleNumber());
         existingVehicle.setValue(vehicle.getValue());
-        existingVehicle.setEmptySeat(vehicle.getEmptySeat());
+//        existingVehicle.setEmptySeat(vehicle.getEmptySeat());
         existingVehicle.setStatus(vehicle.getStatus());
         existingVehicle.setUpdatedAt(LocalDateTime.now());
 

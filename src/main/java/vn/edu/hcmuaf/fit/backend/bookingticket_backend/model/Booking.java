@@ -14,31 +14,39 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @EntityScan
-@Table(name = "order_table")
-public class Order {
+@Table(name = "booking")
+public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-//    @ManyToOne
-//    @JoinColumn(name = "chuyendi_id")
-//    private Trip trip;
+    @Column(name = "username")
+    private String userName;
+
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "phone")
+    private String phone;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(name = "ngaydat")
+    @Column(name = "booking_date")
     private LocalDateTime dayBook = LocalDateTime.now();
 
-    @Column(name = "tongtien")
+    @Column(name = "total")
     private int total;
 
     @Column(name = "payment")
     private String kindPay;
 
-    @Column(name = "trangthai")
-    private int status;
+    @Column(name = "is_paid")
+    private int isPaid;
+
+    @Column(name = "round_trip_ticket")
+    private int roundTrip;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -48,6 +56,10 @@ public class Order {
 
 //    @JsonIgnore
     @JsonManagedReference
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-    private List<OrderDetail> orderDetails;
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
+    private List<BookingDetail> bookingDetails;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
+    private List<SeatReservation> seatReservations;
 }

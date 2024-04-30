@@ -20,11 +20,11 @@ public class Trip {
     private int id;
 
     @ManyToOne
-    @JoinColumn(name = "tuyen_id")
+    @JoinColumn(name = "route_id")
     private Route route;
 
     @ManyToOne
-    @JoinColumn(name = "phuongtien_id", referencedColumnName = "id")
+    @JoinColumn(name = "vehicle_id", referencedColumnName = "id")
     private Vehicle vehicle;
 
     @Column(name = "ngaykhoihanh")
@@ -51,9 +51,13 @@ public class Trip {
 
     @JsonIgnore
     @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL)
-    private List<SeatBooked> seatBookedList;
+    private List<SeatReservation> seatReservations;
 
     @JsonIgnore
     @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL)
-    private List<OrderDetail> orderDetails;
+    private List<WaitingSeat> waitingSeats;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL)
+    private List<BookingDetail> bookingDetails;
 }

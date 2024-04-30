@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class RouteDTO {
-    private int routeId;
+    private int id;
     private String name;
     private int diemdi;
     private int diemden;

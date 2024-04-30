@@ -13,8 +13,8 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @EntityScan
-@Table(name = "vehicle")
-public class Vehicle {
+@Table(name = "kindvehicle")
+public class KindVehicle {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -22,31 +22,13 @@ public class Vehicle {
     @Column(name = "name")
     private String name;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-    @ManyToOne
-    @JoinColumn(name = "loaixe_id")
-    private KindVehicle kindVehicle;
-
-    @Column(name = "bienso")
-    private String vehicleNumber;
-
-    @Column(name = "succhua")
-    private int value;
-
-    @Column(name = "trangthai")
-    private int status;
-
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-//    @JsonIgnore
-//    @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL)
-//    private List<Seat> seats;
-
     @JsonIgnore
-    @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL)
-    private List<Trip> trips;
+    @OneToMany(mappedBy = "kindVehicle", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Vehicle> vehicles;
 }

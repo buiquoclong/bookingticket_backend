@@ -8,11 +8,11 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class VehicleDTO {
-    private int vehicleId;
+    private int id;
     private String name;
+    private int kindVehicleId;
     private String vehicleNumber;
     private int value;
-    private int emptySeat;
     private int status;
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt;

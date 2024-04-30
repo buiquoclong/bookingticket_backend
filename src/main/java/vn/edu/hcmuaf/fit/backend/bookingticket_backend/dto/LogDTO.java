@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class LogDTO {
-    private int logId;
+    private int id;
     private User userId;
     private String message;
     private int level;

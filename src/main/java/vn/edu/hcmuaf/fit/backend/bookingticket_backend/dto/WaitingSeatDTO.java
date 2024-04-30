@@ -7,10 +7,9 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class CityDTO {
+public class WaitingSeatDTO {
     private int id;
-    private String name;
-    private String imgUrl;
+    private int tripId;
+    private int seatId;
     private LocalDateTime createdAt = LocalDateTime.now();
-    private LocalDateTime updatedAt;
 }

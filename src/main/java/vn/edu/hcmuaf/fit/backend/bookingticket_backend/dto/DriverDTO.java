@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class DriverDTO {
-    private int driverId;
+    private int id;
     private String name;
     private String email;
     private String phone;

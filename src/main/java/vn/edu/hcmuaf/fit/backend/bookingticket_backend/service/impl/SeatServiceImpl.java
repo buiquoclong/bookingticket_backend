@@ -29,6 +29,10 @@ public class SeatServiceImpl implements SeatService {
     }
 
     @Override
+    public List<Seat> getAllSeatsByKindVehicleId(int kindVehicleId) {
+        return seatRepository.findAllByKindVehicleId(kindVehicleId);
+    }
+    @Override
     public Seat getSeatByID(int id) {
         return seatRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("Seat", "Id", id));

@@ -7,10 +7,13 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class CityDTO {
+public class SeatReservationDTO {
     private int id;
-    private String name;
-    private String imgUrl;
+    private int bookingId;
+    private int tripId;
+    private int seatId;
+    private int status;
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt;
+
 }

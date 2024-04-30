@@ -12,23 +12,23 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 @EntityScan
-@Table(name = "seatbooked")
-public class SeatBooked {
+@Table(name = "seat_reservsation")
+public class SeatReservation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @OneToOne
-    @JoinColumn(name = "ghe_id", referencedColumnName = "id")
-    private Seat seat;
+    @ManyToOne
+    @JoinColumn(name = "booking_id", referencedColumnName = "id")
+    private Booking booking;
 
     @ManyToOne
-    @JoinColumn(name = "trip_id", referencedColumnName = "id")
+    @JoinColumn(name = "trip_id")
     private Trip trip;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User user;
+    @JoinColumn(name = "ghe_id", referencedColumnName = "id")
+    private Seat seat;
 
     @Column(name = "status")
     private int status;

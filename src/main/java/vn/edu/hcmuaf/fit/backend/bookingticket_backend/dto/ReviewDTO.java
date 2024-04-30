@@ -7,15 +7,12 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class OrderDetailDTO {
-    private String id;
-    private int orderId;
+public class ReviewDTO {
+    private int id;
     private int tripId;
-    private int numSeat;
-    private String seatName;
-    private int price;
-    private int total;
-    private String pointCatch;
-    private String note;
+    private int userId;
+    private int rating;
+    private String content;
     private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime updatedAt;
 }

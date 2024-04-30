@@ -3,6 +3,7 @@ package vn.edu.hcmuaf.fit.backend.bookingticket_backend.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.TripDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.TripSearchDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Trip;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.TripService;
@@ -37,8 +38,8 @@ public class TripController {
 
     // Update Trip by id
     @PutMapping("{id}")
-    public ResponseEntity<Trip> updateTripById(@PathVariable ("id") int id, @RequestBody Trip trip){
-        return new ResponseEntity<>(tripService.updateTripByID(trip, id), HttpStatus.OK);
+    public ResponseEntity<Trip> updateTripById(@PathVariable ("id") int id, @RequestBody TripDTO tripDTO){
+        return new ResponseEntity<>(tripService.updateTripByID(tripDTO, id), HttpStatus.OK);
     }
 
     // Delete Trip by id

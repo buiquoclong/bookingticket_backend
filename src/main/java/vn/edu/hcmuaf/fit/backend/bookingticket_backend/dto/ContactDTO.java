@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class CityDTO {
+public class ContactDTO {
     private int id;
     private String name;
     private String imgUrl;

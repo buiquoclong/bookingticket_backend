@@ -22,6 +22,12 @@ public class SeatController {
     @GetMapping
     public List<Seat> getAllSeats(){return seatService.getAllSeat();}
 
+    // get all seat by kindid
+    @GetMapping("/kind_vehicle/{kindVehicleId}")
+    public ResponseEntity<List<Seat>> getAllSeatsByKindVehicleId(@PathVariable ("kindVehicleId") int kindVehicleId) {
+        List<Seat> seats = seatService.getAllSeatsByKindVehicleId(kindVehicleId);
+        return ResponseEntity.ok().body(seats);
+    }
     // Create a new Seat
     @PostMapping
     public ResponseEntity<Seat> createSeat(@RequestBody Seat seat){

@@ -1,10 +1,17 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.impl;
 
 import org.springframework.stereotype.Service;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.TripDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.TripSearchDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Driver;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Route;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Trip;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Vehicle;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.DriverRepository;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.RouteRepository;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.TripRepository;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.VehicleRepository;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.TripService;
 
 import java.time.LocalDate;
@@ -15,9 +22,19 @@ import java.util.stream.Collectors;
 @Service
 public class TripServiceImpl implements TripService {
     private TripRepository tripRepository;
+    private RouteRepository routeRepository;
+    private VehicleRepository vehicleRepository;
+    private DriverRepository driverRepository;
 
-    public TripServiceImpl(TripRepository tripRepository) {
+//    public TripServiceImpl(TripRepository tripRepository) {
+//        this.tripRepository = tripRepository;
+//    }
+
+    public TripServiceImpl(TripRepository tripRepository, RouteRepository routeRepository, VehicleRepository vehicleRepository, DriverRepository driverRepository) {
         this.tripRepository = tripRepository;
+        this.routeRepository = routeRepository;
+        this.vehicleRepository = vehicleRepository;
+        this.driverRepository = driverRepository;
     }
 
     @Override
@@ -37,8 +54,24 @@ public class TripServiceImpl implements TripService {
     }
 
     @Override
-    public Trip updateTripByID(Trip trip, int id) {
-        return null;
+    public Trip updateTripByID(TripDTO tripDTO, int id) {
+        Trip existingTrip = tripRepository.findById(id).orElseThrow(()->
+                new ResourceNotFoundException("Trip", "Id", id));
+        Route route =  routeRepository.findById(tripDTO.getRouteId()).orElseThrow(() ->
+                new ResourceNotFoundException("Route", "Id", tripDTO.getRouteId()));
+        Vehicle vehicle =  vehicleRepository.findById(tripDTO.getVehicleId()).orElseThrow(() ->
+                new ResourceNotFoundException("Vehicle", "Id", tripDTO.getVehicleId()));
+        Driver driver =  driverRepository.findById(tripDTO.getDriverId()).orElseThrow(() ->
+                new ResourceNotFoundException("Driver", "Id", tripDTO.getDriverId()));
+        existingTrip.setRoute(route);
+        existingTrip.setVehicle(vehicle);
+        existingTrip.setDayStart(tripDTO.getDayStart());
+        existingTrip.setTimeStart(tripDTO.getTimeStart());
+        existingTrip.setPrice(tripDTO.getPrice());
+        existingTrip.setDriver(driver);
+        existingTrip.setEmptySeat(tripDTO.getEmptySeat());
+        existingTrip.setUpdatedAt(LocalDateTime.now());
+        return tripRepository.save(existingTrip);
     }
 
     @Override
@@ -66,7 +99,7 @@ public class TripServiceImpl implements TripService {
 
         List<Trip> allTrips = tripRepository.findTripsByRoute_DiemDi_IdAndRoute_DiemDen_IdAndDayStart(diemDiId, diemDenId, dayStart);
         return allTrips.stream()
-                .filter(trip -> trip.getVehicle().getEmptySeat() > 0)
+                .filter(trip -> trip.getEmptySeat() > 0)
                 .collect(Collectors.toList());
     }
 
@@ -79,7 +112,7 @@ public class TripServiceImpl implements TripService {
                         tripSearchDTO.getTimeStartFrom(),
                         tripSearchDTO.getTimeStartTo()
                 ).stream()
-                .filter(trip -> trip.getVehicle().getEmptySeat() > 0)
+                .filter(trip -> trip.getEmptySeat() > 0)
                 .collect(Collectors.toList());
     }
     @Override
@@ -90,7 +123,7 @@ public class TripServiceImpl implements TripService {
         String vehicleName = tripSearchDTO.getVehicleName();
 
         return tripRepository.findByRouteDiemDiIdAndRouteDiemDenIdAndDayStartAndVehicleName(diemDiId, diemDenId, dayStart, vehicleName).stream()
-                .filter(trip -> trip.getVehicle().getEmptySeat() > 0)
+                .filter(trip -> trip.getEmptySeat() > 0)
                 .collect(Collectors.toList());
     }
 
@@ -104,7 +137,7 @@ public class TripServiceImpl implements TripService {
                         tripSearchDTO.getTimeStartTo(),
                         tripSearchDTO.getVehicleName()
                 ).stream()
-                .filter(trip -> trip.getVehicle().getEmptySeat() > 0)
+                .filter(trip -> trip.getEmptySeat() > 0)
                 .collect(Collectors.toList());
     }
 }
