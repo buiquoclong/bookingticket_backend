@@ -43,6 +43,9 @@ public class Trip {
     @Column(name = "controng")
     private int emptySeat;
 
+    @Column(name = "status")
+    private int status;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 

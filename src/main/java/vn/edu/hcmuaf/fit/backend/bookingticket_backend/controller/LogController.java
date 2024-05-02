@@ -3,6 +3,7 @@ package vn.edu.hcmuaf.fit.backend.bookingticket_backend.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.LogDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.City;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Log;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.LogService;
@@ -25,8 +26,8 @@ public class LogController {
 
     // Create a new Log
     @PostMapping
-    public ResponseEntity<Log> createLog(@RequestBody Log log){
-        return new ResponseEntity<>(logService.saveLog(log), HttpStatus.CREATED);
+    public ResponseEntity<Log> createLog(@RequestBody LogDTO logDTO){
+        return new ResponseEntity<>(logService.saveLog(logDTO), HttpStatus.CREATED);
     }
 
     // Get Log by id

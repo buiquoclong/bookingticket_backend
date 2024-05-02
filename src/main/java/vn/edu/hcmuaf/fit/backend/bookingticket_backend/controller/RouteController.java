@@ -3,8 +3,11 @@ package vn.edu.hcmuaf.fit.backend.bookingticket_backend.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.RouteDTO;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.VehicleDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.City;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Route;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Vehicle;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.RouteService;
 
 import java.util.List;
@@ -24,9 +27,14 @@ public class RouteController {
     public List<Route> getAllRoutes(){return routeService.getAllRoute();}
 
     // Create a new Route
+//    @PostMapping
+//    public ResponseEntity<Route> createRoute(@RequestBody RouteDTO routeDTO){
+//        return new ResponseEntity<>(routeService.saveRoute(routeDTO), HttpStatus.CREATED);
+//    }
+
     @PostMapping
-    public ResponseEntity<Route> createRoute(@RequestBody Route route){
-        return new ResponseEntity<>(routeService.saveRoute(route), HttpStatus.CREATED);
+    public ResponseEntity<Route> createRoute(@RequestBody RouteDTO routeDTO){
+        return new ResponseEntity<>(routeService.saveRoute(routeDTO), HttpStatus.CREATED);
     }
 
     // Get Route by id

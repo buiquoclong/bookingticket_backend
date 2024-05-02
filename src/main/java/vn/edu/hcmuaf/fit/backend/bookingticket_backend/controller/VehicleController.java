@@ -3,6 +3,7 @@ package vn.edu.hcmuaf.fit.backend.bookingticket_backend.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.VehicleDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.City;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Vehicle;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.VehicleService;
@@ -23,10 +24,16 @@ public class VehicleController {
     @GetMapping
     public List<Vehicle> getAllVehicles(){return vehicleService.getAllVehicle();}
 
+    // lấy danh sách xe theo loại xe
+    @GetMapping("/kind/{kindVehicleId}")
+    public ResponseEntity<List<Vehicle>> getVehiclesByKindVehicleId(@PathVariable int kindVehicleId) {
+        List<Vehicle> vehicles = vehicleService.getVehiclesByKindVehicleId(kindVehicleId);
+        return new ResponseEntity<>(vehicles, HttpStatus.OK);
+    }
     // Create a new Vehicle
     @PostMapping
-    public ResponseEntity<Vehicle> createVehicle(@RequestBody Vehicle vehicle){
-        return new ResponseEntity<>(vehicleService.saveVehicle(vehicle), HttpStatus.CREATED);
+    public ResponseEntity<Vehicle> createVehicle(@RequestBody VehicleDTO vehicleDTO){
+        return new ResponseEntity<>(vehicleService.saveVehicle(vehicleDTO), HttpStatus.CREATED);
     }
 
     // Get Vehicle By id

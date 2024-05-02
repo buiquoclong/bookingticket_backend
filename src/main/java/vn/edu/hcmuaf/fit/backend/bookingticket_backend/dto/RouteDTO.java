@@ -13,7 +13,7 @@ public class RouteDTO {
     private int diemdi;
     private int diemden;
     private String khoangCach;
-    private LocalDateTime timeOfRoute;
+    private String timeOfRoute;
     private int status;
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt;

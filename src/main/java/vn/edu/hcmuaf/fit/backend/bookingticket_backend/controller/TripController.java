@@ -26,8 +26,8 @@ public class TripController {
 
     // Create a new Trip
     @PostMapping
-    public ResponseEntity<Trip> createTrip(@RequestBody Trip trip){
-        return new ResponseEntity<>(tripService.saveTrip(trip), HttpStatus.CREATED);
+    public ResponseEntity<Trip> createTrip(@RequestBody TripDTO tripDTO){
+        return new ResponseEntity<>(tripService.saveTrip(tripDTO), HttpStatus.CREATED);
     }
 
     // Get Trip By id

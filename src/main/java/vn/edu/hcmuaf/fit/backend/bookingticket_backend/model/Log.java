@@ -19,7 +19,7 @@ public class Log {
     private int id;
 
     @ManyToOne
-    @JsonIgnore
+//    @JsonIgnore
     @JoinColumn(name = "user_id", nullable = false)  // foreign key in Log table
     private User user;
 

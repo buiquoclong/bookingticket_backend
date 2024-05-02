@@ -38,7 +38,24 @@ public class TripServiceImpl implements TripService {
     }
 
     @Override
-    public Trip saveTrip(Trip trip) {
+    public Trip saveTrip(TripDTO tripDTO) {
+        Trip trip = new Trip();
+        Route route =  routeRepository.findById(tripDTO.getRouteId()).orElseThrow(() ->
+                new ResourceNotFoundException("Route", "Id", tripDTO.getRouteId()));
+        Vehicle vehicle =  vehicleRepository.findById(tripDTO.getVehicleId()).orElseThrow(() ->
+                new ResourceNotFoundException("Vehicle", "Id", tripDTO.getVehicleId()));
+        Driver driver =  driverRepository.findById(tripDTO.getDriverId()).orElseThrow(() ->
+                new ResourceNotFoundException("Driver", "Id", tripDTO.getDriverId()));
+        trip.setRoute(route);
+        trip.setVehicle(vehicle);
+        trip.setDayStart(tripDTO.getDayStart());
+        trip.setTimeStart(tripDTO.getTimeStart());
+        trip.setPrice(tripDTO.getPrice());
+        trip.setDriver(driver);
+        trip.setEmptySeat(vehicle.getValue());
+        trip.setStatus(tripDTO.getStatus());
+        vehicle.setCreatedAt(LocalDateTime.now());
+        vehicle.setUpdatedAt(LocalDateTime.now());
         return tripRepository.save(trip);
     }
 

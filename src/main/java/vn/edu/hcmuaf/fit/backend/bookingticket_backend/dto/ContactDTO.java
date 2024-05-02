@@ -9,8 +9,10 @@ import java.time.LocalDateTime;
 @Setter
 public class ContactDTO {
     private int id;
+    private String content;
+    private String email;
     private String name;
-    private String imgUrl;
+    private String title;
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt;
 }

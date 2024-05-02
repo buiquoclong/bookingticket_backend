@@ -2,11 +2,13 @@ package vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.impl;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.UserDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.User;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.UserRepository;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.UserService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 @Service
 public class UserServiceImpl implements UserService {
@@ -17,7 +19,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User saveUser(User user) {
+    public User saveUser(UserDTO userDTO) {
+        User user = new User();
+        user.setName(userDTO.getName());
+        user.setPassword(userDTO.getPassword());
+        user.setEmail(userDTO.getEmail());
+        user.setPhone(userDTO.getPhone());
+        user.setRole(userDTO.getRole());
+        user.setStatus(userDTO.getStatus());
+        user.setType(userDTO.getType());
+        user.setCreatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
         return userRepository.save(user);
     }
 

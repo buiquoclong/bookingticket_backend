@@ -2,12 +2,13 @@ package vn.edu.hcmuaf.fit.backend.bookingticket_backend.service;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.SeatDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Seat;
 
 import java.util.List;
 
 public interface SeatService {
-    Seat saveSeat(Seat seat);
+    Seat saveSeat(SeatDTO seatDTO);
     List<Seat> getAllSeat();
     Seat getSeatByID(int id);
     Seat updateSeatByID(Seat seat, int id);

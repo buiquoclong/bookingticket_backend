@@ -442,7 +442,7 @@ INSERT INTO `vehicle` VALUES (6, 'Vehicle006', 3, 'BS006', 21, 0, '2024-04-14 22
 -- ----------------------------
 -- Table structure for verify_tokens
 -- ----------------------------
-ROP TABLE IF EXISTS `verify_tokens`;
+DROP TABLE IF EXISTS `verify_tokens`;
 CREATE TABLE `verify_tokens`  (
   `id` int NOT NULL AUTO_INCREMENT,
   `user_id` int NULL DEFAULT NULL,
@@ -454,7 +454,8 @@ CREATE TABLE `verify_tokens`  (
   INDEX `FKaw9hivaeew6vkk2jr24076jg0`(`user_id` ASC) USING BTREE,
   CONSTRAINT `FKaw9hivaeew6vkk2jr24076jg0` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
--------------------------
+
+-- ----------------------------
 -- Records of verify_tokens
 -- ----------------------------
 

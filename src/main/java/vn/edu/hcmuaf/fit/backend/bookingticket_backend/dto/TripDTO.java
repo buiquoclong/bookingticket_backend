@@ -18,6 +18,7 @@ public class TripDTO {
     private int price;
     private int driverId;
     private int emptySeat;
+    private int status;
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt;
 }

@@ -3,6 +3,7 @@ package vn.edu.hcmuaf.fit.backend.bookingticket_backend.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.SeatDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Seat;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.SeatService;
 
@@ -30,8 +31,8 @@ public class SeatController {
     }
     // Create a new Seat
     @PostMapping
-    public ResponseEntity<Seat> createSeat(@RequestBody Seat seat){
-        return new ResponseEntity<>(seatService.saveSeat(seat), HttpStatus.CREATED);
+    public ResponseEntity<Seat> createSeat(@RequestBody SeatDTO seatDTO){
+        return new ResponseEntity<>(seatService.saveSeat(seatDTO), HttpStatus.CREATED);
     }
 
     // Get Seat By id

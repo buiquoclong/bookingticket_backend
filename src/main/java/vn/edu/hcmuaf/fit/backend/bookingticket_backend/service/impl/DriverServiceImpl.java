@@ -1,11 +1,13 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.impl;
 
 import org.springframework.stereotype.Service;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.DriverDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Driver;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.DriverRepository;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.DriverService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 @Service
 public class DriverServiceImpl implements DriverService {
@@ -16,7 +18,15 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public Driver saveDriver(Driver driver) {
+    public Driver saveDriver(DriverDTO driverDTO) {
+        Driver driver = new Driver();
+        driver.setName(driverDTO.getName());
+        driver.setEmail(driverDTO.getEmail());
+        driver.setPhone(driverDTO.getPhone());
+//        driver.setStatus(driverDTO.getStatus());
+        driver.setStatus(1);
+        driver.setCreatedAt(LocalDateTime.now());
+        driver.setUpdatedAt(LocalDateTime.now());
         return driverRepository.save(driver);
     }
 

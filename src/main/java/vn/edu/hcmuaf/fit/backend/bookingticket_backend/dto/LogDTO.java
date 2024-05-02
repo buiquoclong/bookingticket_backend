@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Setter
 public class LogDTO {
     private int id;
-    private User userId;
+    private int userId;
     private String message;
     private int level;
     private LocalDateTime createdAt = LocalDateTime.now();
