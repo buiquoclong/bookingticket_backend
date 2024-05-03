@@ -54,22 +54,4 @@ public class TripController {
         List<Trip> foundTrips = tripService.searchTrips(tripSearchDTO);
         return new ResponseEntity<>(foundTrips, HttpStatus.OK);
     }
-
-    @PostMapping("/searchbytime")
-    public ResponseEntity<List<Trip>> searchTripsByTime(@RequestBody TripSearchDTO tripSearchDTO) {
-        List<Trip> foundTrips = tripService.searchTripsByTime(tripSearchDTO);
-        return new ResponseEntity<>(foundTrips, HttpStatus.OK);
-    }
-
-    @PostMapping("/search_by_typevehicle")
-    public ResponseEntity<List<Trip>> searchTripsByVehicleType(@RequestBody TripSearchDTO tripSearchDTO) {
-        List<Trip> foundTrips = tripService.searchTripsByVehicleType(tripSearchDTO);
-        return new ResponseEntity<>(foundTrips, HttpStatus.OK);
-    }
-
-    @PostMapping("/search_by_time_and_typevehicle")
-    public ResponseEntity<List<Trip>> searchTripsByTimeAndVehicleType(@RequestBody TripSearchDTO tripSearchDTO) {
-        List<Trip> foundTrips = tripService.searchTripsByTimeAndVehicleType(tripSearchDTO);
-        return new ResponseEntity<>(foundTrips, HttpStatus.OK);
-    }
 }

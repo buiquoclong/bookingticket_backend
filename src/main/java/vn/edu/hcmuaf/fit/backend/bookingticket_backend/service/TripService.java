@@ -13,8 +13,4 @@ public interface TripService {
     Trip updateTripByID(TripDTO tripDTO, int id);
     void deleteTripByID(int id);
     List<Trip> searchTrips(TripSearchDTO tripSearchDTO);
-    List<Trip> searchTripsByTime(TripSearchDTO tripSearchDTO);
-    List<Trip> searchTripsByVehicleType(TripSearchDTO tripSearchDTO);
-
-    List<Trip> searchTripsByTimeAndVehicleType(TripSearchDTO tripSearchDTO);
 }

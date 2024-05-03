@@ -11,18 +11,23 @@ import java.util.List;
 
 @Repository
 public interface TripRepository extends JpaRepository<Trip, Integer> {
-    // Search chuyến
-    List<Trip> findTripsByRoute_DiemDi_IdAndRoute_DiemDen_IdAndDayStart(int diemDiId, int diemDenId, LocalDate dayStart);
+   // Search chuyến
+   List<Trip> findTripsByRoute_DiemDi_IdAndRoute_DiemDen_IdAndDayStart(int diemDiId, int diemDenId, LocalDate dayStart);
 
-    // Search theo giờ
+    // Tìm chuyến theo điểm đi, điểm đến, ngày khởi hành và thời gian khởi hành nằm trong khoảng cho trước
     List<Trip> findTripsByRoute_DiemDi_IdAndRoute_DiemDen_IdAndDayStartAndTimeStartBetween(
             int diemDiId, int diemDenId, LocalDate dayStart, LocalTime timeStartFrom, LocalTime timeStartTo);
 
-    // Search theo loại xe
-    List<Trip> findByRouteDiemDiIdAndRouteDiemDenIdAndDayStartAndVehicleName(int diemDiId, int diemDenId, LocalDate dayStart, String vehicleName);
+    // Tìm chuyến theo điểm đi, điểm đến, ngày khởi hành và loại xe
+    List<Trip> findByRoute_DiemDi_IdAndRoute_DiemDen_IdAndDayStartAndVehicle_KindVehicle_Id(
+            int diemDiId, int diemDenId, LocalDate dayStart, int kindVehicleId);
 
-    // Search theo giờ và loại xe
-    List<Trip> findTripsByRoute_DiemDi_IdAndRoute_DiemDen_IdAndDayStartAndTimeStartBetweenAndVehicleName(
-            int diemDiId, int diemDenId, LocalDate dayStart, LocalTime timeStartFrom, LocalTime timeStartTo, String vehicleName);
+    // Tìm chuyến theo điểm đi, điểm đến, ngày khởi hành, thời gian khởi hành nằm trong khoảng cho trước và loại xe
+    List<Trip> findTripsByRoute_DiemDi_IdAndRoute_DiemDen_IdAndDayStartAndTimeStartBetweenAndVehicle_KindVehicle_Id(
+            int diemDiId, int diemDenId, LocalDate dayStart, LocalTime timeStartFrom, LocalTime timeStartTo, int kindVehicleId);
+
+    // Sắp xếp chuyến theo giá tăng dần hoặc giảm dần
+    List<Trip> findAllByOrderByPriceAsc();
+    List<Trip> findAllByOrderByPriceDesc();
 
 }

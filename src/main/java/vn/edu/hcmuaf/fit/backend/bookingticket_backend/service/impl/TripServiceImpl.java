@@ -1,5 +1,6 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.impl;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.TripDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.TripSearchDTO;
@@ -16,6 +17,7 @@ import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.TripService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -98,63 +100,37 @@ public class TripServiceImpl implements TripService {
         tripRepository.deleteById(id);
     }
 
-//    @Override
-//    public List<Trip> searchTrips(TripSearchDTO tripSearchDTO) {
-//        // Lấy thông tin từ DTO
-//        int diemDiId = tripSearchDTO.getDiemDiId();
-//        int diemDenId = tripSearchDTO.getDiemDenId();
-//        LocalDate dayStart = tripSearchDTO.getDayStart();
-//
-//        // Gọi repository để thực hiện truy vấn
-//        return tripRepository.findTripsByRoute_DiemDi_IdAndRoute_DiemDen_IdAndDayStart(diemDiId, diemDenId, dayStart);
-//    }
     @Override
     public List<Trip> searchTrips(TripSearchDTO tripSearchDTO) {
-        int diemDiId = tripSearchDTO.getDiemDiId();
-        int diemDenId = tripSearchDTO.getDiemDenId();
-        LocalDate dayStart = tripSearchDTO.getDayStart();
+        // Lọc theo điểm đi, điểm đến, ngày khởi hành
+        List<Trip> trips = tripRepository.findTripsByRoute_DiemDi_IdAndRoute_DiemDen_IdAndDayStart(
+                tripSearchDTO.getDiemDiId(),
+                tripSearchDTO.getDiemDenId(),
+                tripSearchDTO.getDayStart()
+        );
 
-        List<Trip> allTrips = tripRepository.findTripsByRoute_DiemDi_IdAndRoute_DiemDen_IdAndDayStart(diemDiId, diemDenId, dayStart);
-        return allTrips.stream()
-                .filter(trip -> trip.getEmptySeat() > 0)
-                .collect(Collectors.toList());
-    }
+        // Nếu có thông tin thời gian khởi hành, thực hiện lọc thêm
+        if (tripSearchDTO.getTimeStartFrom() != null && tripSearchDTO.getTimeStartTo() != null) {
+            trips = trips.stream()
+                    .filter(trip -> trip.getTimeStart().isAfter(tripSearchDTO.getTimeStartFrom())
+                            && trip.getTimeStart().isBefore(tripSearchDTO.getTimeStartTo()))
+                    .collect(Collectors.toList());
+        }
 
-    @Override
-    public List<Trip> searchTripsByTime(TripSearchDTO tripSearchDTO) {
-        return tripRepository.findTripsByRoute_DiemDi_IdAndRoute_DiemDen_IdAndDayStartAndTimeStartBetween(
-                        tripSearchDTO.getDiemDiId(),
-                        tripSearchDTO.getDiemDenId(),
-                        tripSearchDTO.getDayStart(),
-                        tripSearchDTO.getTimeStartFrom(),
-                        tripSearchDTO.getTimeStartTo()
-                ).stream()
-                .filter(trip -> trip.getEmptySeat() > 0)
-                .collect(Collectors.toList());
-    }
-    @Override
-    public List<Trip> searchTripsByVehicleType(TripSearchDTO tripSearchDTO) {
-        int diemDiId = tripSearchDTO.getDiemDiId();
-        int diemDenId = tripSearchDTO.getDiemDenId();
-        LocalDate dayStart = tripSearchDTO.getDayStart();
-        String vehicleName = tripSearchDTO.getVehicleName();
+        // Nếu có thông tin loại xe, thực hiện lọc thêm
+        if (tripSearchDTO.getKindVehicleId() != 0) {
+            trips = trips.stream()
+                    .filter(trip -> trip.getVehicle().getKindVehicle().getId() == tripSearchDTO.getKindVehicleId())
+                    .collect(Collectors.toList());
+        }
 
-        return tripRepository.findByRouteDiemDiIdAndRouteDiemDenIdAndDayStartAndVehicleName(diemDiId, diemDenId, dayStart, vehicleName).stream()
-                .filter(trip -> trip.getEmptySeat() > 0)
-                .collect(Collectors.toList());
-    }
+        // Nếu có yêu cầu sắp xếp giá
+        if (tripSearchDTO.getSort() != 0) {
+            // Sắp xếp tăng dần nếu sort = 1, ngược lại sắp xếp giảm dần
+            Sort sort = tripSearchDTO.getSort() == 1 ? Sort.by("price").ascending() : Sort.by("price").descending();
+            trips.sort(Comparator.comparingInt(Trip::getPrice));
+        }
 
-    @Override
-    public List<Trip> searchTripsByTimeAndVehicleType(TripSearchDTO tripSearchDTO) {
-        return tripRepository.findTripsByRoute_DiemDi_IdAndRoute_DiemDen_IdAndDayStartAndTimeStartBetweenAndVehicleName(
-                        tripSearchDTO.getDiemDiId(),
-                        tripSearchDTO.getDiemDenId(),
-                        tripSearchDTO.getDayStart(),
-                        tripSearchDTO.getTimeStartFrom(),
-                        tripSearchDTO.getTimeStartTo(),
-                        tripSearchDTO.getVehicleName()
-                ).stream()
-                .filter(trip -> trip.getEmptySeat() > 0)
-                .collect(Collectors.toList());
+        return trips;
     }
 }

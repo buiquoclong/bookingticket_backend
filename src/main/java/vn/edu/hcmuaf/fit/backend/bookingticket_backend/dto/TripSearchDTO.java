@@ -13,5 +13,6 @@ public class TripSearchDTO {
     private LocalDate dayStart;
     private LocalTime timeStartFrom;
     private LocalTime timeStartTo;
-    private String vehicleName;
+    private int kindVehicleId;
+    private int sort;
 }
