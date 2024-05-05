@@ -11,4 +11,6 @@ public interface BookingDetailService {
     BookingDetail getBookingDetailByID(String id);
     BookingDetail updateBookingDetailByID(BookingDetail orderDetail, String id);
     void deleteBookingDetailByID(String id);
+    List<BookingDetail> getBookingDetailsByBookingId(int bookingId);
+    List<BookingDetail> getAllBookingDetailByUserId(int userId);
 }

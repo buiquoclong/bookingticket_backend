@@ -7,14 +7,13 @@ import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Booking;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.BookingDetail;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Trip;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.User;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.*;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.BookingDetailRepository;
-import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.BookingDetailRepository;
-import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.BookingRepository;
-import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.TripRepository;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.BookingDetailService;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.BookingDetailService;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -22,16 +21,25 @@ public class BookingDetailServiceImpl implements BookingDetailService {
     private BookingDetailRepository bookingDetailRepository;
     private BookingRepository bookingRepository;
     private TripRepository tripRepository;
+    private UserRepository userRepository;
 
 //    public BookingDetailServiceImpl(BookingDetailRepository bookingDetailRepository) {
 //        this.bookingDetailRepository = bookingDetailRepository;
 //    }
 
 
-    public BookingDetailServiceImpl(BookingDetailRepository bookingDetailRepository, BookingRepository bookingRepository, TripRepository tripRepository) {
+//    public BookingDetailServiceImpl(BookingDetailRepository bookingDetailRepository, BookingRepository bookingRepository, TripRepository tripRepository) {
+//        this.bookingDetailRepository = bookingDetailRepository;
+//        this.bookingRepository = bookingRepository;
+//        this.tripRepository = tripRepository;
+//    }
+
+
+    public BookingDetailServiceImpl(BookingDetailRepository bookingDetailRepository, BookingRepository bookingRepository, TripRepository tripRepository, UserRepository userRepository) {
         this.bookingDetailRepository = bookingDetailRepository;
         this.bookingRepository = bookingRepository;
         this.tripRepository = tripRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -66,6 +74,26 @@ public class BookingDetailServiceImpl implements BookingDetailService {
         }
         return ticketCode.toString();
     }
+
+    // get all detail by bookingid
+    @Override
+    public List<BookingDetail> getBookingDetailsByBookingId(int bookingId) {
+        return bookingDetailRepository.findByBookingId(bookingId);
+    }
+
+    // get all detail by userid
+    @Override
+    public List<BookingDetail> getAllBookingDetailByUserId(int userId) {
+        User user = userRepository.findById(userId).orElseThrow(() ->
+                new ResourceNotFoundException("User", "Id", userId));
+        List<Booking> bookings = user.getBookings();
+        List<BookingDetail> allBookingDetails = new ArrayList<>();
+        for (Booking booking : bookings) {
+            allBookingDetails.addAll(booking.getBookingDetails());
+        }
+        return allBookingDetails;
+    }
+
 
     @Override
     public List<BookingDetail> getAllBookingDetail() {

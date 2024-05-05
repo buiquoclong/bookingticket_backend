@@ -125,10 +125,18 @@ public class TripServiceImpl implements TripService {
         }
 
         // Nếu có yêu cầu sắp xếp giá
+//        if (tripSearchDTO.getSort() != 0) {
+//            // Sắp xếp tăng dần nếu sort = 1, ngược lại sắp xếp giảm dần
+//            Sort sort = tripSearchDTO.getSort() == 1 ? Sort.by("price").ascending() : Sort.by("price").descending();
+//            trips.sort(Comparator.comparingInt(Trip::getPrice));
+//        }
         if (tripSearchDTO.getSort() != 0) {
             // Sắp xếp tăng dần nếu sort = 1, ngược lại sắp xếp giảm dần
-            Sort sort = tripSearchDTO.getSort() == 1 ? Sort.by("price").ascending() : Sort.by("price").descending();
-            trips.sort(Comparator.comparingInt(Trip::getPrice));
+            if (tripSearchDTO.getSort() == 1) {
+                trips.sort(Comparator.comparingInt(Trip::getPrice)); // Tăng dần
+            } else {
+                trips.sort(Comparator.comparingInt(Trip::getPrice).reversed()); // Giảm dần
+            }
         }
 
         return trips;

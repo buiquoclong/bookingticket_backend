@@ -29,6 +29,20 @@ public class BookingDetailController {
         return  new ResponseEntity<>(bookingDetailService.saveBookingDetail(bookingDetailDTO), HttpStatus.CREATED);
     }
 
+    // Lấy danh sách các booking detail dựa trên booking ID
+    @GetMapping("/booking/{bookingId}")
+    public ResponseEntity<List<BookingDetail>> getBookingDetailsByBookingId(@PathVariable int bookingId) {
+        List<BookingDetail> bookingDetails = bookingDetailService.getBookingDetailsByBookingId(bookingId);
+        return new ResponseEntity<>(bookingDetails, HttpStatus.OK);
+    }
+
+    // Lấy dánh sách các bookingdetail theo userId
+    @GetMapping("/user/{userId}/booking_details")
+    public ResponseEntity<List<BookingDetail>> getAllBookingDetailsByUserId(@PathVariable("userId") int userId) {
+        return new ResponseEntity<>(bookingDetailService.getAllBookingDetailByUserId(userId), HttpStatus.OK);
+    }
+
+
     // Get BookingDetail by id
     @GetMapping("{id}")
     public ResponseEntity<BookingDetail> getOrderDetailById(@PathVariable ("id") String id){

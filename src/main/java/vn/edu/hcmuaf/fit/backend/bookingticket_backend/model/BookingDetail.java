@@ -22,7 +22,7 @@ public class BookingDetail {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "booking_id", referencedColumnName = "id")
 //    @JsonIgnoreProperties("orderDetails")
-    @JsonBackReference
+////    @JsonBackReference
     private Booking booking;
 
     @ManyToOne

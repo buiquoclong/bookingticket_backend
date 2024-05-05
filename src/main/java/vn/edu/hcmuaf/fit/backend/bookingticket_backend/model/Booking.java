@@ -1,6 +1,7 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -15,6 +16,7 @@ import java.util.List;
 @Entity
 @EntityScan
 @Table(name = "booking")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -54,8 +56,8 @@ public class Booking {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-//    @JsonIgnore
-    @JsonManagedReference
+    @JsonIgnore
+//    @JsonManagedReference
     @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
     private List<BookingDetail> bookingDetails;
 
