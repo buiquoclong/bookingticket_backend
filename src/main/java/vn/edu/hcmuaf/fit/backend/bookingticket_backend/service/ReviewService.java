@@ -9,6 +9,8 @@ public interface ReviewService {
     Review saveReview(ReviewDTO reviewDTO);
     List<Review> getAllReview();
     Review getReviewByID(int id);
-    Review updateReviewByID(Review review, int id);
+    Review updateReviewByID(ReviewDTO reviewDTO, int id);
     void deleteReviewByID(int id);
+
+    List<Review> getReviewByUserId(int userId);
 }

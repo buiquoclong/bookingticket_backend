@@ -33,6 +33,10 @@ public class SeatReservationController {
     public List<SeatReservation> getSeatReservationsByTripId(@PathVariable("tripId") int tripId) {
         return seatReservationService.getSeatReservationsByTripId(tripId);
     }
+    @GetMapping("/booking/{bookingId}")
+    public List<SeatReservation> getSeatReservationsByBookingId(@PathVariable("bookingId") int bookingId) {
+        return seatReservationService.getSeatReservationsByBookingId(bookingId);
+    }
 
     // Create a new SeatReservation
     @PostMapping
@@ -57,6 +61,13 @@ public class SeatReservationController {
     public ResponseEntity<String> deleteSeatReservationById(@PathVariable ("id") int id){
         seatReservationService.deleteSeatReservationByID(id);
         return new ResponseEntity<>("SeatReservation " + id + " is deleted successfully", HttpStatus.OK);
+    }
+
+    // Delete seatReservation theo bookingId
+    @DeleteMapping("/booking/{bookingId}")
+    public ResponseEntity<String> deleteSeatReservationsByBookingId(@PathVariable("bookingId") int bookingId){
+        seatReservationService.deleteSeatReservationsByBookingId(bookingId);
+        return new ResponseEntity<>("SeatReservations with Booking Id " + bookingId + " are deleted successfully", HttpStatus.OK);
     }
 
 }

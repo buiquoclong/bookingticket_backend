@@ -59,6 +59,11 @@ public class SeatReservationServiceImpl implements SeatReservationService {
     }
 
     @Override
+    public List<SeatReservation> getSeatReservationsByBookingId(int bookingId) {
+        return seatReservationRepository.findByBooking_Id(bookingId);
+    }
+
+    @Override
     public List<SeatReservation> getAllSeatReservation() {
         return seatReservationRepository.findAll();
     }
@@ -79,5 +84,16 @@ public class SeatReservationServiceImpl implements SeatReservationService {
         seatReservationRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("SeatReservation", "Id", id));
         seatReservationRepository.deleteById(id);
+    }
+
+    // xóa theo bookingId
+    @Override
+    public void deleteSeatReservationsByBookingId(int bookingId) {
+        List<SeatReservation> seatReservations = seatReservationRepository.findByBooking_Id(bookingId);
+        if (seatReservations != null && !seatReservations.isEmpty()) {
+            seatReservationRepository.deleteAll(seatReservations);
+        } else {
+            throw new ResourceNotFoundException("Seat Reservations", "Booking Id", bookingId);
+        }
     }
 }

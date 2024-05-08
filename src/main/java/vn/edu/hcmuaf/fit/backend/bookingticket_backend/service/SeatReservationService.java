@@ -11,6 +11,7 @@ public interface SeatReservationService {
     SeatReservation getSeatReservationByID(int id);
     SeatReservation updateSeatReservationByID(SeatReservation seatReservation, int id);
     void deleteSeatReservationByID(int id);
-//    List<SeatReservation> getSeatReservationsByTripId(int tripId);
     List<SeatReservation> getSeatReservationsByTripId(int tripId);
+    List<SeatReservation> getSeatReservationsByBookingId(int bookingId);
+    void deleteSeatReservationsByBookingId(int bookingId);
 }

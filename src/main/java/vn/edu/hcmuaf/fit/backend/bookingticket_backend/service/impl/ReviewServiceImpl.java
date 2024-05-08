@@ -56,9 +56,26 @@ public class ReviewServiceImpl implements ReviewService {
                 new ResourceNotFoundException("Review", "Id", id));
     }
 
+    // get review by userId
     @Override
-    public Review updateReviewByID(Review review, int id) {
-        return null;
+    public List<Review> getReviewByUserId(int userId) {
+        return reviewRepository.findByUserId(userId);
+    }
+    @Override
+    public Review updateReviewByID(ReviewDTO reviewDTO, int id) {
+
+        Review existingReview = reviewRepository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("Review", "Id", reviewDTO.getId()));
+        User user = userRepository.findById(reviewDTO.getUserId()).orElseThrow(() ->
+                new ResourceNotFoundException("User", "Id", reviewDTO.getUserId()));
+        Trip trip =  tripRepository.findById(reviewDTO.getTripId()).orElseThrow(() ->
+                new ResourceNotFoundException("Trip", "Id", reviewDTO.getTripId()));
+        existingReview.setTrip(trip);
+        existingReview.setUser(user);
+        existingReview.setRating(reviewDTO.getRating());
+        existingReview.setContent(reviewDTO.getContent());
+        existingReview.setUpdatedAt(LocalDateTime.now());
+        return reviewRepository.save(existingReview);
     }
 
     @Override

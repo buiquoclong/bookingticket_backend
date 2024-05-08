@@ -6,8 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.BookingDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Booking;
-import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.City;
-import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.BookingService;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.BookingService;
 
 import java.util.List;
@@ -37,16 +35,23 @@ public class BookingController {
         return new ResponseEntity<>(bookingService.saveBooking(bookingDTO), HttpStatus.CREATED);
     }
 
-    // Get Booking bay id
+    // Get Booking by id
     @GetMapping("{id}")
     public ResponseEntity<Booking> getBookingById(@PathVariable ("id") int id){
         return new ResponseEntity<>(bookingService.getBookingByID(id), HttpStatus.OK);
     }
 
+    //get booking by userId
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Booking>> getBookingByUserId(@PathVariable int userId) {
+        List<Booking> bookings = bookingService.getBookingByUserId(userId);
+        return new ResponseEntity<>(bookings, HttpStatus.OK);
+    }
+
     // Update Booking by id
     @PutMapping("{id}")
-    public ResponseEntity<Booking> updateBookingById(@PathVariable ("id") int id, @RequestBody Booking booking){
-        return new ResponseEntity<>(bookingService.updateBookingByID(booking, id), HttpStatus.OK);
+    public ResponseEntity<Booking> updateBookingById(@PathVariable ("id") int id, @RequestBody BookingDTO bookingDTO){
+        return new ResponseEntity<>(bookingService.updateBookingByID(bookingDTO, id), HttpStatus.OK);
     }
 
     // Delete city by id

@@ -10,7 +10,7 @@ import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.BookingDetailServ
 import java.util.List;
 
 @RestController
-@RequestMapping("api/boking_detail")
+@RequestMapping("api/booking_detail")
 @CrossOrigin("http://localhost:3000")
 public class BookingDetailController {
     private BookingDetailService bookingDetailService;

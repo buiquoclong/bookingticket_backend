@@ -9,6 +9,7 @@ public interface BookingService {
     Booking saveBooking(BookingDTO bookingDTO);
     List<Booking> getAllBooking();
     Booking getBookingByID(int id);
-    Booking updateBookingByID(Booking order, int id);
+    Booking updateBookingByID(BookingDTO bookingDTO, int id);
     void deleteBookingByID(int id);
+    List<Booking> getBookingByUserId(int userId);
 }

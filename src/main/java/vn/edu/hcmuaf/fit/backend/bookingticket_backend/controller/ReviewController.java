@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.ReviewDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Review;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Vehicle;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.ReviewService;
 
 import java.util.List;
@@ -37,10 +38,17 @@ public class ReviewController {
         return new ResponseEntity<>(reviewService.getReviewByID(id), HttpStatus.OK);
     }
 
+    //get review by userId
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Review>> getReviewByUserId(@PathVariable int userId) {
+        List<Review> reviews = reviewService.getReviewByUserId(userId);
+        return new ResponseEntity<>(reviews, HttpStatus.OK);
+    }
+
     // Update Review by id
     @PutMapping("{id}")
-    public ResponseEntity<Review> updateReviewById(@PathVariable ("id") int id, @RequestBody Review Review){
-        return new ResponseEntity<>(reviewService.updateReviewByID(Review, id), HttpStatus.OK);
+    public ResponseEntity<Review> updateReviewById(@PathVariable ("id") int id, @RequestBody ReviewDTO reviewDTO){
+        return new ResponseEntity<>(reviewService.updateReviewByID(reviewDTO, id), HttpStatus.OK);
     }
 
     // Delete Review by id

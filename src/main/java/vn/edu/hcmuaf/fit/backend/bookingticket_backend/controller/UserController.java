@@ -46,8 +46,8 @@ public class UserController {
 
     // Update User by id
     @PutMapping("{id}")
-    public ResponseEntity<User> updateUserById(@PathVariable ("id") int id, @RequestBody User user){
-        return new ResponseEntity<>(userService.updateUserByID(user, id), HttpStatus.OK);
+    public ResponseEntity<User> updateUserById(@PathVariable ("id") int id, @RequestBody UserDTO userDTO){
+        return new ResponseEntity<>(userService.updateUserByID(userDTO, id), HttpStatus.OK);
     }
 
     // Delete User by id

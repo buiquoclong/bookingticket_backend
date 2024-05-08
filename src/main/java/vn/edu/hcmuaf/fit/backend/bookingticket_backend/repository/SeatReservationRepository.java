@@ -10,6 +10,6 @@ import java.util.List;
 
 @Repository
 public interface SeatReservationRepository extends JpaRepository<SeatReservation, Integer> {
-//    List<SeatReservation> findByBooking_Trip_Id(int tripId);
     List<SeatReservation> findByTrip_Id(int tripId);
+    List<SeatReservation> findByBooking_Id(int bookingId);
 }

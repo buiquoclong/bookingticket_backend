@@ -10,7 +10,7 @@ public interface UserService {
     User saveUser(UserDTO userDTO);
     List<User> getAllUser();
     User getUserByID(int id);
-    User updateUserByID(User user, int id);
+    User updateUserByID(UserDTO userDTO, int id);
     void deleteUserByID(int id);
     String login(String email, String pass);
 }

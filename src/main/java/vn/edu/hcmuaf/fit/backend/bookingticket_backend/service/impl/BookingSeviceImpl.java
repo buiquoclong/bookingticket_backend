@@ -4,13 +4,10 @@ import org.springframework.stereotype.Service;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.BookingDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Booking;
-import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Trip;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.User;
-import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.BookingRepository;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.BookingRepository;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.TripRepository;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.UserRepository;
-import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.BookingService;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.BookingService;
 
 import java.time.LocalDateTime;
@@ -67,9 +64,27 @@ public class BookingSeviceImpl implements BookingService {
                 new ResourceNotFoundException("City", "Id", id));
     }
 
+    // get booking by userId
     @Override
-    public Booking updateBookingByID(Booking booking, int id) {
-        return null;
+    public List<Booking> getBookingByUserId(int userId) {
+        return bookingRepository.findByUserId(userId);
+    }
+    @Override
+    public Booking updateBookingByID(BookingDTO bookingDTO, int id) {
+        Booking existingBooking = bookingRepository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("Booking", "Id", id));
+        User user = userRepository.findById(bookingDTO.getUserId()).orElseThrow(() ->
+                new ResourceNotFoundException("User", "Id", bookingDTO.getUserId()));
+        existingBooking.setUserName(bookingDTO.getUserName());
+        existingBooking.setEmail(bookingDTO.getEmail());
+        existingBooking.setPhone(bookingDTO.getPhone());
+        existingBooking.setUser(user);
+        existingBooking.setTotal(bookingDTO.getTotal());
+        existingBooking.setKindPay(bookingDTO.getKindPay());
+        existingBooking.setIsPaid(bookingDTO.getIsPaid());
+        existingBooking.setRoundTrip(bookingDTO.getRoundTrip());
+        existingBooking.setUpdatedAt(LocalDateTime.now());
+        return bookingRepository.save(existingBooking);
     }
 
     @Override
