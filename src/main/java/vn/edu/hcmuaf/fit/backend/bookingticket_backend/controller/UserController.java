@@ -34,8 +34,8 @@ public class UserController {
 
     // Create a new User
     @PostMapping
-    public ResponseEntity<User>  creatUser(@RequestBody UserDTO userDTO){
-        return new ResponseEntity<>(userService.saveUser(userDTO), HttpStatus.CREATED);
+    public String creatUser(@RequestBody UserDTO userDTO){
+        return userService.saveUser(userDTO);
     }
 
     // Get User by id

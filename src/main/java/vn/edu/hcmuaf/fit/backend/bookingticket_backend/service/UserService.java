@@ -7,7 +7,7 @@ import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.User;
 import java.util.List;
 
 public interface UserService {
-    User saveUser(UserDTO userDTO);
+    String saveUser(UserDTO userDTO);
     List<User> getAllUser();
     User getUserByID(int id);
     User updateUserByID(UserDTO userDTO, int id);

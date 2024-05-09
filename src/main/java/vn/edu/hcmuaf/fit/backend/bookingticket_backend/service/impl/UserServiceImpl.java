@@ -19,18 +19,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User saveUser(UserDTO userDTO) {
-        User user = new User();
-        user.setName(userDTO.getName());
-        user.setPassword(userDTO.getPassword());
-        user.setEmail(userDTO.getEmail());
-        user.setPhone(userDTO.getPhone());
-        user.setRole(userDTO.getRole());
-        user.setStatus(userDTO.getStatus());
-        user.setType(userDTO.getType());
-        user.setCreatedAt(LocalDateTime.now());
-        user.setUpdatedAt(LocalDateTime.now());
-        return userRepository.save(user);
+    public String saveUser(UserDTO userDTO) {
+        String result = "";
+        if (userRepository.existsByEmail(userDTO.getEmail())) {
+            result += "Email đã tồn tại";
+        }else {
+            User user = new User();
+            user.setName(userDTO.getName());
+            user.setPassword(userDTO.getPassword());
+            user.setEmail(userDTO.getEmail());
+            user.setPhone(userDTO.getPhone());
+            user.setRole(userDTO.getRole());
+            user.setStatus(userDTO.getStatus());
+            user.setType(userDTO.getType());
+            user.setCreatedAt(LocalDateTime.now());
+            user.setUpdatedAt(LocalDateTime.now());
+            userRepository.save(user);
+            result += "Tải khoản đã được tạo thành công";
+        }
+        return result;
     }
 
     @Override
