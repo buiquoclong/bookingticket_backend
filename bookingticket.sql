@@ -85,9 +85,9 @@ CREATE TABLE `city`  (
 -- ----------------------------
 -- Records of city
 -- ----------------------------
-INSERT INTO `city` VALUES (1, 'Đà Nẵng', 'src1', '2024-04-21 03:28:26.000000', '2024-04-21 03:28:26.000000');
-INSERT INTO `city` VALUES (2, 'Sài Gòn', 'src2', '2024-04-21 03:28:40.000000', '2024-04-21 03:28:40.000000');
-INSERT INTO `city` VALUES (3, 'Đà Lạt', 'src3', '2024-04-21 03:28:54.000000', '2024-04-21 03:28:54.000000');
+INSERT INTO `city` VALUES (1, 'Đà Nẵng', 'img/dn.png', '2024-04-21 03:28:26.000000', '2024-04-21 03:28:26.000000');
+INSERT INTO `city` VALUES (2, 'Sài Gòn', 'img/sg.png', '2024-04-21 03:28:40.000000', '2024-04-21 03:28:40.000000');
+INSERT INTO `city` VALUES (3, 'Đà Lạt', 'img/dl.png', '2024-04-21 03:28:54.000000', '2024-04-21 03:28:54.000000');
 
 -- ----------------------------
 -- Table structure for contact
@@ -363,6 +363,7 @@ CREATE TABLE `trip`  (
   `giave` int NULL DEFAULT NULL,
   `taixe_id` int NULL DEFAULT NULL,
   `controng` int NULL DEFAULT NULL,
+  `status` int NULL DEFAULT NULL,
   `created_at` datetime(6) NULL DEFAULT NULL,
   `updated_at` datetime(6) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
@@ -378,13 +379,13 @@ CREATE TABLE `trip`  (
 -- ----------------------------
 -- Records of trip
 -- ----------------------------
-INSERT INTO `trip` VALUES (1, 1, 1, '2024-04-25', '18:10:24.000000', 300000, 1, 21, '2024-04-16 18:10:33.000000', '2024-04-16 18:10:37.000000');
-INSERT INTO `trip` VALUES (2, 1, 2, '2024-04-25', '19:10:24.000000', 300000, 2, 21, '2024-04-16 18:10:33.000000', '2024-04-16 18:10:37.000000');
-INSERT INTO `trip` VALUES (3, 1, 3, '2024-04-25', '22:10:24.000000', 300000, 3, 21, '2024-04-16 18:10:33.000000', '2024-04-16 18:10:37.000000');
-INSERT INTO `trip` VALUES (4, 2, 4, '2024-04-28', '18:10:24.000000', 300000, 4, 21, '2024-04-16 18:10:33.000000', '2024-04-16 18:10:37.000000');
-INSERT INTO `trip` VALUES (5, 2, 5, '2024-04-28', '19:10:24.000000', 300000, 5, 21, '2024-04-16 18:10:33.000000', '2024-04-16 18:10:37.000000');
-INSERT INTO `trip` VALUES (6, 2, 6, '2024-04-28', '22:10:24.000000', 300000, 6, 21, '2024-04-16 18:10:33.000000', '2024-04-16 18:10:37.000000');
-INSERT INTO `trip` VALUES (7, 2, 1, '2024-05-01', '22:10:24.000000', 300000, 1, 21, '2024-04-16 18:10:33.000000', '2024-04-16 18:10:37.000000');
+INSERT INTO `trip` VALUES (1, 1, 1, '2024-05-11', '18:10:24.000000', 250000, 1, 21, 1, '2024-04-16 18:10:33.000000', '2024-04-16 18:10:37.000000');
+INSERT INTO `trip` VALUES (2, 1, 2, '2024-05-11', '19:10:24.000000', 300000, 2, 21, 1, '2024-04-16 18:10:33.000000', '2024-04-16 18:10:37.000000');
+INSERT INTO `trip` VALUES (3, 1, 3, '2024-05-11', '22:10:24.000000', 350000, 3, 21, 1, '2024-04-16 18:10:33.000000', '2024-04-16 18:10:37.000000');
+INSERT INTO `trip` VALUES (4, 2, 4, '2024-05-14', '18:10:24.000000', 250000, 4, 21, 1, '2024-04-16 18:10:33.000000', '2024-04-16 18:10:37.000000');
+INSERT INTO `trip` VALUES (5, 2, 5, '2024-05-14', '19:10:24.000000', 330000, 5, 21, 1, '2024-04-16 18:10:33.000000', '2024-04-16 18:10:37.000000');
+INSERT INTO `trip` VALUES (6, 2, 6, '2024-05-14', '22:10:24.000000', 350000, 6, 21, 1, '2024-04-16 18:10:33.000000', '2024-04-16 18:10:37.000000');
+INSERT INTO `trip` VALUES (7, 2, 1, '2024-05-01', '22:10:24.000000', 300000, 1, 21, 1, '2024-04-16 18:10:33.000000', '2024-04-16 18:10:37.000000');
 
 -- ----------------------------
 -- Table structure for user
@@ -399,6 +400,7 @@ CREATE TABLE `user`  (
   `role` int NULL DEFAULT NULL,
   `status` int NULL DEFAULT NULL,
   `type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `confirm_token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `created_at` datetime(6) NULL DEFAULT NULL,
   `updated_at` datetime(6) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
@@ -407,9 +409,9 @@ CREATE TABLE `user`  (
 -- ----------------------------
 -- Records of user
 -- ----------------------------
-INSERT INTO `user` VALUES (1, 'Nguyễn Văn B', '12345678', 'abc@gmail.com', '12345678', 1, 1, "Đăng ký", '2024-04-23 22:52:54.000000', '2024-04-23 22:52:59.000000');
-INSERT INTO `user` VALUES (2, 'Nguyễn Văn C', '12345678', 'abcd@gmail.com', '12345678', 2, 1, "Google",  '2024-04-23 22:52:54.000000', '2024-04-23 22:52:59.000000');
-INSERT INTO `user` VALUES (3, 'Nguyễn Văn D', '12345678', 'abcde@gmail.com', '12345678', 3, 1, "Đăng ký",  '2024-04-23 22:52:54.000000', '2024-04-23 22:52:59.000000');
+INSERT INTO `user` VALUES (1, 'Nguyễn Văn B', '12345678', 'abc@gmail.com', '12345678', 1, 1, "Đăng ký", "", '2024-04-23 22:52:54.000000', '2024-04-23 22:52:59.000000');
+INSERT INTO `user` VALUES (2, 'Nguyễn Văn C', '12345678', 'abcd@gmail.com', '12345678', 2, 1, "Google", "",  '2024-04-23 22:52:54.000000', '2024-04-23 22:52:59.000000');
+INSERT INTO `user` VALUES (3, 'Nguyễn Văn D', '12345678', 'abcde@gmail.com', '12345678', 3, 1, "Đăng ký", "",  '2024-04-23 22:52:54.000000', '2024-04-23 22:52:59.000000');
 
 -- ----------------------------
 -- Table structure for vehicle
@@ -442,6 +444,7 @@ INSERT INTO `vehicle` VALUES (6, 'Vehicle006', 3, 'BS006', 21, 0, '2024-04-14 22
 -- ----------------------------
 -- Table structure for verify_tokens
 -- ----------------------------
+
 DROP TABLE IF EXISTS `verify_tokens`;
 CREATE TABLE `verify_tokens`  (
   `id` int NOT NULL AUTO_INCREMENT,

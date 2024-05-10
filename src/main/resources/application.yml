@@ -1,0 +1,6 @@
+mailServer:
+  host: smtp.gmail.com
+  port: 587
+  email: roadlineboooking@gmail.com
+  password: vzkc xjmm xlcc hsze
+  isSSL: false

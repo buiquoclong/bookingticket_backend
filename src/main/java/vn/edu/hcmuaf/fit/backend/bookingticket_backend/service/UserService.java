@@ -13,4 +13,5 @@ public interface UserService {
     User updateUserByID(UserDTO userDTO, int id);
     void deleteUserByID(int id);
     String login(String email, String pass);
+    String forgotPassword(String email);
 }

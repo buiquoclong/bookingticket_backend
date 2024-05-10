@@ -9,6 +9,7 @@ import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.User;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.UserService;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/user")
@@ -55,5 +56,18 @@ public class UserController {
     public ResponseEntity<String> deleteUserById(@PathVariable ("id") int id){
         userService.deleteUserByID(id);
         return new ResponseEntity<>("User " + id + " is deleted successfully", HttpStatus.OK);
+    }
+
+    // quên mật khẩu
+//    @PostMapping("forgot-password")
+//    public ResponseEntity<String> forgotPassword(@RequestParam String email) {
+//        String response = userService.forgotPassword(email);
+//        return new ResponseEntity<>(response, HttpStatus.OK);
+//    }
+    @PostMapping("forgot-password")
+    public ResponseEntity<String> forgotPassword(@RequestBody Map<String, String> requestBody) {
+        String email = requestBody.get("email");
+        String response = userService.forgotPassword(email);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

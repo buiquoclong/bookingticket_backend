@@ -16,6 +16,7 @@ public class UserDTO {
     private int role;
     private int status;
     private String type;
+    private String confirmToken;
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt;
 }

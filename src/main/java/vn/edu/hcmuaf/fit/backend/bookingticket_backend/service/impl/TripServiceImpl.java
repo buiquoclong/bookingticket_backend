@@ -139,6 +139,8 @@ public class TripServiceImpl implements TripService {
             }
         }
 
-        return trips;
+        return trips.stream()
+                .filter(trip -> trip.getEmptySeat() > 0)
+                .collect(Collectors.toList());
     }
 }

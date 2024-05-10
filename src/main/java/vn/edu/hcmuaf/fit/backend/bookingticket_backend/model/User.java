@@ -40,6 +40,9 @@ public class User {
     @Column(name = "type")
     private String type;
 
+    @Column(name = "confirm_token")
+    private String confirmToken;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
