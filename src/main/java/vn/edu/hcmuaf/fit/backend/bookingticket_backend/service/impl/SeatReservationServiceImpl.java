@@ -1,5 +1,7 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.impl;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.SeatReservationDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
@@ -95,5 +97,10 @@ public class SeatReservationServiceImpl implements SeatReservationService {
         } else {
             throw new ResourceNotFoundException("Seat Reservations", "Booking Id", bookingId);
         }
+    }
+
+    @Override
+    public Page<SeatReservation> getAllSeatReservationPage(Pageable pageable) {
+        return seatReservationRepository.findAll(pageable);
     }
 }

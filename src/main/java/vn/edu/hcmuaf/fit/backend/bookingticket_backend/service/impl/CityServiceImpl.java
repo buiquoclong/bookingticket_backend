@@ -1,5 +1,7 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.impl;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.City;
@@ -41,5 +43,10 @@ public class CityServiceImpl implements CityService {
         cityRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("City", "Id", id));
         cityRepository.deleteById(id);
+    }
+
+    @Override
+    public Page<City> getAllCityPage(Pageable pageable) {
+        return cityRepository.findAll(pageable);
     }
 }

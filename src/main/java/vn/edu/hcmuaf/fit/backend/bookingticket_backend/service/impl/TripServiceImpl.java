@@ -1,5 +1,7 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.impl;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.TripDTO;
@@ -142,5 +144,10 @@ public class TripServiceImpl implements TripService {
         return trips.stream()
                 .filter(trip -> trip.getEmptySeat() > 0)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<Trip> getAllTripPage(Pageable pageable) {
+        return tripRepository.findAll(pageable);
     }
 }

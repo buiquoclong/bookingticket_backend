@@ -1,12 +1,18 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.controller;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.City;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Seat;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.CityService;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/city")
@@ -32,6 +38,21 @@ public class CityController {
     @GetMapping("{id}")
     public ResponseEntity<City> getCityById(@PathVariable ("id") int id){
         return new ResponseEntity<>(cityService.getCityByID(id), HttpStatus.OK);
+    }
+
+    // phân trang
+    @GetMapping("page")
+    public ResponseEntity<Map<String, Object>> getAllCityByPage(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<City> cityPage = cityService.getAllCityPage(pageable);
+        Map<String, Object> response = new HashMap<>();
+        response.put("cities", cityPage.getContent());
+        response.put("currentPage", cityPage.getNumber());
+        response.put("totalItems", cityPage.getTotalElements());
+        response.put("totalPages", cityPage.getTotalPages());
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     // Update City by id

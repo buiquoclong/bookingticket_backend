@@ -1,14 +1,20 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.controller;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.SeatReservationDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.City;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Seat;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.SeatReservation;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.SeatReservationService;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/seat_reservation")
@@ -48,6 +54,21 @@ public class SeatReservationController {
     @GetMapping("{id}")
     public ResponseEntity<SeatReservation> getSeatReservationById(@PathVariable ("id") int id){
         return new ResponseEntity<>(seatReservationService.getSeatReservationByID(id), HttpStatus.OK);
+    }
+
+    // phân trang
+    @GetMapping("page")
+    public ResponseEntity<Map<String, Object>> getAllSeatByPage(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<SeatReservation> seatReservationPage = seatReservationService.getAllSeatReservationPage(pageable);
+        Map<String, Object> response = new HashMap<>();
+        response.put("seatReservations", seatReservationPage.getContent());
+        response.put("currentPage", seatReservationPage.getNumber());
+        response.put("totalItems", seatReservationPage.getTotalElements());
+        response.put("totalPages", seatReservationPage.getTotalPages());
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     // Update SeatReservation by id

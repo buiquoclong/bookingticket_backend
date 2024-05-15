@@ -1,7 +1,8 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.impl;
 
 import jakarta.mail.MessagingException;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.UserDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
@@ -133,5 +134,10 @@ public class UserServiceImpl implements UserService {
         } else {
             return "Không tìm thấy người dùng với địa chỉ email này.";
         }
+    }
+
+    @Override
+    public Page<User> getAllUserPage(Pageable pageable) {
+        return userRepository.findAll(pageable);
     }
 }

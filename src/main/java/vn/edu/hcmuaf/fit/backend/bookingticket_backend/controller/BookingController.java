@@ -1,14 +1,21 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.controller;
 
 import org.aspectj.weaver.ast.Or;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.BookingDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Booking;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.BookingDetail;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Seat;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.BookingService;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/booking")
@@ -46,6 +53,37 @@ public class BookingController {
     public ResponseEntity<List<Booking>> getBookingByUserId(@PathVariable int userId) {
         List<Booking> bookings = bookingService.getBookingByUserId(userId);
         return new ResponseEntity<>(bookings, HttpStatus.OK);
+    }
+
+    // lấy booking theo userid phân trang
+    @GetMapping("/user/{userId}/page")
+    public ResponseEntity<Map<String, Object>> getBookingByUserId(
+            @PathVariable int userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<Booking> bookingPage = bookingService.getBookingByUserIdPageable(userId, pageable);
+        Map<String, Object> response = new HashMap<>();
+        response.put("bookings", bookingPage.getContent());
+        response.put("currentPage", bookingPage.getNumber());
+        response.put("totalItems", bookingPage.getTotalElements());
+        response.put("totalPages", bookingPage.getTotalPages());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    // phân trang
+    @GetMapping("page")
+    public ResponseEntity<Map<String, Object>> getAllSeatByPage(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<Booking> bookingPage = bookingService.getAllBookingPage(pageable);
+        Map<String, Object> response = new HashMap<>();
+        response.put("bookings", bookingPage.getContent());
+        response.put("currentPage", bookingPage.getNumber());
+        response.put("totalItems", bookingPage.getTotalElements());
+        response.put("totalPages", bookingPage.getTotalPages());
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     // Update Booking by id

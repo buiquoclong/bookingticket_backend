@@ -1,13 +1,19 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.controller;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.ContactDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Contact;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Seat;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.ContactService;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/contact")
@@ -35,6 +41,21 @@ public class ContactController {
     @GetMapping("{id}")
     public ResponseEntity<Contact> getContactById(@PathVariable ("id") int id){
         return new ResponseEntity<>(contactService.getContactByID(id), HttpStatus.OK);
+    }
+
+    // phân trang
+    @GetMapping("page")
+    public ResponseEntity<Map<String, Object>> getAllSeatByPage(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<Contact> contactPage = contactService.getAllContactPage(pageable);
+        Map<String, Object> response = new HashMap<>();
+        response.put("contacts", contactPage.getContent());
+        response.put("currentPage", contactPage.getNumber());
+        response.put("totalItems", contactPage.getTotalElements());
+        response.put("totalPages", contactPage.getTotalPages());
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     // Update Contact by id

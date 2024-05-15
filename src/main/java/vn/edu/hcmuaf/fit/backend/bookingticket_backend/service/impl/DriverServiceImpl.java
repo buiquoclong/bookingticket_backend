@@ -1,5 +1,7 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.impl;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.DriverDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
@@ -49,5 +51,10 @@ public class DriverServiceImpl implements DriverService {
         driverRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("Driver", "Id", id));
         driverRepository.deleteById(id);
+    }
+
+    @Override
+    public Page<Driver> getAllDriverPage(Pageable pageable) {
+        return driverRepository.findAll(pageable);
     }
 }

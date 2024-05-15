@@ -1,5 +1,7 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.impl;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.VehicleDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
@@ -51,6 +53,12 @@ public class VehicleServiceImpl implements VehicleService {
     public List<Vehicle> getVehiclesByKindVehicleId(int kindVehicleId) {
         return vehicleRepository.findByKindVehicleId(kindVehicleId);
     }
+
+    @Override
+    public Page<Vehicle> getAllVehiclePage(Pageable pageable) {
+        return vehicleRepository.findAll(pageable);
+    }
+
     @Override
     public Vehicle getVehicleByID(int id) {
         return vehicleRepository.findById(id).orElseThrow(() ->

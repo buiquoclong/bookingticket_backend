@@ -1,6 +1,7 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.service;
 
-import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.UserDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.User;
 
@@ -14,4 +15,5 @@ public interface UserService {
     void deleteUserByID(int id);
     String login(String email, String pass);
     String forgotPassword(String email);
+    Page<User> getAllUserPage(Pageable pageable);
 }

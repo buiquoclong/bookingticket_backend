@@ -1,5 +1,8 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.impl;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.BookingDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
@@ -69,6 +72,18 @@ public class BookingSeviceImpl implements BookingService {
     public List<Booking> getBookingByUserId(int userId) {
         return bookingRepository.findByUserId(userId);
     }
+
+    @Override
+    public Page<Booking> getAllBookingPage(Pageable pageable) {
+        return bookingRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<Booking> getBookingByUserIdPageable(int userId, Pageable pageable) {
+        List<Booking> bookings = bookingRepository.findByUserId(userId);
+        return new PageImpl<>(bookings, pageable, bookings.size());
+    }
+
     @Override
     public Booking updateBookingByID(BookingDTO bookingDTO, int id) {
         Booking existingBooking = bookingRepository.findById(id).orElseThrow(() ->

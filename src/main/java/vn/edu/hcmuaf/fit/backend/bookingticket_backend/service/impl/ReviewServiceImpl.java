@@ -1,5 +1,7 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.impl;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.ReviewDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
@@ -61,6 +63,12 @@ public class ReviewServiceImpl implements ReviewService {
     public List<Review> getReviewByUserId(int userId) {
         return reviewRepository.findByUserId(userId);
     }
+
+    @Override
+    public Page<Review> getAllReviewPage(Pageable pageable) {
+        return reviewRepository.findAll(pageable);
+    }
+
     @Override
     public Review updateReviewByID(ReviewDTO reviewDTO, int id) {
 

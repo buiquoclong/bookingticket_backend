@@ -1,5 +1,8 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.controller;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -7,7 +10,9 @@ import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.SeatDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Seat;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.SeatService;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/seat")
@@ -28,6 +33,21 @@ public class SeatController {
     public ResponseEntity<List<Seat>> getAllSeatsByKindVehicleId(@PathVariable ("kindVehicleId") int kindVehicleId) {
         List<Seat> seats = seatService.getAllSeatsByKindVehicleId(kindVehicleId);
         return ResponseEntity.ok().body(seats);
+    }
+
+    // get all seat by page
+    @GetMapping("page")
+    public ResponseEntity<Map<String, Object>> getAllSeatByPage(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<Seat> seatPage = seatService.getAllSeatPage(pageable);
+        Map<String, Object> response = new HashMap<>();
+        response.put("seats", seatPage.getContent());
+        response.put("currentPage", seatPage.getNumber());
+        response.put("totalItems", seatPage.getTotalElements());
+        response.put("totalPages", seatPage.getTotalPages());
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
     // Create a new Seat
     @PostMapping

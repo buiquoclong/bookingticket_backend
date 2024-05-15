@@ -1,5 +1,7 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.SeatDTO;
@@ -15,4 +17,5 @@ public interface SeatService {
     void deleteSeatByID(int id);
     @Query("SELECT s FROM Seat s JOIN FETCH s.kindVehicle kv WHERE kv.id = :kindVehicleId")
     List<Seat> getAllSeatsByKindVehicleId(@Param("kindVehicleId") int kindVehicleId);
+    Page<Seat> getAllSeatPage(Pageable pageable);
 }

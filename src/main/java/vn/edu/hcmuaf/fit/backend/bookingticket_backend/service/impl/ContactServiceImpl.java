@@ -1,5 +1,7 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.impl;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.ContactDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
@@ -48,5 +50,10 @@ public class ContactServiceImpl implements ContactService {
         contactRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("Contact", "Id", id));
         contactRepository.deleteById(id);
+    }
+
+    @Override
+    public Page<Contact> getAllContactPage(Pageable pageable) {
+        return contactRepository.findAll(pageable);
     }
 }

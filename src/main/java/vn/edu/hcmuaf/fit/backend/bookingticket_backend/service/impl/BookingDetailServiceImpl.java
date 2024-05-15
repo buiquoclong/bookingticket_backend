@@ -1,5 +1,8 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.impl;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.BookingDetailDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
@@ -92,6 +95,23 @@ public class BookingDetailServiceImpl implements BookingDetailService {
             allBookingDetails.addAll(booking.getBookingDetails());
         }
         return allBookingDetails;
+    }
+
+    @Override
+    public Page<BookingDetail> getBookingDetailsByUserId(int userId, Pageable pageable) {
+        User user = userRepository.findById(userId).orElseThrow(() ->
+                new ResourceNotFoundException("User", "Id", userId));
+        List<Booking> bookings = user.getBookings();
+        List<BookingDetail> allBookingDetails = new ArrayList<>();
+        for (Booking booking : bookings) {
+            allBookingDetails.addAll(booking.getBookingDetails());
+        }
+        // Sử dụng Pageable để phân trang
+//        int start = (int) pageable.getOffset();
+//        int end = (start + pageable.getPageSize()) > allBookingDetails.size() ? allBookingDetails.size() : (start + pageable.getPageSize());
+//        Page<BookingDetail> page = new PageImpl<>(allBookingDetails.subList(start, end), pageable, allBookingDetails.size());
+//        return page;
+        return new PageImpl<>(allBookingDetails, pageable, allBookingDetails.size());
     }
 
 

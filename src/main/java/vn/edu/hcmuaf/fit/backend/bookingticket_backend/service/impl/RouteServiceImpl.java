@@ -1,5 +1,7 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.impl;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.RouteDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
@@ -66,5 +68,10 @@ public class RouteServiceImpl implements RouteService {
         routeRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("Route", "Id", id));
         routeRepository.deleteById(id);
+    }
+
+    @Override
+    public Page<Route> getAllRoutePage(Pageable pageable) {
+        return routeRepository.findAll(pageable);
     }
 }

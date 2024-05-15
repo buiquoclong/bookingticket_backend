@@ -1,14 +1,20 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.controller;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.TripDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.TripSearchDTO;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Seat;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Trip;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.TripService;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/trip")
@@ -34,6 +40,21 @@ public class TripController {
     @GetMapping("{id}")
     public ResponseEntity<Trip> getTripById(@PathVariable ("id") int id){
         return new ResponseEntity<>(tripService.getTripByID(id), HttpStatus.OK);
+    }
+
+    // phân trang
+    @GetMapping("page")
+    public ResponseEntity<Map<String, Object>> getAllSeatByPage(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<Trip> tripPage = tripService.getAllTripPage(pageable);
+        Map<String, Object> response = new HashMap<>();
+        response.put("trips", tripPage.getContent());
+        response.put("currentPage", tripPage.getNumber());
+        response.put("totalItems", tripPage.getTotalElements());
+        response.put("totalPages", tripPage.getTotalPages());
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     // Update Trip by id

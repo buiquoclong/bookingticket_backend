@@ -1,5 +1,7 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.impl;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.SeatDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
@@ -49,6 +51,13 @@ public class SeatServiceImpl implements SeatService {
     public List<Seat> getAllSeatsByKindVehicleId(int kindVehicleId) {
         return seatRepository.findAllByKindVehicleId(kindVehicleId);
     }
+
+    // phân trang
+    @Override
+    public Page<Seat> getAllSeatPage(Pageable pageable) {
+        return seatRepository.findAll(pageable);
+    }
+
     @Override
     public Seat getSeatByID(int id) {
         return seatRepository.findById(id).orElseThrow(() ->
