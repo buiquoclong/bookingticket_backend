@@ -77,15 +77,18 @@ public class UserController {
     }
 
     // quên mật khẩu
-//    @PostMapping("forgot-password")
-//    public ResponseEntity<String> forgotPassword(@RequestParam String email) {
-//        String response = userService.forgotPassword(email);
-//        return new ResponseEntity<>(response, HttpStatus.OK);
-//    }
     @PostMapping("forgot-password")
     public ResponseEntity<String> forgotPassword(@RequestBody Map<String, String> requestBody) {
         String email = requestBody.get("email");
         String response = userService.forgotPassword(email);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    // đổi mật khẩu
+    @PutMapping("{userId}/change-password")
+    public String changePassword(@PathVariable("userId") int userId,@RequestBody Map<String, String> requestBody){
+        String oldPassword = requestBody.get("oldPassword");
+        String newPassword = requestBody.get("newPassword");
+        return userService.changePassword(userId, oldPassword, newPassword);
     }
 }

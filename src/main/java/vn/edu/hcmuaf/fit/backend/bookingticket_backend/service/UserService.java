@@ -16,4 +16,5 @@ public interface UserService {
     String login(String email, String pass);
     String forgotPassword(String email);
     Page<User> getAllUserPage(Pageable pageable);
+    String  changePassword(int userId, String oldPassword, String newPassword);
 }

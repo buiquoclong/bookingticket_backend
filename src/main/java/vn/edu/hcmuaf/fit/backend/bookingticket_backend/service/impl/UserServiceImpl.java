@@ -1,8 +1,10 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.impl;
 
 import jakarta.mail.MessagingException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.UserDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
@@ -21,6 +23,9 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
     private EmailService emailService;
 
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+
 //    public UserServiceImpl(UserRepository userRepository){
 //        this.userRepository =userRepository;
 //    }
@@ -29,6 +34,9 @@ public class UserServiceImpl implements UserService {
         this.userRepository = userRepository;
         this.emailService = emailService;
     }
+
+
+
 
     @Override
     public String saveUser(UserDTO userDTO) {
@@ -39,7 +47,7 @@ public class UserServiceImpl implements UserService {
             String confirmToken = String.format("%06d", new Random().nextInt(999999));
             User user = new User();
             user.setName(userDTO.getName());
-            user.setPassword(userDTO.getPassword());
+            user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
             user.setEmail(userDTO.getEmail());
             user.setPhone(userDTO.getPhone());
             user.setRole(userDTO.getRole());
@@ -97,7 +105,7 @@ public class UserServiceImpl implements UserService {
     public String login(String email, String pass) {
         User u = userRepository.findByEmail(email);
         if(u != null) {
-            if(u.getPassword().equals(pass)) {
+            if(passwordEncoder.matches(pass, u.getPassword())) {
                 return String.valueOf(u.getId()); // Trả về ID nếu email và pass đều đúng
             } else {
                 return "Mật khẩu không đúng"; // Thông báo nếu pass không đúng
@@ -122,7 +130,7 @@ public class UserServiceImpl implements UserService {
             // Tạo mật khẩu mới
             String newPassword = generatePassword(8);
             // Cập nhật mật khẩu mới vào cơ sở dữ liệu
-            user.setPassword(newPassword);
+            user.setPassword(passwordEncoder.encode(newPassword));
             userRepository.save(user);
             // Gửi email thông báo về mật khẩu mới
             try {
@@ -139,5 +147,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public Page<User> getAllUserPage(Pageable pageable) {
         return userRepository.findAll(pageable);
+    }
+
+    @Override
+    public String changePassword(int userId, String oldPassword, String newPassword) {
+        User user = userRepository.findById(userId).orElseThrow(() ->
+                new ResourceNotFoundException("User", "Id", userId));
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            return "Mật khẩu cũ không đúng";
+        }
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+        return "Mật khẩu đã được thay đổi thành công";
     }
 }
