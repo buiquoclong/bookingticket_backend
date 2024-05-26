@@ -12,7 +12,7 @@ public interface PromotionService {
     Promotion savePromotion(PromotionDTO promotionDTO);
     List<Promotion> getAllPromotion();
     Promotion getPromotionByID(int id);
-    Promotion updatePromotionByID(Promotion promotion, int id);
+    Promotion updatePromotionByID(PromotionDTO promotionDTO, int id);
     void deletePromotionByID(int id);
     Page<Promotion> getAllPromotionPage(Pageable pageable);
 }

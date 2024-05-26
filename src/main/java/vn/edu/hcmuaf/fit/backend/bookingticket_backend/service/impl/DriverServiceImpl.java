@@ -42,8 +42,15 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public Driver updateDriverByID(Driver driver, int id) {
-        return null;
+    public Driver updateDriverByID(DriverDTO driverDTO, int id) {
+        Driver existingDriver = driverRepository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("Driver", "Id", id));
+        existingDriver.setName(driverDTO.getName());
+        existingDriver.setEmail(driverDTO.getEmail());
+        existingDriver.setPhone(driverDTO.getPhone());
+        existingDriver.setStatus(1);
+        existingDriver.setUpdatedAt(LocalDateTime.now());
+        return driverRepository.save(existingDriver);
     }
 
     @Override

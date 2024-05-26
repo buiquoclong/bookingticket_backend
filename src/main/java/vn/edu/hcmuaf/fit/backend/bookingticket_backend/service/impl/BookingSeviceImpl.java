@@ -5,6 +5,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.BookingDTO;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.MonthlyRevenueDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Booking;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.User;
@@ -13,8 +14,13 @@ import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.TripRepository
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.UserRepository;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.BookingService;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class BookingSeviceImpl implements BookingService {
@@ -52,7 +58,8 @@ public class BookingSeviceImpl implements BookingService {
             User user = userRepository.findById(bookingDTO.getUserId()).orElseThrow(() ->
                     new ResourceNotFoundException("User", "Id", bookingDTO.getUserId()));
             booking.setUser(user);
-        }        return bookingRepository.save(booking);
+        }
+        return bookingRepository.save(booking);
     }
 
 
@@ -85,20 +92,60 @@ public class BookingSeviceImpl implements BookingService {
     }
 
     @Override
+    public Integer getTotalRevenue() {
+        return bookingRepository.findTotalRevenue();
+    }
+
+    // thống kê doanh thu theo ngày
+    @Override
+    public Integer getTotalRevenueByDay(LocalDate date) {
+        return bookingRepository.findTotalRevenueByDay(date);
+    }
+
+    @Override
+    public Integer getTotalRevenueByMonth(YearMonth yearMonth) {
+        return bookingRepository.findTotalRevenueByMonth(yearMonth.getYear(), yearMonth.getMonthValue());
+    }
+
+    @Override
+    public List<MonthlyRevenueDTO> getRevenueForLastNineMonths() {
+        LocalDateTime endDate = LocalDateTime.now();
+        LocalDateTime startDate = endDate.minusMonths(8).withDayOfMonth(1).toLocalDate().atStartOfDay();
+
+        List<MonthlyRevenueDTO> revenues = bookingRepository.findRevenueForLastNineMonths(startDate, endDate);
+
+        // Chuyển danh sách kết quả thành map để dễ truy cập
+        Map<YearMonth, Integer> revenueMap = revenues.stream()
+                .collect(Collectors.toMap(
+                        r -> YearMonth.of(r.getYear(), r.getMonth()),
+                        MonthlyRevenueDTO::getRevenue));
+
+        // Tạo danh sách kết quả cuối cùng với các tháng đầy đủ theo thứ tự từ quá khứ đến hiện tại
+        List<MonthlyRevenueDTO> result = new ArrayList<>();
+        for (int i = 8; i >= 0; i--) {
+            YearMonth yearMonth = YearMonth.now().minusMonths(i);
+            double revenue = revenueMap.getOrDefault(yearMonth, 0);
+            result.add(new MonthlyRevenueDTO(yearMonth.getMonthValue(), (int) revenue, yearMonth.getYear()));
+        }
+
+        return result;
+    }
+
+    @Override
     public Booking updateBookingByID(BookingDTO bookingDTO, int id) {
         Booking existingBooking = bookingRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("Booking", "Id", id));
-        User user = userRepository.findById(bookingDTO.getUserId()).orElseThrow(() ->
-                new ResourceNotFoundException("User", "Id", bookingDTO.getUserId()));
         existingBooking.setUserName(bookingDTO.getUserName());
         existingBooking.setEmail(bookingDTO.getEmail());
         existingBooking.setPhone(bookingDTO.getPhone());
-        existingBooking.setUser(user);
-        existingBooking.setTotal(bookingDTO.getTotal());
-        existingBooking.setKindPay(bookingDTO.getKindPay());
         existingBooking.setIsPaid(bookingDTO.getIsPaid());
         existingBooking.setRoundTrip(bookingDTO.getRoundTrip());
         existingBooking.setUpdatedAt(LocalDateTime.now());
+        if (bookingDTO.getUserId() != 0) {
+            User user = userRepository.findById(bookingDTO.getUserId()).orElseThrow(() ->
+                    new ResourceNotFoundException("User", "Id", bookingDTO.getUserId()));
+            existingBooking.setUser(user);
+        }
         return bookingRepository.save(existingBooking);
     }
 

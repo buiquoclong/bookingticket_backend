@@ -13,7 +13,7 @@ public interface DriverService {
     Driver saveDriver(DriverDTO driverDTO);
     List<Driver> getAllDriver();
     Driver getDriverByID(int id);
-    Driver updateDriverByID(Driver driver, int id);
+    Driver updateDriverByID(DriverDTO driverDTO, int id);
     void deleteDriverByID(int id);
     Page<Driver> getAllDriverPage(Pageable pageable);
 }

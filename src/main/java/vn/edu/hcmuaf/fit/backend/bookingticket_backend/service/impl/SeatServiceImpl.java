@@ -65,18 +65,19 @@ public class SeatServiceImpl implements SeatService {
     }
 
     @Override
-    public Seat updateSeatByID(Seat seat, int id) {
+    public Seat updateSeatByID(SeatDTO seatDTO, int id) {
         Seat existingSeat = seatRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("Seat", "Id", id));
-
-        existingSeat.setName(seat.getName());
-//        existingSeat.setVehicle(seat.getVehicle());
-        existingSeat.setStatus(seat.getStatus());
+        KindVehicle kindVehicle = kindVehicleRepository.findById(seatDTO.getKindVehicleId()).orElseThrow(() ->
+                new ResourceNotFoundException("KindVehicle", "Id", seatDTO.getKindVehicleId()));
+        existingSeat.setName(seatDTO.getName());
+        existingSeat.setKindVehicle(kindVehicle);
+        existingSeat.setStatus(seatDTO.getStatus());
         existingSeat.setUpdatedAt(LocalDateTime.now());
 
-        seatRepository.save(existingSeat);
 
-        return null;
+
+        return seatRepository.save(existingSeat);
     }
 
     @Override

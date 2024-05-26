@@ -66,8 +66,8 @@ public class RouteController {
 
     // Update Route by id
     @PutMapping("{id}")
-    public ResponseEntity<Route> updateRouteById(@PathVariable ("id") int id, @RequestBody Route route){
-        return new ResponseEntity<>(routeService.updateRouteByID(route, id), HttpStatus.OK);
+    public ResponseEntity<Route> updateRouteById(@PathVariable ("id") int id, @RequestBody RouteDTO routeDTO){
+        return new ResponseEntity<>(routeService.updateRouteByID(routeDTO, id), HttpStatus.OK);
     }
 
     // Delete route by id

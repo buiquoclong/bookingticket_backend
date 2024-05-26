@@ -55,8 +55,16 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public Promotion updatePromotionByID(Promotion promotion, int id) {
-        return null;
+    public Promotion updatePromotionByID(PromotionDTO promotionDTO, int id) {
+        Promotion existingPromotion = promotionRepository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("Promotion", "Id", id));
+        existingPromotion.setCode(promotionDTO.getCode());
+        existingPromotion.setDescription(promotionDTO.getDescription());
+        existingPromotion.setStartDay(promotionDTO.getStartDay());
+        existingPromotion.setEndDay(promotionDTO.getEndDay());
+        existingPromotion.setDiscount(promotionDTO.getDiscount());
+        existingPromotion.setUpdatedAt(LocalDateTime.now());
+        return promotionRepository.save(existingPromotion);
     }
 
     @Override

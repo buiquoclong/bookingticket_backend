@@ -12,7 +12,7 @@ public interface RouteService {
     Route saveRoute(RouteDTO routeDTO);
     List<Route> getAllRoute();
     Route getRouteByID(int id);
-    Route updateRouteByID(Route route, int id);
+    Route updateRouteByID(RouteDTO routeDTO, int id);
     void deleteRouteByID(int id);
     Page<Route> getAllRoutePage(Pageable pageable);
 }

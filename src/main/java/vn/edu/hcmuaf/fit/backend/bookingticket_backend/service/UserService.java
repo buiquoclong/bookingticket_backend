@@ -17,4 +17,5 @@ public interface UserService {
     String forgotPassword(String email);
     Page<User> getAllUserPage(Pageable pageable);
     String  changePassword(int userId, String oldPassword, String newPassword);
+    public long getTotalUsers();
 }

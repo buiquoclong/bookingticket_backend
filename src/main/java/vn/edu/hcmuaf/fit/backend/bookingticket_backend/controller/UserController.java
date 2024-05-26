@@ -91,4 +91,8 @@ public class UserController {
         String newPassword = requestBody.get("newPassword");
         return userService.changePassword(userId, oldPassword, newPassword);
     }
+    @GetMapping("/totalUser")
+    public long getTotalUsers() {
+        return userService.getTotalUsers();
+    }
 }

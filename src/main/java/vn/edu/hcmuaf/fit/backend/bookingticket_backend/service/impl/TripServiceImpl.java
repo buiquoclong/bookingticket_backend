@@ -91,6 +91,7 @@ public class TripServiceImpl implements TripService {
         existingTrip.setPrice(tripDTO.getPrice());
         existingTrip.setDriver(driver);
         existingTrip.setEmptySeat(tripDTO.getEmptySeat());
+        existingTrip.setStatus(tripDTO.getStatus());
         existingTrip.setUpdatedAt(LocalDateTime.now());
         return tripRepository.save(existingTrip);
     }

@@ -41,8 +41,15 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public Contact updateContactByID(Contact contact, int id) {
-        return null;
+    public Contact updateContactByID(ContactDTO contactDTO, int id) {
+        Contact existingContact  = contactRepository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("Contact", "Id", id));
+        existingContact.setContent(contactDTO.getContent());
+        existingContact.setEmail(contactDTO.getEmail());
+        existingContact.setName(contactDTO.getName());
+        existingContact.setTitle(contactDTO.getTitle());
+        existingContact.setCreatedAt(LocalDateTime.now());
+        return contactRepository.save(existingContact);
     }
 
     @Override

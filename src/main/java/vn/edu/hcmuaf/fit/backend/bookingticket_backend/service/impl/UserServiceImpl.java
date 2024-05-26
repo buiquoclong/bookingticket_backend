@@ -67,6 +67,7 @@ public class UserServiceImpl implements UserService {
         return result;
     }
 
+
     @Override
     public List<User> getAllUser() {
         return userRepository.findAll();
@@ -159,5 +160,10 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
         return "Mật khẩu đã được thay đổi thành công";
+    }
+
+    @Override
+    public long getTotalUsers() {
+        return userRepository.countUsers();
     }
 }

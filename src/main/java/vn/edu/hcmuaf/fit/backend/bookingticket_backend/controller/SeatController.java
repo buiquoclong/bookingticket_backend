@@ -63,8 +63,8 @@ public class SeatController {
 
     // Update City by id
     @PutMapping("{id}")
-    public ResponseEntity<Seat> updateSeatById(@PathVariable ("id") int id, @RequestBody Seat seat){
-        return new ResponseEntity<>(seatService.updateSeatByID(seat, id), HttpStatus.OK);
+    public ResponseEntity<Seat> updateSeatById(@PathVariable ("id") int id, @RequestBody SeatDTO seatDTO){
+        return new ResponseEntity<>(seatService.updateSeatByID(seatDTO, id), HttpStatus.OK);
     }
 
     // Delete city by id

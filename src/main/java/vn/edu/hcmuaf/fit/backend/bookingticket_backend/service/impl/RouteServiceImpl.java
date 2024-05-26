@@ -59,8 +59,21 @@ public class RouteServiceImpl implements RouteService {
     }
 
     @Override
-    public Route updateRouteByID(Route route, int id) {
-        return null;
+    public Route updateRouteByID(RouteDTO routeDTO, int id) {
+        Route existingRoute = routeRepository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("Route", "Id", id));
+        City diemdi = cityRepository.findById(routeDTO.getDiemdi()).orElseThrow(() ->
+                new ResourceNotFoundException("City1", "Id", routeDTO.getDiemdi()));
+        City diemden = cityRepository.findById(routeDTO.getDiemden()).orElseThrow(() ->
+                new ResourceNotFoundException("City", "Id", routeDTO.getDiemden()));
+        existingRoute.setName(routeDTO.getName());
+        existingRoute.setDiemDi(diemdi);
+        existingRoute.setDiemDen(diemden);
+        existingRoute.setKhoangCach(routeDTO.getKhoangCach());
+        existingRoute.setTimeOfRoute(routeDTO.getTimeOfRoute());
+        existingRoute.setStatus(routeDTO.getStatus());
+        existingRoute.setUpdatedAt(LocalDateTime.now());
+        return routeRepository.save(existingRoute);
     }
 
     @Override

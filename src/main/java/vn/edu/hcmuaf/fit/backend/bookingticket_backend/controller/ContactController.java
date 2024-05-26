@@ -60,8 +60,8 @@ public class ContactController {
 
     // Update Contact by id
     @PutMapping("{id}")
-    public ResponseEntity<Contact> updateContactById(@PathVariable ("id") int id, @RequestBody Contact Contact){
-        return new ResponseEntity<>(contactService.updateContactByID(Contact, id), HttpStatus.OK);
+    public ResponseEntity<Contact> updateContactById(@PathVariable ("id") int id, @RequestBody ContactDTO contactDTO){
+        return new ResponseEntity<>(contactService.updateContactByID(contactDTO, id), HttpStatus.OK);
     }
 
     // Delete Contact by id

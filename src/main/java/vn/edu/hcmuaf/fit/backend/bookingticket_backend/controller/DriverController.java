@@ -60,8 +60,8 @@ public class DriverController {
 
     // Update Driver by id
     @PutMapping("{id}")
-    public ResponseEntity<Driver> updateDriverById(@PathVariable ("id") int id, @RequestBody Driver driver){
-        return new ResponseEntity<>(driverService.updateDriverByID(driver, id), HttpStatus.OK);
+    public ResponseEntity<Driver> updateDriverById(@PathVariable ("id") int id, @RequestBody DriverDTO driverDTO){
+        return new ResponseEntity<>(driverService.updateDriverByID(driverDTO, id), HttpStatus.OK);
     }
 
     // Delete driver by id

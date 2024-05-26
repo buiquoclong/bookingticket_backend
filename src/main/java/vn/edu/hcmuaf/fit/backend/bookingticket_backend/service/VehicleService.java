@@ -12,7 +12,7 @@ public interface VehicleService {
     Vehicle saveVehicle(VehicleDTO vehicleDTO);
     List<Vehicle> getAllVehicle();
     Vehicle getVehicleByID(int id);
-    Vehicle updateVehicleByID(Vehicle vehicle, int id);
+    Vehicle updateVehicleByID(VehicleDTO vehicleDTO, int id);
     void deleteVehicleByID(int id);
     List<Vehicle> getVehiclesByKindVehicleId(int kindVehicleId);
     Page<Vehicle> getAllVehiclePage(Pageable pageable);

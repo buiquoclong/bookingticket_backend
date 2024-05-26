@@ -60,8 +60,8 @@ public class PromotionController {
 
     // Update Promotion by id
     @PutMapping("{id}")
-    public ResponseEntity<Promotion> updatePromotionById(@PathVariable ("id") int id, @RequestBody Promotion Promotion){
-        return new ResponseEntity<>(promotionService.updatePromotionByID(Promotion, id), HttpStatus.OK);
+    public ResponseEntity<Promotion> updatePromotionById(@PathVariable ("id") int id, @RequestBody PromotionDTO promotionDTO){
+        return new ResponseEntity<>(promotionService.updatePromotionByID(promotionDTO, id), HttpStatus.OK);
     }
 
     // Delete Promotion by id

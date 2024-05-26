@@ -1,6 +1,8 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.controller;
 
+import jakarta.mail.MessagingException;
 import org.aspectj.weaver.ast.Or;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -8,11 +10,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.BookingDTO;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.MonthlyRevenueDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Booking;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.BookingDetail;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Seat;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.BookingService;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.EmailService;
 
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +28,8 @@ import java.util.Map;
 @CrossOrigin("http://localhost:3000")
 public class BookingController {
     private BookingService bookingService;
+    @Autowired
+    private EmailService emailService;
 
 //    public BookingController(BookingService BookingService) {
 //        this.BookingService = BookingService;
@@ -92,10 +100,46 @@ public class BookingController {
         return new ResponseEntity<>(bookingService.updateBookingByID(bookingDTO, id), HttpStatus.OK);
     }
 
-    // Delete city by id
+    // Delete booking by id
     @DeleteMapping("{id}")
     public ResponseEntity<String> deleteBookingById(@PathVariable ("id") int id){
         bookingService.deleteBookingByID(id);
         return new ResponseEntity<>("Booking " + id + " is deleted successfully", HttpStatus.OK);
+    }
+
+    // send mail booking
+    @PostMapping("/sendBookingEmail/{bookingId}")
+    public String sendBookingEmail(@PathVariable int bookingId) {
+        try {
+            emailService.sendBookingDetailsEmail(bookingId);
+            return "Email sent successfully";
+        } catch (MessagingException e) {
+            return "Error while sending email";
+        }
+    }
+
+    // thống kê tổng doanh thu
+    @GetMapping("/totalAll")
+    public Integer getTotalRevenue() {
+        return bookingService.getTotalRevenue();
+    }
+
+    // thống kê doanh thu theo ngày
+    @GetMapping("/total-by-day")
+    public Integer getRevenueByDay(@RequestParam("date") String date) {
+        LocalDate localDate = LocalDate.parse(date);
+        return bookingService.getTotalRevenueByDay(localDate);
+    }
+
+    // thống kê doanh thu theo tháng
+    @GetMapping("/total-by-month")
+    public Integer getRevenueByMonth(@RequestParam("yearMonth") String yearMonth) {
+        YearMonth ym = YearMonth.parse(yearMonth);
+        return bookingService.getTotalRevenueByMonth(ym);
+    }
+
+    @GetMapping("/total/lastNineMonths")
+    public List<MonthlyRevenueDTO> getRevenueForLastNineMonths() {
+        return bookingService.getRevenueForLastNineMonths();
     }
 }

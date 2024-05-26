@@ -9,14 +9,24 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Booking;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.BookingDetail;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.BookingDetailService;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.BookingService;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.EmailService;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 @Service
 public class EmailServiceImpl implements EmailService {
     private final JavaMailSender mailSender;
     private final TemplateEngine templateEngine;
+    @Autowired
+    private BookingService bookingService;
+    @Autowired
+    private BookingDetailService bookingDetailService;
+
 
 
     public EmailServiceImpl(JavaMailSender mailSender, TemplateEngine templateEngine) {
@@ -57,6 +67,28 @@ public class EmailServiceImpl implements EmailService {
         helper.setTo(email);
         helper.setText(content, true);
         helper.setSubject("Xác Nhận Email Quên Mật khẩu");
+
+        mailSender.send(message);
+    }
+
+    @Override
+    public void sendBookingDetailsEmail(int bookingId) throws MessagingException {
+        Booking booking = bookingService.getBookingByID(bookingId);
+        List<BookingDetail> bookingDetails = bookingDetailService.getBookingDetailsByBookingId(bookingId);
+
+        Context context = new Context();
+        context.setVariable("booking", booking);
+        context.setVariable("bookingDetails", bookingDetails);
+
+        String content = templateEngine.process("booking", context);
+
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
+
+        helper.setFrom("roadlineboooking@gmail.com");
+        helper.setTo(booking.getEmail());
+        helper.setText(content, true);
+        helper.setSubject("Xác nhận đặt vé thành công");
 
         mailSender.send(message);
     }

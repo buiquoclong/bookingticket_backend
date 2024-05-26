@@ -13,7 +13,7 @@ public interface SeatService {
     Seat saveSeat(SeatDTO seatDTO);
     List<Seat> getAllSeat();
     Seat getSeatByID(int id);
-    Seat updateSeatByID(Seat seat, int id);
+    Seat updateSeatByID(SeatDTO seatDTO, int id);
     void deleteSeatByID(int id);
     @Query("SELECT s FROM Seat s JOIN FETCH s.kindVehicle kv WHERE kv.id = :kindVehicleId")
     List<Seat> getAllSeatsByKindVehicleId(@Param("kindVehicleId") int kindVehicleId);

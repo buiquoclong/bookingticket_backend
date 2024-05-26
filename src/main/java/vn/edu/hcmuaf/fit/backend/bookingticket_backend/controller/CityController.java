@@ -6,10 +6,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.CityDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.City;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Seat;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.CityService;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,9 +33,15 @@ public class CityController {
 
     // Create a new City
     @PostMapping
-    public ResponseEntity<City> creatCity(@RequestBody City city){
-        return new ResponseEntity<>(cityService.saveCity(city), HttpStatus.CREATED);
+    public ResponseEntity<City> saveCity(@RequestPart("city") CityDTO cityDTO, @RequestPart("file") MultipartFile file) {
+        try {
+            City city = cityService.saveCity(cityDTO, file);
+            return new ResponseEntity<>(city, HttpStatus.CREATED);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
+
 
     // Get City by id
     @GetMapping("{id}")
@@ -57,8 +66,15 @@ public class CityController {
 
     // Update City by id
     @PutMapping("{id}")
-    public ResponseEntity<City> updateCityById(@PathVariable ("id") int id, @RequestBody City city){
-        return new ResponseEntity<>(cityService.updateCityByID(city, id), HttpStatus.OK);
+    public ResponseEntity<City> updateCityById(@PathVariable("id") int id,
+                                               @RequestPart("city") CityDTO cityDTO,
+                                               @RequestPart(value = "file", required = false) MultipartFile file) {
+        try {
+            City updatedCity = cityService.updateCityByID(cityDTO, file, id);
+            return new ResponseEntity<>(updatedCity, HttpStatus.OK);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
     // Delete city by id

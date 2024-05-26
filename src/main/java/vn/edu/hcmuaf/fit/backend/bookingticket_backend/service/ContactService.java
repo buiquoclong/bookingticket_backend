@@ -12,7 +12,7 @@ public interface ContactService {
     Contact saveContact(ContactDTO contactDTO);
     List<Contact> getAllContact();
     Contact getContactByID(int id);
-    Contact updateContactByID(Contact contact, int id);
+    Contact updateContactByID(ContactDTO contactDTO, int id);
     void deleteContactByID(int id);
     Page<Contact> getAllContactPage(Pageable pageable);
 }

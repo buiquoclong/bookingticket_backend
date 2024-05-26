@@ -66,19 +66,20 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     @Override
-    public Vehicle updateVehicleByID(Vehicle vehicle, int id) {
+    public Vehicle updateVehicleByID(VehicleDTO vehicleDTO, int id) {
         Vehicle existingVehicle = vehicleRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("Vehicle", "Id", id));
-
-        existingVehicle.setName(vehicle.getName());
-        existingVehicle.setVehicleNumber(vehicle.getVehicleNumber());
-        existingVehicle.setValue(vehicle.getValue());
-//        existingVehicle.setEmptySeat(vehicle.getEmptySeat());
-        existingVehicle.setStatus(vehicle.getStatus());
+        KindVehicle kindVehicle = kindVehicleRepository.findById(vehicleDTO.getKindVehicleId()).orElseThrow(() ->
+                new ResourceNotFoundException("KindVehicle", "Id", vehicleDTO.getKindVehicleId()));
+        existingVehicle.setName(vehicleDTO.getName());
+        existingVehicle.setKindVehicle(kindVehicle);
+        existingVehicle.setVehicleNumber(vehicleDTO.getVehicleNumber());
+        existingVehicle.setValue(vehicleDTO.getValue());
+        existingVehicle.setStatus(vehicleDTO.getStatus());
         existingVehicle.setUpdatedAt(LocalDateTime.now());
 
-        vehicleRepository.save(existingVehicle);
-        return null;
+
+        return vehicleRepository.save(existingVehicle);
     }
 
     @Override

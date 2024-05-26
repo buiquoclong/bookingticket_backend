@@ -65,8 +65,8 @@ public class VehicleController {
 
     // Update Vehicle by id
     @PutMapping("{id}")
-    public ResponseEntity<Vehicle> updateVehicleById(@PathVariable ("id") int id, @RequestBody Vehicle vehicle){
-        return new ResponseEntity<>(vehicleService.updateVehicleByID(vehicle, id), HttpStatus.OK);
+    public ResponseEntity<Vehicle> updateVehicleById(@PathVariable ("id") int id, @RequestBody VehicleDTO vehicleDTO){
+        return new ResponseEntity<>(vehicleService.updateVehicleByID(vehicleDTO, id), HttpStatus.OK);
     }
 
     // Delete Vehicle by id
