@@ -3,12 +3,15 @@ package vn.edu.hcmuaf.fit.backend.bookingticket_backend.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
+@Getter
+@Setter
 @Data
 @NoArgsConstructor
 @Entity

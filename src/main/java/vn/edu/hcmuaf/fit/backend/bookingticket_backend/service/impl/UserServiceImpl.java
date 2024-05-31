@@ -2,38 +2,53 @@ package vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.impl;
 
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.LoginDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.UserDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.User;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.UserRepository;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.EmailService;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.UserService;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.utils.JwtTokenUtils;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 @Service
 public class UserServiceImpl implements UserService {
+    @Autowired
     private UserRepository userRepository;
+    @Autowired
     private EmailService emailService;
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-//    public UserServiceImpl(UserRepository userRepository){
-//        this.userRepository =userRepository;
-//    }
+    @Autowired
+    @Lazy
+    private  AuthenticationManager authenticationManager;
 
-    public UserServiceImpl(UserRepository userRepository, EmailService emailService) {
-        this.userRepository = userRepository;
-        this.emailService = emailService;
-    }
+    @Autowired
+    private  JwtTokenUtils jwtTokenUtil;
+
+//    public UserServiceImpl(UserRepository userRepository, EmailService emailService) {
+//        this.userRepository = userRepository;
+//        this.emailService = emailService;
+//    }
 
 
 
@@ -101,20 +116,42 @@ public class UserServiceImpl implements UserService {
                 new ResourceNotFoundException("User", "Id", id));
         userRepository.deleteById(id);
     }
+    @Override
+    public String login(LoginDTO loginDTO) {
+        User u = userRepository.findByEmail(loginDTO.getEmail());
+        if (u == null){
+            return "NULL";// "Không tìm thấy người dùng"
+        }
+
+        if(!passwordEncoder.matches(loginDTO.getPass(), u.getPassword())) {
+            return "PASSWORD";// "Mật khẩu không đúng";
+        }
+        if (u.getStatus() == 3) {
+            return "LOCK";
+        }
+        if (u.getStatus() == 1) {
+            return u.getId() + ",VERIFY"; // Trả về userId và VERIFY
+        }
+        Authentication authentication = new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), u.getId());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        return jwtTokenUtil.generateToken(u);
+    }
 
     @Override
-    public String login(String email, String pass) {
-        User u = userRepository.findByEmail(email);
-        if(u != null) {
-            if(passwordEncoder.matches(pass, u.getPassword())) {
-                return String.valueOf(u.getId()); // Trả về ID nếu email và pass đều đúng
-            } else {
-                return "Mật khẩu không đúng"; // Thông báo nếu pass không đúng
-            }
-        } else {
-            return "Không tìm thấy người dùng"; // Thông báo nếu không tìm thấy email
+    public String sendMailConfirmAccount(int userId) {
+        User existingUser = userRepository.findById(userId).orElseThrow(() ->
+                new ResourceNotFoundException("User", "Id", userId));
+        String confirmToken = String.format("%06d", new Random().nextInt(999999));
+        existingUser.setConfirmToken(confirmToken);
+        userRepository.save(existingUser);
+        try {
+            emailService.sendVerificationEmail(existingUser.getEmail(), confirmToken);
+            return "SUCCESS";
+        } catch (MessagingException e) {
+            return "FAIL";
         }
     }
+
     public static String generatePassword(int length) {
         String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         SecureRandom RANDOM = new SecureRandom();
@@ -165,5 +202,21 @@ public class UserServiceImpl implements UserService {
     @Override
     public long getTotalUsers() {
         return userRepository.countUsers();
+    }
+    @Override
+    public User processOAuthPostLogin(String email, String username) {
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            user = new User();
+            user.setName(username);
+            user.setEmail(email);
+            user.setRole(1);
+            user.setStatus(1);
+            user.setType("GOOGLE");
+            user.setCreatedAt(LocalDateTime.now());
+            user.setUpdatedAt(LocalDateTime.now());
+            userRepository.save(user);
+        }
+        return user;
     }
 }

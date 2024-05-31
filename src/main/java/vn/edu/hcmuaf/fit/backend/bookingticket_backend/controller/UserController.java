@@ -1,11 +1,14 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.LoginDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.UserDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.User;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.UserService;
@@ -26,8 +29,20 @@ public class UserController {
 
     // Login
     @PostMapping("login")
-    public String login(@RequestBody UserDTO userDTO){
-        return userService.login(userDTO.getEmail(),userDTO.getPassword());
+    public String loginToken(@RequestBody LoginDTO loginDTO){
+        return userService.login(loginDTO);
+    }
+    @GetMapping("/token")
+    public ResponseEntity<String> getToken(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            String token = (String) session.getAttribute("token");
+            if (token != null) {
+                session.removeAttribute("token"); // Xóa token khỏi session sau khi lấy
+                return ResponseEntity.ok(token);
+            }
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token not found");
     }
 
     // Get all User
@@ -81,6 +96,14 @@ public class UserController {
     public ResponseEntity<String> forgotPassword(@RequestBody Map<String, String> requestBody) {
         String email = requestBody.get("email");
         String response = userService.forgotPassword(email);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    // gửi lại mã xác thực
+    @PostMapping("change-confirm")
+    public ResponseEntity<String> changeConfirm(@RequestBody Map<String, String> requestBody) {
+        Integer userId = Integer.valueOf(requestBody.get("userId"));
+        String response = userService.sendMailConfirmAccount(userId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
