@@ -33,7 +33,7 @@ public class CityServiceImpl implements CityService {
     }
 
     @Override
-    public City saveCity(CityDTO cityDTO, MultipartFile file) throws IOException {
+    public City createCity(CityDTO cityDTO, MultipartFile file) throws IOException {
         String originalFileName = file.getOriginalFilename();
         String fileName = System.currentTimeMillis() + "_" + originalFileName;
         Path targetLocation = this.fileStorageLocation.resolve(fileName);

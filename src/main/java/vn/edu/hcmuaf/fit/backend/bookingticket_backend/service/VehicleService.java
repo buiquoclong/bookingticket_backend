@@ -9,7 +9,7 @@ import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Vehicle;
 import java.util.List;
 
 public interface VehicleService {
-    Vehicle saveVehicle(VehicleDTO vehicleDTO);
+    Vehicle createVehicle(VehicleDTO vehicleDTO);
     List<Vehicle> getAllVehicle();
     Vehicle getVehicleByID(int id);
     Vehicle updateVehicleByID(VehicleDTO vehicleDTO, int id);

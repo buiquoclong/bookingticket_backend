@@ -6,7 +6,7 @@ import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.KindVehicle;
 import java.util.List;
 
 public interface KindVehicleService {
-    KindVehicle saveKindVehicle(KindVehicle kindVehicle);
+    KindVehicle createKindVehicle(KindVehicle kindVehicle);
     List<KindVehicle> getAllKindVehicle();
     KindVehicle getKindVehicleByID(int id);
     KindVehicle updateKindVehicleByID(KindVehicle kindVehicle, int id);

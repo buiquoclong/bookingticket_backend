@@ -41,7 +41,7 @@ public class BookingSeviceImpl implements BookingService {
     }
 
     @Override
-    public Booking saveBooking(BookingDTO bookingDTO) {
+    public Booking createBooking(BookingDTO bookingDTO) {
         Booking booking = new Booking();
         booking.setUserName(bookingDTO.getUserName());
         booking.setEmail(bookingDTO.getEmail());

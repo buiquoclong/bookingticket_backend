@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.List;
 
 public interface CityService {
-    City saveCity(CityDTO cityDTO, MultipartFile file) throws IOException;
+    City createCity(CityDTO cityDTO, MultipartFile file) throws IOException;
     List<City> getAllCity();
     City getCityByID(int id);
     City updateCityByID(CityDTO cityDTO, MultipartFile file, int id) throws IOException;

@@ -30,7 +30,7 @@ public class RouteServiceImpl implements RouteService {
     }
 
     @Override
-    public Route saveRoute(RouteDTO routeDTO) {
+    public Route createRoute(RouteDTO routeDTO) {
         Route route = new Route();
         City diemdi = cityRepository.findById(routeDTO.getDiemdi()).orElseThrow(() ->
                 new ResourceNotFoundException("City1", "Id", routeDTO.getDiemdi()));

@@ -29,7 +29,7 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     @Override
-    public Vehicle saveVehicle(VehicleDTO vehicleDTO) {
+    public Vehicle createVehicle(VehicleDTO vehicleDTO) {
         Vehicle vehicle = new Vehicle();
         KindVehicle kindVehicle = kindVehicleRepository.findById(vehicleDTO.getKindVehicleId()).orElseThrow(() ->
                 new ResourceNotFoundException("KindVehicle", "Id", vehicleDTO.getKindVehicleId()));

@@ -29,7 +29,7 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
-    public Log saveLog(LogDTO logDTO) {
+    public Log createLog(LogDTO logDTO) {
         Log log = new Log();
         User user = userRepository.findById(logDTO.getUserId()).orElseThrow(() ->
                 new ResourceNotFoundException("User", "Id", logDTO.getUserId()));
@@ -51,20 +51,23 @@ public class LogServiceImpl implements LogService {
                 new ResourceNotFoundException("Log", "Id", id));
     }
 
-    @Override
-    public Log updateLogByID(Log log, int id) {
-        return null;
-    }
-
-    @Override
-    public void deleteLogByID(int id) {
-        logRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("Log", "Id", id));
-        logRepository.deleteById(id);
-    }
 
     @Override
     public Page<Log> getAllLogPage(Pageable pageable) {
         return logRepository.findAll(pageable);
+    }
+
+    @Override
+    public List<Log> getLogsByUserId(int userId) {
+        return logRepository.findByUserId(userId);
+    }
+
+    @Override
+    public LogDTO convertToLogDTO(int userId, String message, int level) {
+        LogDTO logDTO = new LogDTO();
+        logDTO.setUserId(userId);
+        logDTO.setMessage(message);
+        logDTO.setLevel(level);
+        return logDTO;
     }
 }

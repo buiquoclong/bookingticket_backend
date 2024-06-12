@@ -9,7 +9,7 @@ import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Seat;
 import java.util.List;
 
 public interface RouteService {
-    Route saveRoute(RouteDTO routeDTO);
+    Route createRoute(RouteDTO routeDTO);
     List<Route> getAllRoute();
     Route getRouteByID(int id);
     Route updateRouteByID(RouteDTO routeDTO, int id);

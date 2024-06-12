@@ -1,18 +1,23 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.LogDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.RouteDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.VehicleDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.City;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Route;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Seat;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Vehicle;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.LogService;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.RouteService;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.utils.JwtTokenUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +28,10 @@ import java.util.Map;
 @CrossOrigin("http://localhost:3000")
 public class RouteController {
     private RouteService routeService;
+    @Autowired
+    private JwtTokenUtils jwtTokenUtils;
+    @Autowired
+    private LogService logService;
 
     public RouteController(RouteService routeService) {
         this.routeService = routeService;
@@ -39,8 +48,17 @@ public class RouteController {
 //    }
 
     @PostMapping
-    public ResponseEntity<Route> createRoute(@RequestBody RouteDTO routeDTO){
-        return new ResponseEntity<>(routeService.saveRoute(routeDTO), HttpStatus.CREATED);
+    public ResponseEntity<Route> createRoute(@RequestBody RouteDTO routeDTO, HttpServletRequest request){
+
+        String token = jwtTokenUtils.extractJwtFromRequest(request);
+        if (token == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        LogDTO logData =  logService.convertToLogDTO(userId, "Tạo tuyến tên: "+ routeDTO.getName(), 1);
+        logService.createLog(logData);
+        return new ResponseEntity<>(routeService.createRoute(routeDTO), HttpStatus.CREATED);
     }
 
     // Get Route by id
@@ -66,13 +84,29 @@ public class RouteController {
 
     // Update Route by id
     @PutMapping("{id}")
-    public ResponseEntity<Route> updateRouteById(@PathVariable ("id") int id, @RequestBody RouteDTO routeDTO){
+    public ResponseEntity<Route> updateRouteById(@PathVariable ("id") int id, @RequestBody RouteDTO routeDTO, HttpServletRequest request){
+        String token = jwtTokenUtils.extractJwtFromRequest(request);
+        if (token == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        LogDTO logData =  logService.convertToLogDTO(userId, "Cập nhật tuyến Id: "+ id, 2);
+        logService.createLog(logData);
         return new ResponseEntity<>(routeService.updateRouteByID(routeDTO, id), HttpStatus.OK);
     }
 
     // Delete route by id
     @DeleteMapping("{id}")
-    public ResponseEntity<String> deleteRouteById(@PathVariable ("id") int id){
+    public ResponseEntity<String> deleteRouteById(@PathVariable ("id") int id, HttpServletRequest request){
+        String token = jwtTokenUtils.extractJwtFromRequest(request);
+        if (token == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        LogDTO logData =  logService.convertToLogDTO(userId, "Xóa tuyến Id: "+ id, 2);
+        logService.createLog(logData);
         routeService.deleteRouteByID(id);
         return new ResponseEntity<>("Route " + id + " is deleted successfully", HttpStatus.OK);
     }

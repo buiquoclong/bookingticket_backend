@@ -33,7 +33,7 @@ public class SeatReservationServiceImpl implements SeatReservationService {
     }
 
     @Override
-    public SeatReservation saveSeatReservation(SeatReservationDTO seatReservationDTO) {
+    public SeatReservation createSeatReservation(SeatReservationDTO seatReservationDTO) {
         SeatReservation seatReservation = new SeatReservation();
         Booking booking =  bookingRepository.findById(seatReservationDTO.getBookingId()).orElseThrow(() ->
                 new ResourceNotFoundException("Booking", "Id", seatReservationDTO.getBookingId()));

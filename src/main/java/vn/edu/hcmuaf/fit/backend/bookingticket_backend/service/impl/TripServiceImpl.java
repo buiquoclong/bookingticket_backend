@@ -42,7 +42,7 @@ public class TripServiceImpl implements TripService {
     }
 
     @Override
-    public Trip saveTrip(TripDTO tripDTO) {
+    public Trip createTrip(TripDTO tripDTO) {
         Trip trip = new Trip();
         Route route =  routeRepository.findById(tripDTO.getRouteId()).orElseThrow(() ->
                 new ResourceNotFoundException("Route", "Id", tripDTO.getRouteId()));

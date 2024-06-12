@@ -40,7 +40,7 @@ public class WaitingSeatController {
     // Create a new SeatReservation
     @PostMapping
     public ResponseEntity<WaitingSeat> createWaitingSeat(@RequestBody WaitingSeatDTO waitingSeatDTO){
-        return new ResponseEntity<>(waitingSeatService.saveWaitingSeat(waitingSeatDTO), HttpStatus.CREATED);
+        return new ResponseEntity<>(waitingSeatService.createWaitingSeat(waitingSeatDTO), HttpStatus.CREATED);
     }
 
     // Get SeatReservation By id

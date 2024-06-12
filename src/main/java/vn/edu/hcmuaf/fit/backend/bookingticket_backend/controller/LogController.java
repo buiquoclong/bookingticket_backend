@@ -33,7 +33,7 @@ public class LogController {
     // Create a new Log
     @PostMapping
     public ResponseEntity<Log> createLog(@RequestBody LogDTO logDTO){
-        return new ResponseEntity<>(logService.saveLog(logDTO), HttpStatus.CREATED);
+        return new ResponseEntity<>(logService.createLog(logDTO), HttpStatus.CREATED);
     }
 
     // Get Log by id
@@ -55,19 +55,6 @@ public class LogController {
         response.put("totalItems", logPage.getTotalElements());
         response.put("totalPages", logPage.getTotalPages());
         return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    // Update Log by id
-    @PutMapping("{id}")
-    public ResponseEntity<Log> updateLogById(@PathVariable ("id") int id, @RequestBody Log log){
-        return new ResponseEntity<>(logService.updateLogByID(log, id), HttpStatus.OK);
-    }
-
-    // Delete log by id
-    @DeleteMapping("{id}")
-    public ResponseEntity<String> deleteLogById(@PathVariable ("id") int id){
-        logService.deleteLogByID(id);
-        return new ResponseEntity<>("Log " + id + " is deleted successfully", HttpStatus.OK);
     }
 
 }

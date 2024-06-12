@@ -28,7 +28,7 @@ public class WaitingSeatServiceImpl implements WaitingSeatService {
     }
 
     @Override
-    public WaitingSeat saveWaitingSeat(WaitingSeatDTO waitingSeatDTO) {
+    public WaitingSeat createWaitingSeat(WaitingSeatDTO waitingSeatDTO) {
         WaitingSeat waitingSeat = new WaitingSeat();
         Trip trip =  tripRepository.findById(waitingSeatDTO.getTripId()).orElseThrow(() ->
                 new ResourceNotFoundException("Trip", "Id", waitingSeatDTO.getTripId()));

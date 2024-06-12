@@ -7,11 +7,13 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.User;
 
 import java.security.Key;
@@ -88,6 +90,14 @@ public class JwtTokenUtils {
 
     public String extractUserId(String token) {
         return extractClaim(token, Claims::getSubject);
+    }
+    // Lấy JWT từ header
+    public String extractJwtFromRequest(HttpServletRequest request){
+        String bearerToken = request.getHeader("Authorization");
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
     }
 
     public boolean validateToken(String token, User user) {

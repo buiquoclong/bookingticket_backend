@@ -1,10 +1,18 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.impl;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.ReviewDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Booking;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Review;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Trip;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.User;
@@ -14,7 +22,9 @@ import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.UserRepository
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.ReviewService;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ReviewServiceImpl implements ReviewService {
@@ -34,7 +44,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public Review saveReview(ReviewDTO reviewDTO) {
+    public Review createReview(ReviewDTO reviewDTO) {
         Review review = new Review();
         User user = userRepository.findById(reviewDTO.getUserId()).orElseThrow(() ->
                 new ResourceNotFoundException("User", "Id", reviewDTO.getUserId()));
@@ -67,6 +77,12 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public Page<Review> getAllReviewPage(Pageable pageable) {
         return reviewRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<Review> getReviewByUserIdPageable(int userId, Pageable pageable) {
+        List<Review> reviews = reviewRepository.findByUserId(userId);
+        return new PageImpl<>(reviews, pageable, reviews.size());
     }
 
     @Override

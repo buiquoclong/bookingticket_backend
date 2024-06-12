@@ -9,7 +9,7 @@ import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Seat;
 import java.util.List;
 
 public interface ContactService {
-    Contact saveContact(ContactDTO contactDTO);
+    Contact createContact(ContactDTO contactDTO);
     List<Contact> getAllContact();
     Contact getContactByID(int id);
     Contact updateContactByID(ContactDTO contactDTO, int id);

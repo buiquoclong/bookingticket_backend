@@ -9,7 +9,7 @@ import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.SeatReservation;
 import java.util.List;
 
 public interface SeatReservationService {
-    SeatReservation saveSeatReservation(SeatReservationDTO seatReservationDTO);
+    SeatReservation createSeatReservation(SeatReservationDTO seatReservationDTO);
     List<SeatReservation> getAllSeatReservation();
     SeatReservation getSeatReservationByID(int id);
     SeatReservation updateSeatReservationByID(SeatReservation seatReservation, int id);

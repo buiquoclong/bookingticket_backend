@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public String saveUser(UserDTO userDTO) {
+    public String createUser(UserDTO userDTO) {
         String result = "";
         if (userRepository.existsByEmail(userDTO.getEmail())) {
             result += "Email đã tồn tại";

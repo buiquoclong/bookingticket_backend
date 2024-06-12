@@ -46,13 +46,13 @@ public class BookingDetailServiceImpl implements BookingDetailService {
     }
 
     @Override
-    public BookingDetail saveBookingDetail(BookingDetailDTO bookingDetailDTO) {
+    public BookingDetail createBookingDetail(BookingDetailDTO bookingDetailDTO) {
         BookingDetail bookingDetail = new BookingDetail();
         Booking booking =  bookingRepository.findById(bookingDetailDTO.getBookingId()).orElseThrow(() ->
                 new ResourceNotFoundException("Booking", "Id", bookingDetailDTO.getBookingId()));
         Trip trip =  tripRepository.findById(bookingDetailDTO.getTripId()).orElseThrow(() ->
                 new ResourceNotFoundException("Trip", "Id", bookingDetailDTO.getTripId()));
-        bookingDetail.setId(generateBookingDetailId());
+        bookingDetail.setId(generateUniqueBookingDetailId());
         bookingDetail.setBooking(booking);
         bookingDetail.setTrip(trip);
         bookingDetail.setRoundTrip(bookingDetailDTO.getRoundTrip());
@@ -65,8 +65,16 @@ public class BookingDetailServiceImpl implements BookingDetailService {
         return bookingDetailRepository.save(bookingDetail);
     }
 
+    public String generateUniqueBookingDetailId() {
+        String id;
+        do {
+            id = generateBookingDetailId();
+        } while (bookingDetailRepository.existsById(id));
+        return id;
+    }
+
     public String generateBookingDetailId(){
-        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         int length = 8;
         StringBuilder ticketCode = new StringBuilder();
         for (int i = 0; i < length; i++) {

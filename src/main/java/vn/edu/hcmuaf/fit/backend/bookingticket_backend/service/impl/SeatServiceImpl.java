@@ -30,7 +30,7 @@ public class SeatServiceImpl implements SeatService {
     }
 
     @Override
-    public Seat saveSeat(SeatDTO seatDTO) {
+    public Seat createSeat(SeatDTO seatDTO) {
         Seat seat = new Seat();
         KindVehicle kindVehicle = kindVehicleRepository.findById(seatDTO.getKindVehicleId()).orElseThrow(() ->
                 new ResourceNotFoundException("KindVehicle", "Id", seatDTO.getKindVehicleId()));

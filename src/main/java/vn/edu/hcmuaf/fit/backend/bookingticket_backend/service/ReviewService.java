@@ -4,12 +4,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.ReviewDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Review;
-import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Seat;
 
 import java.util.List;
 
 public interface ReviewService {
-    Review saveReview(ReviewDTO reviewDTO);
+    Review createReview(ReviewDTO reviewDTO);
     List<Review> getAllReview();
     Review getReviewByID(int id);
     Review updateReviewByID(ReviewDTO reviewDTO, int id);
@@ -17,4 +16,5 @@ public interface ReviewService {
 
     List<Review> getReviewByUserId(int userId);
     Page<Review> getAllReviewPage(Pageable pageable);
+    Page<Review> getReviewByUserIdPageable(int userId, Pageable pageable);
 }

@@ -9,10 +9,10 @@ import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Seat;
 import java.util.List;
 
 public interface LogService {
-    Log saveLog(LogDTO logDTO);
+    Log createLog(LogDTO logDTO);
     List<Log> getAllLog();
     Log getLogByID(int id);
-    Log updateLogByID(Log log, int id);
-    void deleteLogByID(int id);
     Page<Log> getAllLogPage(Pageable pageable);
+    List<Log> getLogsByUserId(int userId);
+    LogDTO convertToLogDTO(int userId, String message, int level);
 }

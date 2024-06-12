@@ -21,7 +21,7 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public Promotion savePromotion(PromotionDTO promotionDTO) {
+    public Promotion createPromotion(PromotionDTO promotionDTO) {
         Promotion promotion = new Promotion();
         promotion.setCode(generateCode());
         promotion.setDescription(promotionDTO.getDescription());

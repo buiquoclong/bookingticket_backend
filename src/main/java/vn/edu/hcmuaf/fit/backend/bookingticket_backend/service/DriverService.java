@@ -10,7 +10,7 @@ import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Seat;
 import java.util.List;
 
 public interface DriverService {
-    Driver saveDriver(DriverDTO driverDTO);
+    Driver createDriver(DriverDTO driverDTO);
     List<Driver> getAllDriver();
     Driver getDriverByID(int id);
     Driver updateDriverByID(DriverDTO driverDTO, int id);

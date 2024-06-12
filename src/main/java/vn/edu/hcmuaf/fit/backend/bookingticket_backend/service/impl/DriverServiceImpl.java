@@ -20,7 +20,7 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public Driver saveDriver(DriverDTO driverDTO) {
+    public Driver createDriver(DriverDTO driverDTO) {
         Driver driver = new Driver();
         driver.setName(driverDTO.getName());
         driver.setEmail(driverDTO.getEmail());

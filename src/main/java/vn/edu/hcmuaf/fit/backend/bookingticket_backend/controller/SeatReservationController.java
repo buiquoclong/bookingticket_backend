@@ -47,7 +47,7 @@ public class SeatReservationController {
     // Create a new SeatReservation
     @PostMapping
     public ResponseEntity<SeatReservation> createSeatReservation(@RequestBody SeatReservationDTO seatReservationDTO){
-        return new ResponseEntity<>(seatReservationService.saveSeatReservation(seatReservationDTO), HttpStatus.CREATED);
+        return new ResponseEntity<>(seatReservationService.createSeatReservation(seatReservationDTO), HttpStatus.CREATED);
     }
 
     // Get SeatReservation By id

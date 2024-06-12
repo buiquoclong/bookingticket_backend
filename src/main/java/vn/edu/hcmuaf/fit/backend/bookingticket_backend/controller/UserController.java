@@ -2,16 +2,22 @@ package vn.edu.hcmuaf.fit.backend.bookingticket_backend.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.LogDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.LoginDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.UserDTO;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.User;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.UserRepository;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.LogService;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.UserService;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.utils.JwtTokenUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +28,12 @@ import java.util.Map;
 @CrossOrigin("http://localhost:3000")
 public class UserController {
     private UserService userService;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private JwtTokenUtils jwtTokenUtils;
+    @Autowired
+    private LogService logService;
 
     public UserController(UserService userService) {
         this.userService = userService;
@@ -53,8 +65,17 @@ public class UserController {
 
     // Create a new User
     @PostMapping
-    public String creatUser(@RequestBody UserDTO userDTO){
-        return userService.saveUser(userDTO);
+    public String creatUser(@RequestBody UserDTO userDTO, HttpServletRequest request){
+
+        String token = jwtTokenUtils.extractJwtFromRequest(request);
+        if (token == null) {
+            return null;
+        }
+
+        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        LogDTO logData =  logService.convertToLogDTO(userId, "Tạo tài khoản tên: "+ userDTO.getName(), 1);
+        logService.createLog(logData);
+        return userService.createUser(userDTO);
     }
 
     // Get User by id
@@ -80,13 +101,58 @@ public class UserController {
 
     // Update User by id
     @PutMapping("{id}")
-    public ResponseEntity<User> updateUserById(@PathVariable ("id") int id, @RequestBody UserDTO userDTO){
-        return new ResponseEntity<>(userService.updateUserByID(userDTO, id), HttpStatus.OK);
+    public ResponseEntity<User> updateUserById(@PathVariable ("id") int id, @RequestBody UserDTO userDTO, HttpServletRequest request){
+        String token = jwtTokenUtils.extractJwtFromRequest(request);
+        if (token == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        User existingUser = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User", "Id", id));
+        // Save old values for comparison
+        int oldRole = existingUser.getRole();
+        int oldStatus = existingUser.getStatus();
+
+        // Update the user
+        User updatedUser;
+        try {
+            updatedUser = userService.updateUserByID(userDTO, id);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        // Check what has changed
+        boolean roleChanged = oldRole != updatedUser.getRole();
+        boolean statusChanged = oldStatus != updatedUser.getStatus();
+        boolean otherInfoChanged = !existingUser.equals(updatedUser);
+
+        // Generate log message based on changes
+        StringBuilder logMessage = new StringBuilder("Cập nhật thông tin tài khoản Id: " + id);
+        if (roleChanged) {
+            logMessage.append(", thay đổi quyền");
+        }
+        if (statusChanged) {
+            logMessage.append(", thay đổi trạng thái");
+            if (updatedUser.getStatus() == 3) {
+                logMessage.append(" (khóa tài khoản)");
+            }
+        }
+        if (otherInfoChanged && !roleChanged && !statusChanged) {
+            logMessage.append(", thay đổi thông tin khác");
+        }
+
+        // Create log entry
+        LogDTO logData = logService.convertToLogDTO(userId, logMessage.toString(), 2);
+        logService.createLog(logData);
+
+        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
 
     // Delete User by id
     @DeleteMapping("{id}")
-    public ResponseEntity<String> deleteUserById(@PathVariable ("id") int id){
+    public ResponseEntity<String> deleteUserById(@PathVariable ("id") int id, HttpServletRequest request){
         userService.deleteUserByID(id);
         return new ResponseEntity<>("User " + id + " is deleted successfully", HttpStatus.OK);
     }
@@ -112,7 +178,19 @@ public class UserController {
     public String changePassword(@PathVariable("userId") int userId,@RequestBody Map<String, String> requestBody){
         String oldPassword = requestBody.get("oldPassword");
         String newPassword = requestBody.get("newPassword");
-        return userService.changePassword(userId, oldPassword, newPassword);
+        // Thực hiện việc đổi mật khẩu
+        String result;
+        try {
+            result = userService.changePassword(userId, oldPassword, newPassword);
+            if ("Mật khẩu đã được thay đổi thành công".equals(result)) {
+                LogDTO logData = logService.convertToLogDTO(userId, "Đổi mật khẩu", 2);
+                logService.createLog(logData);
+            }
+        } catch (ResourceNotFoundException e) {
+            result = "Người dùng không tồn tại";
+        }
+
+        return result;
     }
     @GetMapping("/totalUser")
     public long getTotalUsers() {

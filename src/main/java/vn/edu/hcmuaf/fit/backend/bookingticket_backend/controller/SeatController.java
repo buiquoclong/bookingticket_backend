@@ -1,14 +1,19 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.LogDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.SeatDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Seat;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.LogService;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.SeatService;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.utils.JwtTokenUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +24,10 @@ import java.util.Map;
 @CrossOrigin("http://localhost:3000")
 public class SeatController {
     private SeatService seatService;
+    @Autowired
+    private JwtTokenUtils jwtTokenUtils;
+    @Autowired
+    private LogService logService;
 
     public SeatController(SeatService seatService) {
         this.seatService = seatService;
@@ -51,8 +60,17 @@ public class SeatController {
     }
     // Create a new Seat
     @PostMapping
-    public ResponseEntity<Seat> createSeat(@RequestBody SeatDTO seatDTO){
-        return new ResponseEntity<>(seatService.saveSeat(seatDTO), HttpStatus.CREATED);
+    public ResponseEntity<Seat> createSeat(@RequestBody SeatDTO seatDTO, HttpServletRequest request){
+
+        String token = jwtTokenUtils.extractJwtFromRequest(request);
+        if (token == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        LogDTO logData =  logService.convertToLogDTO(userId, "Tạo ghế tên: "+ seatDTO.getName(), 1);
+        logService.createLog(logData);
+        return new ResponseEntity<>(seatService.createSeat(seatDTO), HttpStatus.CREATED);
     }
 
     // Get Seat By id
@@ -63,13 +81,30 @@ public class SeatController {
 
     // Update City by id
     @PutMapping("{id}")
-    public ResponseEntity<Seat> updateSeatById(@PathVariable ("id") int id, @RequestBody SeatDTO seatDTO){
+    public ResponseEntity<Seat> updateSeatById(@PathVariable ("id") int id, @RequestBody SeatDTO seatDTO, HttpServletRequest request){
+
+        String token = jwtTokenUtils.extractJwtFromRequest(request);
+        if (token == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        LogDTO logData =  logService.convertToLogDTO(userId, "Cập nhật ghế Id: "+ id, 2);
+        logService.createLog(logData);
         return new ResponseEntity<>(seatService.updateSeatByID(seatDTO, id), HttpStatus.OK);
     }
 
     // Delete city by id
     @DeleteMapping("{id}")
-    public ResponseEntity<String> deleteSeatById(@PathVariable ("id") int id){
+    public ResponseEntity<String> deleteSeatById(@PathVariable ("id") int id, HttpServletRequest request){
+        String token = jwtTokenUtils.extractJwtFromRequest(request);
+        if (token == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        LogDTO logData =  logService.convertToLogDTO(userId, "Xóa ghế Id: "+ id, 2);
+        logService.createLog(logData);
         seatService.deleteSeatByID(id);
         return new ResponseEntity<>("Seat " + id + " is deleted successfully", HttpStatus.OK);
     }

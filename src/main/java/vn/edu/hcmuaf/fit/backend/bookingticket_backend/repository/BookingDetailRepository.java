@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface BookingDetailRepository extends JpaRepository<BookingDetail, String> {
     List<BookingDetail> findByBookingId(int bookingId);
+    boolean existsById(String id);
 }

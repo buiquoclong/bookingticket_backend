@@ -32,7 +32,7 @@ public class BookingDetailController {
     // Create a new BookingDetail
     @PostMapping
     public ResponseEntity<BookingDetail> createOrderDetail(@RequestBody BookingDetailDTO bookingDetailDTO){
-        return  new ResponseEntity<>(bookingDetailService.saveBookingDetail(bookingDetailDTO), HttpStatus.CREATED);
+        return  new ResponseEntity<>(bookingDetailService.createBookingDetail(bookingDetailDTO), HttpStatus.CREATED);
     }
 
     // Lấy danh sách các booking detail dựa trên booking ID
@@ -74,7 +74,7 @@ public class BookingDetailController {
 
     // Get BookingDetail by id
     @GetMapping("{id}")
-    public ResponseEntity<BookingDetail> getOrderDetailById(@PathVariable ("id") String id){
+    public ResponseEntity<BookingDetail> getBookingDetailById(@PathVariable ("id") String id){
         return new ResponseEntity<>(bookingDetailService.getBookingDetailByID(id), HttpStatus.OK);
     }
 

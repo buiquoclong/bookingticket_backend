@@ -7,7 +7,7 @@ import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.WaitingSeat;
 import java.util.List;
 
 public interface WaitingSeatService {
-    WaitingSeat saveWaitingSeat(WaitingSeatDTO waitingSeatDTO);
+    WaitingSeat createWaitingSeat(WaitingSeatDTO waitingSeatDTO);
     List<WaitingSeat> getAllWaitingSeat();
     WaitingSeat getWaitingSeatByID(int id);
     WaitingSeat updateWaitingSeatByID(WaitingSeatDTO waitingSeatDTO, int id);

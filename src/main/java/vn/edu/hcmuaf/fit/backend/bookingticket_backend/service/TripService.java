@@ -10,7 +10,7 @@ import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Trip;
 import java.util.List;
 
 public interface TripService {
-    Trip saveTrip(TripDTO tripDTO);
+    Trip createTrip(TripDTO tripDTO);
     List<Trip> getAllTrip();
     Trip getTripByID(int id);
     Trip updateTripByID(TripDTO tripDTO, int id);

@@ -21,7 +21,7 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public Contact saveContact(ContactDTO ContactDTO) {
+    public Contact createContact(ContactDTO ContactDTO) {
         Contact contact = new Contact();
         contact.setContent(ContactDTO.getContent());
         contact.setEmail(ContactDTO.getEmail());

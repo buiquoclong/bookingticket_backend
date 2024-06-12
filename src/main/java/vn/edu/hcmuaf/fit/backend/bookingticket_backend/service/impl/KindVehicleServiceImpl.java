@@ -18,7 +18,7 @@ public class KindVehicleServiceImpl implements KindVehicleService {
     }
 
     @Override
-    public KindVehicle saveKindVehicle(KindVehicle KindVehicle) {
+    public KindVehicle createKindVehicle(KindVehicle KindVehicle) {
         return kindVehicleRepository.save(KindVehicle);
     }
 

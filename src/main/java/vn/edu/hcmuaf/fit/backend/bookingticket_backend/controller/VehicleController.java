@@ -1,16 +1,21 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.LogDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.VehicleDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.City;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Seat;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Vehicle;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.LogService;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.VehicleService;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.utils.JwtTokenUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +26,10 @@ import java.util.Map;
 @CrossOrigin("http://localhost:3000")
 public class VehicleController {
     private VehicleService vehicleService;
+    @Autowired
+    private JwtTokenUtils jwtTokenUtils;
+    @Autowired
+    private LogService logService;
 
     public VehicleController(VehicleService vehicleService) {
         this.vehicleService = vehicleService;
@@ -38,8 +47,26 @@ public class VehicleController {
     }
     // Create a new Vehicle
     @PostMapping
-    public ResponseEntity<Vehicle> createVehicle(@RequestBody VehicleDTO vehicleDTO){
-        return new ResponseEntity<>(vehicleService.saveVehicle(vehicleDTO), HttpStatus.CREATED);
+    public ResponseEntity<Vehicle> createVehicle(@RequestBody VehicleDTO vehicleDTO, HttpServletRequest request){
+
+//        String token = jwtTokenUtils.extractJwtFromRequest(request);
+//        if (token == null) {
+//            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+//        }
+//
+//        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+//        LogDTO logData =  logService.convertToLogDTO(userId, "Tạo phương tiện tên: "+ vehicleDTO.getName(), 1);
+//        logService.createLog(logData);
+
+        String token = jwtTokenUtils.extractJwtFromRequest(request);
+        if (token == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        LogDTO logData =  logService.convertToLogDTO(userId, "Tạo phương tiện tên: "+ vehicleDTO.getName(), 1);
+        logService.createLog(logData);
+        return new ResponseEntity<>(vehicleService.createVehicle(vehicleDTO), HttpStatus.CREATED);
     }
 
     // Get Vehicle By id
@@ -65,13 +92,29 @@ public class VehicleController {
 
     // Update Vehicle by id
     @PutMapping("{id}")
-    public ResponseEntity<Vehicle> updateVehicleById(@PathVariable ("id") int id, @RequestBody VehicleDTO vehicleDTO){
+    public ResponseEntity<Vehicle> updateVehicleById(@PathVariable ("id") int id, @RequestBody VehicleDTO vehicleDTO, HttpServletRequest request){
+        String token = jwtTokenUtils.extractJwtFromRequest(request);
+        if (token == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        LogDTO logData =  logService.convertToLogDTO(userId, "Cập nhật phương tiện Id: "+ id, 2);
+        logService.createLog(logData);
         return new ResponseEntity<>(vehicleService.updateVehicleByID(vehicleDTO, id), HttpStatus.OK);
     }
 
     // Delete Vehicle by id
     @DeleteMapping("{id}")
-    public ResponseEntity<String> deleteVehicleById(@PathVariable ("id") int id){
+    public ResponseEntity<String> deleteVehicleById(@PathVariable ("id") int id, HttpServletRequest request){
+        String token = jwtTokenUtils.extractJwtFromRequest(request);
+        if (token == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        LogDTO logData =  logService.convertToLogDTO(userId, "Xóa phương tiện Id: "+ id, 2);
+        logService.createLog(logData);
         vehicleService.deleteVehicleByID(id);
         return new ResponseEntity<>("Vehicle " + id + " is deleted successfully", HttpStatus.OK);
     }

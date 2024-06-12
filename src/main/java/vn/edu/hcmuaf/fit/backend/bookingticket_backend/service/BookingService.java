@@ -13,7 +13,7 @@ import java.time.YearMonth;
 import java.util.List;
 
 public interface BookingService {
-    Booking saveBooking(BookingDTO bookingDTO);
+    Booking createBooking(BookingDTO bookingDTO);
     List<Booking> getAllBooking();
     Booking getBookingByID(int id);
     Booking updateBookingByID(BookingDTO bookingDTO, int id);
