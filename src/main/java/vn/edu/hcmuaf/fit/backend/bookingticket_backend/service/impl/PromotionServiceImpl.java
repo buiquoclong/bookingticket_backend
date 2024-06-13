@@ -78,4 +78,18 @@ public class PromotionServiceImpl implements PromotionService {
     public Page<Promotion> getAllPromotionPage(Pageable pageable) {
         return promotionRepository.findAll(pageable);
     }
+
+    @Override
+    public String checkPromotionCode(String code) {
+        List<Promotion> promotions = promotionRepository.findAll();
+        for (Promotion promotion : promotions) {
+            if (promotion.getCode().equalsIgnoreCase(code)) {
+                LocalDateTime now = LocalDateTime.now();
+                if (now.isAfter(promotion.getStartDay()) && now.isBefore(promotion.getEndDay())) {
+                    return String.valueOf(promotion.getDiscount());
+                }
+            }
+        }
+        return "NULL";
+    }
 }

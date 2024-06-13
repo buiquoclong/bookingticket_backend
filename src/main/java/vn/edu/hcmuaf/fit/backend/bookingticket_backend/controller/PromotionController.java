@@ -103,4 +103,12 @@ public class PromotionController {
         promotionService.deletePromotionByID(id);
         return new ResponseEntity<>("Promotion " + id + " is deleted successfully", HttpStatus.OK);
     }
+    // check Mã giảm giá
+    @GetMapping("/check")
+    public ResponseEntity<String> checkPromotionCode(@RequestParam String code) {
+//        String discount = promotionService.checkPromotionCode(code);
+//        return new ResponseEntity<>(discount, HttpStatus.OK);
+        String discount = promotionService.checkPromotionCode(code);
+        return new ResponseEntity<>(discount, HttpStatus.OK);
+    }
 }

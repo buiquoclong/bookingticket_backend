@@ -59,6 +59,19 @@ public class BookingController {
         return new ResponseEntity<>(bookingService.createBooking(bookingDTO), HttpStatus.CREATED);
     }
 
+    @PostMapping("/for-emp")
+    public ResponseEntity<Booking> createBookingForEmployee(@RequestBody BookingDTO bookingDTO, HttpServletRequest request){
+        String token = jwtTokenUtils.extractJwtFromRequest(request);
+        if (token == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        LogDTO logData =  logService.convertToLogDTO(userId, "Đặt vé", 1);
+        logService.createLog(logData);
+        return new ResponseEntity<>(bookingService.createBooking(bookingDTO), HttpStatus.CREATED);
+    }
+
     // Get Booking by id
     @GetMapping("{id}")
     public ResponseEntity<Booking> getBookingById(@PathVariable ("id") int id){

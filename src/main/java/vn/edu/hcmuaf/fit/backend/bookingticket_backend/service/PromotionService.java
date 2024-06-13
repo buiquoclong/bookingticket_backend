@@ -15,4 +15,5 @@ public interface PromotionService {
     Promotion updatePromotionByID(PromotionDTO promotionDTO, int id);
     void deletePromotionByID(int id);
     Page<Promotion> getAllPromotionPage(Pageable pageable);
+    String checkPromotionCode(String code);
 }
