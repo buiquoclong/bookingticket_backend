@@ -48,4 +48,8 @@ public class Route {
     @JsonIgnore
     @OneToMany(mappedBy = "route", cascade = CascadeType.ALL)
     private List<Trip> trips;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "route", cascade = CascadeType.ALL)
+    private List<CatchPoint> catchPoints;
 }

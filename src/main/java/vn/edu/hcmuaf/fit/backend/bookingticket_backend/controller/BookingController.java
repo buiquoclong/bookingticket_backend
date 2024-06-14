@@ -103,7 +103,7 @@ public class BookingController {
 
     // phân trang
     @GetMapping("page")
-    public ResponseEntity<Map<String, Object>> getAllSeatByPage(
+    public ResponseEntity<Map<String, Object>> getAllBookingByPage(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
@@ -175,6 +175,12 @@ public class BookingController {
             return "Error while sending email";
         }
     }
+    // Tổng hóa đơn
+    @GetMapping("/total-bookings")
+    public ResponseEntity<Long> getTotalBookings() {
+        long totalBookings = bookingService.getTotalBookings();
+        return new ResponseEntity<>(totalBookings, HttpStatus.OK);
+    }
 
     // thống kê tổng doanh thu
     @GetMapping("/totalAll")
@@ -199,5 +205,19 @@ public class BookingController {
     @GetMapping("/total/lastNineMonths")
     public List<MonthlyRevenueDTO> getRevenueForLastNineMonths() {
         return bookingService.getRevenueForLastNineMonths();
+    }
+
+    @GetMapping("/count-paid-by-month")
+    public ResponseEntity<Integer> countPaidBookingsByMonth(@RequestParam("yearMonth") String yearMonth) {
+        YearMonth ym = YearMonth.parse(yearMonth);
+        Integer count = bookingService.countPaidBookingsByMonth(ym);
+        return new ResponseEntity<>(count, HttpStatus.OK);
+    }
+
+    @GetMapping("/count-cancelled-by-month")
+    public ResponseEntity<Integer> countCancelledBookingsByMonth(@RequestParam("yearMonth") String yearMonth) {
+        YearMonth ym = YearMonth.parse(yearMonth);
+        Integer count = bookingService.countCancelledBookingsByMonth(ym);
+        return new ResponseEntity<>(count, HttpStatus.OK);
     }
 }

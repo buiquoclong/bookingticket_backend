@@ -69,7 +69,7 @@ public class RouteController {
 
     // phân trang
     @GetMapping("page")
-    public ResponseEntity<Map<String, Object>> getAllSeatByPage(
+    public ResponseEntity<Map<String, Object>> getAllRouteByPage(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
@@ -109,6 +109,10 @@ public class RouteController {
         logService.createLog(logData);
         routeService.deleteRouteByID(id);
         return new ResponseEntity<>("Route " + id + " is deleted successfully", HttpStatus.OK);
+    }
+    @GetMapping("/active")
+    public List<Route> getActiveRoutes() {
+        return routeService.getActiveRoutes();
     }
 
 }

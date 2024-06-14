@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
@@ -41,31 +43,58 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable();
         http
-                .cors().and().csrf().disable()
-                .authorizeRequests()
-                .requestMatchers("/**", "/error", "/oauth2/**").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .oauth2Login()
-                .successHandler(new AuthenticationSuccessHandler() {
-                    @Override
-                    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-                        CustomOAuth2User oauthUser = (CustomOAuth2User) authentication.getPrincipal();
-                        String email = oauthUser.getAttribute("email");
-                        String username = oauthUser.getAttribute("name");
-                        User user = userService.processOAuthPostLogin(email, username);
+                .csrf(csrf -> csrf.disable())
+                .cors(withDefaults())
+                .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                        .requestMatchers("/**", "/error", "/oauth2/**").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .oauth2Login(oauth2Login -> oauth2Login
+                        .successHandler(new AuthenticationSuccessHandler() {
+                            @Override
+                            public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+                                CustomOAuth2User oauthUser = (CustomOAuth2User) authentication.getPrincipal();
+                                String email = oauthUser.getAttribute("email");
+                                String username = oauthUser.getAttribute("name");
+                                User user = userService.processOAuthPostLogin(email, username);
 
-                        String token = jwtTokenUtil.generateToken(user);
-                        // Lưu token trong session
-                        request.getSession().setAttribute("token", token);
-                        response.sendRedirect("http://localhost:3000/");
-                    }
-                });
+                                String token = jwtTokenUtil.generateToken(user);
+                                // Lưu token trong session
+                                request.getSession().setAttribute("token", token);
+                                response.sendRedirect("http://localhost:3000/");
+                            }
+                        })
+                );
 
         return http.build();
     }
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        http.csrf().disable();
+//        http
+//                .cors().and().csrf().disable()
+//                .authorizeRequests()
+//                .requestMatchers("/**", "/error", "/oauth2/**").permitAll()
+//                .anyRequest().authenticated()
+//                .and()
+//                .oauth2Login()
+//                .successHandler(new AuthenticationSuccessHandler() {
+//                    @Override
+//                    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+//                        CustomOAuth2User oauthUser = (CustomOAuth2User) authentication.getPrincipal();
+//                        String email = oauthUser.getAttribute("email");
+//                        String username = oauthUser.getAttribute("name");
+//                        User user = userService.processOAuthPostLogin(email, username);
+//
+//                        String token = jwtTokenUtil.generateToken(user);
+//                        // Lưu token trong session
+//                        request.getSession().setAttribute("token", token);
+//                        response.sendRedirect("http://localhost:3000/");
+//                    }
+//                });
+//
+//        return http.build();
+//    }
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {

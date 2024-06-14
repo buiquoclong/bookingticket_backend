@@ -62,7 +62,7 @@ public class TripController {
 
     // phân trang
     @GetMapping("page")
-    public ResponseEntity<Map<String, Object>> getAllSeatByPage(
+    public ResponseEntity<Map<String, Object>> getAllTripByPage(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page - 1, size);

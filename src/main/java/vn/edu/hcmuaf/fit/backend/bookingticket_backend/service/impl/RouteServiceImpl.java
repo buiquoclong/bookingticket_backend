@@ -87,4 +87,9 @@ public class RouteServiceImpl implements RouteService {
     public Page<Route> getAllRoutePage(Pageable pageable) {
         return routeRepository.findAll(pageable);
     }
+
+    @Override
+    public List<Route> getActiveRoutes() {
+        return routeRepository.findByStatus(1);
+    }
 }

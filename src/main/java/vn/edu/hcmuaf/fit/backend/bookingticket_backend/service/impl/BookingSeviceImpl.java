@@ -92,6 +92,11 @@ public class BookingSeviceImpl implements BookingService {
     }
 
     @Override
+    public long getTotalBookings() {
+        return bookingRepository.count();
+    }
+
+    @Override
     public Integer getTotalRevenue() {
         return bookingRepository.findTotalRevenue();
     }
@@ -129,6 +134,16 @@ public class BookingSeviceImpl implements BookingService {
         }
 
         return result;
+    }
+
+    @Override
+    public Integer countPaidBookingsByMonth(YearMonth yearMonth) {
+        return bookingRepository.countPaidBookingsByMonth(yearMonth.getYear(), yearMonth.getMonthValue());
+    }
+
+    @Override
+    public Integer countCancelledBookingsByMonth(YearMonth yearMonth) {
+        return bookingRepository.countCancelledBookingsByMonth(yearMonth.getYear(), yearMonth.getMonthValue());
     }
 
     @Override

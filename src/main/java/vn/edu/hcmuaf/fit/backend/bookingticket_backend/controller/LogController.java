@@ -44,7 +44,7 @@ public class LogController {
 
     // phân trang
     @GetMapping("page")
-    public ResponseEntity<Map<String, Object>> getAllSeatByPage(
+    public ResponseEntity<Map<String, Object>> getAllLogByPage(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page - 1, size);

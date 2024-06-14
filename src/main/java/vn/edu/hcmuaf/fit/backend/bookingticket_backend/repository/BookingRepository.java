@@ -15,23 +15,31 @@ import java.util.List;
 public interface BookingRepository extends JpaRepository<Booking, Integer> {
     List<Booking> findByUserId(int userId);
     // thống kê tổng doanh thu
-    @Query("SELECT SUM(b.total) FROM Booking b WHERE b.isPaid != 2")
+    @Query("SELECT SUM(b.total) FROM Booking b WHERE b.isPaid = 1")
     Integer findTotalRevenue();
     // thống kê doanh thu theo ngày
 //    @Query("SELECT SUM(b.total) FROM Booking b WHERE DATE(b.dayBook) = :date")
 //    Integer findTotalRevenueByDay(@Param("date") LocalDate date);
-    @Query("SELECT SUM(b.total) FROM Booking b WHERE DATE(b.dayBook) = :date AND b.isPaid != 2")
+    @Query("SELECT SUM(b.total) FROM Booking b WHERE DATE(b.dayBook) = :date AND b.isPaid = 1")
     Integer findTotalRevenueByDay(@Param("date") LocalDate date);
 
     // doanh thu theo tháng
-    @Query("SELECT SUM(b.total) FROM Booking b WHERE YEAR(b.dayBook) = :year AND MONTH(b.dayBook) = :month AND b.isPaid != 2")
+    @Query("SELECT SUM(b.total) FROM Booking b WHERE YEAR(b.dayBook) = :year AND MONTH(b.dayBook) = :month AND b.isPaid = 1")
     Integer findTotalRevenueByMonth(@Param("year") int year, @Param("month") int month);
 
     // list doanh thu theo 9 tháng
     @Query(value = "SELECT new vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.MonthlyRevenueDTO(EXTRACT(MONTH FROM b.dayBook), CAST(SUM(b.total) AS int), EXTRACT(YEAR FROM b.dayBook)) " +
             "FROM Booking b " +
-            "WHERE b.dayBook BETWEEN :startDate AND :endDate AND b.isPaid != 2" +
+            "WHERE b.dayBook BETWEEN :startDate AND :endDate AND b.isPaid = 1" +
             "GROUP BY EXTRACT(YEAR FROM b.dayBook), EXTRACT(MONTH FROM b.dayBook) " +
             "ORDER BY EXTRACT(YEAR FROM b.dayBook) DESC, EXTRACT(MONTH FROM b.dayBook) DESC")
     List<MonthlyRevenueDTO> findRevenueForLastNineMonths(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+
+    // Đếm số lượng vé đã thanh toán theo tháng
+    @Query("SELECT COUNT(b) FROM Booking b WHERE b.isPaid = 1 AND YEAR(b.dayBook) = :year AND MONTH(b.dayBook) = :month")
+    Integer countPaidBookingsByMonth(@Param("year") int year, @Param("month") int month);
+
+    // Đếm số lượng vé đã bị hủy theo tháng
+    @Query("SELECT COUNT(b) FROM Booking b WHERE b.isPaid = 2 AND YEAR(b.dayBook) = :year AND MONTH(b.dayBook) = :month")
+    Integer countCancelledBookingsByMonth(@Param("year") int year, @Param("month") int month);
 }

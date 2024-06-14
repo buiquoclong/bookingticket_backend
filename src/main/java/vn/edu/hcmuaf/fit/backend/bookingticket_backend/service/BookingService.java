@@ -21,6 +21,8 @@ public interface BookingService {
     List<Booking> getBookingByUserId(int userId);
     Page<Booking> getAllBookingPage(Pageable pageable);
     Page<Booking> getBookingByUserIdPageable(int userId, Pageable pageable);
+    // Tổng bill
+    long getTotalBookings();
     // thống kê tổng doanh thu
     public Integer getTotalRevenue();
     // thống kê doanh thu theo ngày
@@ -30,4 +32,10 @@ public interface BookingService {
 
     // doanh thu trong 9 tháng
     public List<MonthlyRevenueDTO> getRevenueForLastNineMonths();
+
+    // số vé đã thanh toán
+    Integer countPaidBookingsByMonth(YearMonth yearMonth);
+    // Số vé đã bị hủy
+    Integer countCancelledBookingsByMonth(YearMonth yearMonth);
+
 }

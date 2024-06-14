@@ -58,7 +58,7 @@ public class SeatReservationController {
 
     // phân trang
     @GetMapping("page")
-    public ResponseEntity<Map<String, Object>> getAllSeatByPage(
+    public ResponseEntity<Map<String, Object>> getAllSeatReservationByPage(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page - 1, size);

@@ -89,7 +89,7 @@ public class ReviewServiceImpl implements ReviewService {
     public Review updateReviewByID(ReviewDTO reviewDTO, int id) {
 
         Review existingReview = reviewRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("Review", "Id", reviewDTO.getId()));
+                new ResourceNotFoundException("Review", "Id", id));
         existingReview.setRating(reviewDTO.getRating());
         existingReview.setContent(reviewDTO.getContent());
         existingReview.setUpdatedAt(LocalDateTime.now());

@@ -13,6 +13,7 @@ import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.VehicleService;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class VehicleServiceImpl implements VehicleService {
@@ -51,7 +52,10 @@ public class VehicleServiceImpl implements VehicleService {
     // lấy danh sách xe theo loại xe
     @Override
     public List<Vehicle> getVehiclesByKindVehicleId(int kindVehicleId) {
-        return vehicleRepository.findByKindVehicleId(kindVehicleId);
+        List<Vehicle> vehicles = vehicleRepository.findByKindVehicleId(kindVehicleId);
+        return vehicles.stream()
+                .filter(vehicle -> vehicle.getStatus() == 1)
+                .collect(Collectors.toList());
     }
 
     @Override
