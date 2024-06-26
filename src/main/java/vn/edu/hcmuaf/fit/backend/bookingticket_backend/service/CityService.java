@@ -17,5 +17,5 @@ public interface CityService {
     City getCityByID(int id);
     City updateCityByID(CityDTO cityDTO, MultipartFile file, int id) throws IOException;
     void deleteCityByID(int id);
-    Page<City> getAllCityPage(Pageable pageable);
+    Page<City> getAllCityPage(String name, Pageable pageable);
 }

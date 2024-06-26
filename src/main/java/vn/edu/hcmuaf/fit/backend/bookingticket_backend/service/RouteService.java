@@ -14,6 +14,6 @@ public interface RouteService {
     Route getRouteByID(int id);
     Route updateRouteByID(RouteDTO routeDTO, int id);
     void deleteRouteByID(int id);
-    Page<Route> getAllRoutePage(Pageable pageable);
+    Page<Route> getAllRoutePage(String name, Pageable pageable);
     List<Route> getActiveRoutes();
 }

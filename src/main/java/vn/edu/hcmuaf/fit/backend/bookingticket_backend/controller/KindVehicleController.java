@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.KindVehicleDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.LogDTO;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Contact;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.KindVehicle;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.KindVehicleService;
@@ -49,9 +50,15 @@ public class KindVehicleController {
         }
 
         int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
-        LogDTO logData =  logService.convertToLogDTO(userId, "Tạo loại xe tên: "+ kindVehicleDTO.getName(), 1);
-        logService.createLog(logData);
-        return new ResponseEntity<>(kindVehicleService.createKindVehicle(kindVehicleDTO), HttpStatus.CREATED);
+        try {
+            KindVehicle createKindVehicle = kindVehicleService.createKindVehicle(kindVehicleDTO);
+
+            LogDTO logData =  logService.convertToLogDTO(userId, "Tạo loại xe tên: "+ kindVehicleDTO.getName(), 1);
+            logService.createLog(logData);
+            return new ResponseEntity<>(createKindVehicle, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     // Get KindVehicle by id
@@ -69,9 +76,17 @@ public class KindVehicleController {
         }
 
         int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
-        LogDTO logData =  logService.convertToLogDTO(userId, "Cập nhật loại xe Id: "+ id, 2);
-        logService.createLog(logData);
-        return new ResponseEntity<>(kindVehicleService.updateKindVehicleByID(kindVehicleDTO, id), HttpStatus.OK);
+        try{
+            KindVehicle updateKindVehicle = kindVehicleService.updateKindVehicleByID(kindVehicleDTO, id);
+
+            LogDTO logData =  logService.convertToLogDTO(userId, "Cập nhật loại xe Id: "+ id, 2);
+            logService.createLog(logData);
+            return new ResponseEntity<>(updateKindVehicle, HttpStatus.OK);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     // Delete KindVehicle by id
@@ -83,18 +98,28 @@ public class KindVehicleController {
         }
 
         int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
-        LogDTO logData =  logService.convertToLogDTO(userId, "Xóa loại xe Id: "+ id, 2);
-        logService.createLog(logData);
-        kindVehicleService.deleteKindVehicleByID(id);
-        return new ResponseEntity<>("KindVehicle " + id + " is deleted successfully", HttpStatus.OK);
+        try {
+            kindVehicleService.deleteKindVehicleByID(id);
+
+            // Ghi log sau khi hành động thành công
+            LogDTO logData =  logService.convertToLogDTO(userId, "Xóa loại xe Id: "+ id, 2);
+            logService.createLog(logData);
+
+            return new ResponseEntity<>("KindVehicle " + id + " is deleted successfully", HttpStatus.OK);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>("KindVehicle " + id + " not found", HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     // phân trang
     @GetMapping("page")
     public ResponseEntity<Map<String, Object>> getAllKindVehicleByPage(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String name) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<KindVehicle> kindVehiclePage = kindVehicleService.getAllKindVehiclePage(pageable);
+        Page<KindVehicle> kindVehiclePage = kindVehicleService.getAllKindVehiclePage(name,pageable);
         Map<String, Object> response = new HashMap<>();
         response.put("kindVehicles", kindVehiclePage.getContent());
         response.put("currentPage", kindVehiclePage.getNumber());

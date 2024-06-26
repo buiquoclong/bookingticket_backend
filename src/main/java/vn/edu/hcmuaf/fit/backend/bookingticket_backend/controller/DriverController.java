@@ -11,6 +11,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.DriverDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.LogDTO;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Driver;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Seat;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.DriverService;
@@ -60,9 +61,15 @@ public class DriverController {
         }
 
         int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
-        LogDTO logData =  logService.convertToLogDTO(userId, "Tạo tài xế tên: "+ driverDTO.getName(), 1);
-        logService.createLog(logData);
-        return new ResponseEntity<>(driverService.createDriver(driverDTO), HttpStatus.CREATED);
+        try {
+            Driver creatDriver = driverService.createDriver(driverDTO);
+
+            LogDTO logData =  logService.convertToLogDTO(userId, "Tạo tài xế tên: "+ driverDTO.getName(), 1);
+            logService.createLog(logData);
+            return new ResponseEntity<>(creatDriver, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     // Get Driver by id
@@ -75,9 +82,12 @@ public class DriverController {
     @GetMapping("page")
     public ResponseEntity<Map<String, Object>> getAllDriverByPage(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String phone) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<Driver> driverPage = driverService.getAllDriverPage(pageable);
+        Page<Driver> driverPage = driverService.getAllDriverPage(name, email, phone, pageable);
         Map<String, Object> response = new HashMap<>();
         response.put("drivers", driverPage.getContent());
         response.put("currentPage", driverPage.getNumber());
@@ -95,9 +105,17 @@ public class DriverController {
         }
 
         int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
-        LogDTO logData =  logService.convertToLogDTO(userId, "Cập nhật tài xế Id: "+ id, 2);
-        logService.createLog(logData);
-        return new ResponseEntity<>(driverService.updateDriverByID(driverDTO, id), HttpStatus.OK);
+        try {
+            Driver updateDriver = driverService.updateDriverByID(driverDTO, id);
+
+            LogDTO logData =  logService.convertToLogDTO(userId, "Cập nhật tài xế Id: "+ id, 2);
+            logService.createLog(logData);
+            return new ResponseEntity<>(updateDriver, HttpStatus.OK);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     // Delete driver by id
@@ -109,9 +127,18 @@ public class DriverController {
         }
 
         int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
-        LogDTO logData =  logService.convertToLogDTO(userId, "Xóa tài xế Id: "+ id, 2);
-        logService.createLog(logData);
-        driverService.deleteDriverByID(id);
-        return new ResponseEntity<>("Driver " + id + " is deleted successfully", HttpStatus.OK);
+        try {
+            driverService.deleteDriverByID(id);
+
+            // Ghi log sau khi hành động thành công
+            LogDTO logData =  logService.convertToLogDTO(userId, "Xóa tài xế Id: "+ id, 2);
+            logService.createLog(logData);
+
+            return new ResponseEntity<>("Driver " + id + " is deleted successfully", HttpStatus.OK);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>("Driver " + id + " not found", HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

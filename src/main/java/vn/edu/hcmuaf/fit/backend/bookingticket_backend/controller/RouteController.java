@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.LogDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.RouteDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.VehicleDTO;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.City;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Route;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Seat;
@@ -56,9 +57,15 @@ public class RouteController {
         }
 
         int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
-        LogDTO logData =  logService.convertToLogDTO(userId, "Tạo tuyến tên: "+ routeDTO.getName(), 1);
-        logService.createLog(logData);
-        return new ResponseEntity<>(routeService.createRoute(routeDTO), HttpStatus.CREATED);
+        try {
+            Route createRoute = routeService.createRoute(routeDTO);
+
+            LogDTO logData =  logService.convertToLogDTO(userId, "Tạo tuyến tên: "+ routeDTO.getName(), 1);
+            logService.createLog(logData);
+            return new ResponseEntity<>(createRoute, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     // Get Route by id
@@ -71,9 +78,10 @@ public class RouteController {
     @GetMapping("page")
     public ResponseEntity<Map<String, Object>> getAllRouteByPage(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String name) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<Route> routePage = routeService.getAllRoutePage(pageable);
+        Page<Route> routePage = routeService.getAllRoutePage(name, pageable);
         Map<String, Object> response = new HashMap<>();
         response.put("routes", routePage.getContent());
         response.put("currentPage", routePage.getNumber());
@@ -91,9 +99,17 @@ public class RouteController {
         }
 
         int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
-        LogDTO logData =  logService.convertToLogDTO(userId, "Cập nhật tuyến Id: "+ id, 2);
-        logService.createLog(logData);
-        return new ResponseEntity<>(routeService.updateRouteByID(routeDTO, id), HttpStatus.OK);
+        try{
+            Route updateRoute = routeService.updateRouteByID(routeDTO, id);
+
+            LogDTO logData =  logService.convertToLogDTO(userId, "Cập nhật tuyến Id: "+ id, 2);
+            logService.createLog(logData);
+            return new ResponseEntity<>(updateRoute, HttpStatus.OK);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     // Delete route by id
@@ -105,10 +121,19 @@ public class RouteController {
         }
 
         int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
-        LogDTO logData =  logService.convertToLogDTO(userId, "Xóa tuyến Id: "+ id, 2);
-        logService.createLog(logData);
-        routeService.deleteRouteByID(id);
-        return new ResponseEntity<>("Route " + id + " is deleted successfully", HttpStatus.OK);
+        try {
+            routeService.deleteRouteByID(id);
+
+            // Ghi log sau khi hành động thành công
+            LogDTO logData =  logService.convertToLogDTO(userId, "Xóa tuyến Id: "+ id, 2);
+            logService.createLog(logData);
+
+            return new ResponseEntity<>("Route " + id + " is deleted successfully", HttpStatus.OK);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>("Route " + id + " not found", HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     @GetMapping("/active")
     public List<Route> getActiveRoutes() {

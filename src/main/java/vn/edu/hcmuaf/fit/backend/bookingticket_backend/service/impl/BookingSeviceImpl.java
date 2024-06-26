@@ -3,6 +3,7 @@ package vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.impl;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.BookingDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.MonthlyRevenueDTO;
@@ -12,6 +13,7 @@ import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.User;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.BookingRepository;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.TripRepository;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.UserRepository;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.specification.BookingSpecifications;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.BookingService;
 
 import java.time.LocalDate;
@@ -144,6 +146,21 @@ public class BookingSeviceImpl implements BookingService {
     @Override
     public Integer countCancelledBookingsByMonth(YearMonth yearMonth) {
         return bookingRepository.countCancelledBookingsByMonth(yearMonth.getYear(), yearMonth.getMonthValue());
+    }
+
+    @Override
+    public Page<Booking> getAllBookingPage(Pageable pageable, Integer id, String userName, String email, String phone, Integer userId, String kindPay, Integer isPaid, Integer roundTrip) {
+        // Sử dụng Specification để lọc theo các tiêu chí
+        Specification<Booking> spec = Specification.where(BookingSpecifications.hasId(id))
+                .and(BookingSpecifications.hasUserName(userName))
+                .and(BookingSpecifications.hasEmail(email))
+                .and(BookingSpecifications.hasPhone(phone))
+                .and(BookingSpecifications.hasUserId(userId))
+                .and(BookingSpecifications.hasKindPay(kindPay))
+                .and(BookingSpecifications.hasIsPaid(isPaid))
+                .and(BookingSpecifications.hasRoundTrip(roundTrip));
+
+        return bookingRepository.findAll(spec, pageable);
     }
 
     @Override

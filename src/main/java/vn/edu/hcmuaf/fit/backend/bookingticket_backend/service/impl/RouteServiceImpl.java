@@ -2,14 +2,18 @@ package vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.impl;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.RouteDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.City;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.KindVehicle;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Route;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Trip;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.CityRepository;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.RouteRepository;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.specification.RouteSpecification;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.specification.TripSpecifications;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.RouteService;
 
 import java.time.LocalDateTime;
@@ -84,8 +88,9 @@ public class RouteServiceImpl implements RouteService {
     }
 
     @Override
-    public Page<Route> getAllRoutePage(Pageable pageable) {
-        return routeRepository.findAll(pageable);
+    public Page<Route> getAllRoutePage(String name, Pageable pageable) {
+        Specification<Route> spec = Specification.where(RouteSpecification.hasName(name));
+        return routeRepository.findAll(spec, pageable);
     }
 
     @Override

@@ -16,4 +16,6 @@ public interface BookingDetailService {
     List<BookingDetail> getBookingDetailsByBookingId(int bookingId);
     List<BookingDetail> getAllBookingDetailByUserId(int userId);
     Page<BookingDetail> getBookingDetailsByUserId(int userId, Pageable pageable);
+    Page<BookingDetail> getBookingDetailsByUserId(int userId, Pageable pageable, String id);
+
 }

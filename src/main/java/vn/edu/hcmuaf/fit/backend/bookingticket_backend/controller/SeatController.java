@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.LogDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.SeatDTO;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Seat;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.LogService;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.SeatService;
@@ -48,9 +49,11 @@ public class SeatController {
     @GetMapping("page")
     public ResponseEntity<Map<String, Object>> getAllSeatByPage(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String kindVehicleName) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<Seat> seatPage = seatService.getAllSeatPage(pageable);
+        Page<Seat> seatPage = seatService.getAllSeatPage(name, kindVehicleName, pageable);
         Map<String, Object> response = new HashMap<>();
         response.put("seats", seatPage.getContent());
         response.put("currentPage", seatPage.getNumber());
@@ -68,9 +71,15 @@ public class SeatController {
         }
 
         int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
-        LogDTO logData =  logService.convertToLogDTO(userId, "Tạo ghế tên: "+ seatDTO.getName(), 1);
-        logService.createLog(logData);
-        return new ResponseEntity<>(seatService.createSeat(seatDTO), HttpStatus.CREATED);
+        try {
+            Seat createSeat = seatService.createSeat(seatDTO);
+
+            LogDTO logData =  logService.convertToLogDTO(userId, "Tạo ghế tên: "+ seatDTO.getName(), 1);
+            logService.createLog(logData);
+            return new ResponseEntity<>(createSeat, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     // Get Seat By id
@@ -89,9 +98,17 @@ public class SeatController {
         }
 
         int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
-        LogDTO logData =  logService.convertToLogDTO(userId, "Cập nhật ghế Id: "+ id, 2);
-        logService.createLog(logData);
-        return new ResponseEntity<>(seatService.updateSeatByID(seatDTO, id), HttpStatus.OK);
+        try{
+            Seat updateSeat = seatService.updateSeatByID(seatDTO, id);
+
+            LogDTO logData =  logService.convertToLogDTO(userId, "Cập nhật ghế Id: "+ id, 2);
+            logService.createLog(logData);
+            return new ResponseEntity<>(updateSeat, HttpStatus.OK);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     // Delete city by id
@@ -103,9 +120,18 @@ public class SeatController {
         }
 
         int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
-        LogDTO logData =  logService.convertToLogDTO(userId, "Xóa ghế Id: "+ id, 2);
-        logService.createLog(logData);
-        seatService.deleteSeatByID(id);
-        return new ResponseEntity<>("Seat " + id + " is deleted successfully", HttpStatus.OK);
+        try {
+            seatService.deleteSeatByID(id);
+
+            // Ghi log sau khi hành động thành công
+            LogDTO logData =  logService.convertToLogDTO(userId, "Xóa ghế Id: "+ id, 2);
+            logService.createLog(logData);
+
+            return new ResponseEntity<>("Seat " + id + " is deleted successfully", HttpStatus.OK);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>("Seat " + id + " not found", HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

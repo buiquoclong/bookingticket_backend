@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,8 @@ import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.User;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.ReviewRepository;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.TripRepository;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.UserRepository;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.specification.ReviewSpecifications;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.specification.TripSpecifications;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.ReviewService;
 
 import java.time.LocalDateTime;
@@ -75,8 +78,11 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public Page<Review> getAllReviewPage(Pageable pageable) {
-        return reviewRepository.findAll(pageable);
+    public Page<Review> getAllReviewPage(Integer userId, String userName, Integer rating, Pageable pageable) {
+        Specification<Review> spec = Specification.where(ReviewSpecifications.hasUserId(userId)
+                .and(ReviewSpecifications.hasUserUserName(userName))
+                .and(ReviewSpecifications.hasRating(rating)));
+        return reviewRepository.findAll(spec, pageable);
     }
 
     @Override

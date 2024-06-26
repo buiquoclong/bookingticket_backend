@@ -2,11 +2,15 @@ package vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.impl;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.DriverDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.CatchPoint;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Driver;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.DriverRepository;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.specification.CatchPointSpecification;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.specification.DriverSpecification;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.DriverService;
 
 import java.time.LocalDateTime;
@@ -61,7 +65,11 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public Page<Driver> getAllDriverPage(Pageable pageable) {
-        return driverRepository.findAll(pageable);
+    public Page<Driver> getAllDriverPage(String name, String email, String phone, Pageable pageable) {
+        Specification<Driver> spec = Specification.where(DriverSpecification.hasName(name)
+                .and(DriverSpecification.hasEmail(email))
+                .and(DriverSpecification.hasPhone(phone)));
+
+        return driverRepository.findAll(spec, pageable);
     }
 }

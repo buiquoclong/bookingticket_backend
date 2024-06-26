@@ -3,18 +3,18 @@ package vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.impl;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.TripDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.TripSearchDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
-import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Driver;
-import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Route;
-import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Trip;
-import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Vehicle;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.*;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.DriverRepository;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.RouteRepository;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.TripRepository;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.VehicleRepository;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.specification.BookingSpecifications;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.specification.TripSpecifications;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.TripService;
 
 import java.time.LocalDate;
@@ -150,5 +150,12 @@ public class TripServiceImpl implements TripService {
     @Override
     public Page<Trip> getAllTripPage(Pageable pageable) {
         return tripRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<Trip> getTrips(Integer routeId, LocalDate dayStart, Pageable pageable) {
+        Specification<Trip> spec = Specification.where(TripSpecifications.hasRouteId(routeId)
+                .and(TripSpecifications.hasDayStart(dayStart)));
+        return tripRepository.findAll(spec, pageable);
     }
 }

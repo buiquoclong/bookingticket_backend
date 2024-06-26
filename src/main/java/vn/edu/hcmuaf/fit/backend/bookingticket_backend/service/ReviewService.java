@@ -15,6 +15,6 @@ public interface ReviewService {
     void deleteReviewByID(int id);
 
     List<Review> getReviewByUserId(int userId);
-    Page<Review> getAllReviewPage(Pageable pageable);
+    Page<Review> getAllReviewPage(Integer userId, String userName, Integer rating, Pageable pageable);
     Page<Review> getReviewByUserIdPageable(int userId, Pageable pageable);
 }

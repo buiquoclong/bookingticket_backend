@@ -15,5 +15,5 @@ public interface DriverService {
     Driver getDriverByID(int id);
     Driver updateDriverByID(DriverDTO driverDTO, int id);
     void deleteDriverByID(int id);
-    Page<Driver> getAllDriverPage(Pageable pageable);
+    Page<Driver> getAllDriverPage(String name, String email, String phone, Pageable pageable);
 }

@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.LogDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.CatchPointDTO;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.CatchPoint;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.LogService;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.CatchPointService;
@@ -54,9 +55,17 @@ public class CatchPointController {
         }
 
         int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
-        LogDTO logData =  logService.convertToLogDTO(userId, "Tạo điểm đón của tuyến: " + catchPointDTO.getRouteId(), 1);
-        logService.createLog(logData);
-        return new ResponseEntity<>(catchPointService.createCatchPoint(catchPointDTO), HttpStatus.CREATED);
+        try {
+            CatchPoint createdCatchPoint = catchPointService.createCatchPoint(catchPointDTO);
+
+            // Ghi log sau khi tạo thành công
+            LogDTO logData = logService.convertToLogDTO(userId, "Tạo điểm đón của tuyến: " + catchPointDTO.getRouteId(), 1);
+            logService.createLog(logData);
+
+            return new ResponseEntity<>(createdCatchPoint, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     // Get CatchPoint by id
@@ -76,9 +85,10 @@ public class CatchPointController {
     @GetMapping("page")
     public ResponseEntity<Map<String, Object>> getAllCatchPointByPage(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String address) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<CatchPoint> catchPointPage = catchPointService.getAllCatchPointPage(pageable);
+        Page<CatchPoint> catchPointPage = catchPointService.getAllCatchPointPage(address,pageable);
         Map<String, Object> response = new HashMap<>();
         response.put("catchPoints", catchPointPage.getContent());
         response.put("currentPage", catchPointPage.getNumber());
@@ -96,9 +106,19 @@ public class CatchPointController {
         }
 
         int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
-        LogDTO logData =  logService.convertToLogDTO(userId, "Cập nhật đánh điểm đón Id: "+ id, 2);
-        logService.createLog(logData);
-        return new ResponseEntity<>(catchPointService.updateCatchPointByID(catchPointDTO, id), HttpStatus.OK);
+        try {
+            CatchPoint updatedCatchPoint = catchPointService.updateCatchPointByID(catchPointDTO, id);
+
+            // Ghi log sau khi cập nhật thành công
+            LogDTO logData = logService.convertToLogDTO(userId, "Cập nhật điểm đón Id: " + id, 2);
+            logService.createLog(logData);
+
+            return new ResponseEntity<>(updatedCatchPoint, HttpStatus.OK);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     // Delete CatchPoint by id
@@ -110,9 +130,18 @@ public class CatchPointController {
         }
 
         int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
-        LogDTO logData =  logService.convertToLogDTO(userId, "Xóa điểm đón Id: "+ id, 2);
-        logService.createLog(logData);
-        catchPointService.deleteCatchPointByID(id);
-        return new ResponseEntity<>("CatchPoint " + id + " is deleted successfully", HttpStatus.OK);
+        try {
+            catchPointService.deleteCatchPointByID(id);
+
+            // Ghi log sau khi hành động thành công
+            LogDTO logData = logService.convertToLogDTO(userId, "Xóa điểm đón Id: " + id, 2);
+            logService.createLog(logData);
+
+            return new ResponseEntity<>("CatchPoint " + id + " is deleted successfully", HttpStatus.OK);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>("CatchPoint " + id + " not found", HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

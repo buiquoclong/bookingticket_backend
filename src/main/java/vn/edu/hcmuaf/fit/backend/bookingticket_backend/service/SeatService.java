@@ -17,5 +17,5 @@ public interface SeatService {
     void deleteSeatByID(int id);
     @Query("SELECT s FROM Seat s JOIN FETCH s.kindVehicle kv WHERE kv.id = :kindVehicleId")
     List<Seat> getAllSeatsByKindVehicleId(@Param("kindVehicleId") int kindVehicleId);
-    Page<Seat> getAllSeatPage(Pageable pageable);
+    Page<Seat> getAllSeatPage(String name, String kindVehicleName, Pageable pageable);
 }

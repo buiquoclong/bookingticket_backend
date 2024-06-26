@@ -2,13 +2,17 @@ package vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.impl;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.LogDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Log;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Trip;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.User;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.LogRepository;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.UserRepository;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.specification.LogSpecifications;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.specification.TripSpecifications;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.LogService;
 
 import java.time.LocalDateTime;
@@ -53,8 +57,10 @@ public class LogServiceImpl implements LogService {
 
 
     @Override
-    public Page<Log> getAllLogPage(Pageable pageable) {
-        return logRepository.findAll(pageable);
+    public Page<Log> getAllLogPage(String userName, Integer level, Pageable pageable) {
+        Specification<Log> spec = Specification.where(LogSpecifications.hasUserUserName(userName)
+                .and(LogSpecifications.hasIsLevel(level)));
+        return logRepository.findAll(spec,pageable);
     }
 
     @Override

@@ -10,6 +10,8 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestResolver;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.web.cors.CorsConfiguration;
@@ -41,6 +43,9 @@ public class WebSecurityConfig {
     @Autowired
     private JwtTokenUtils jwtTokenUtil;
 
+    @Autowired
+    private ClientRegistrationRepository clientRegistrationRepository;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -51,6 +56,8 @@ public class WebSecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2Login -> oauth2Login
+                        .authorizationEndpoint(authorization -> authorization
+                                .authorizationRequestResolver(customOAuth2AuthorizationRequestResolver()))
                         .successHandler(new AuthenticationSuccessHandler() {
                             @Override
                             public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -95,6 +102,9 @@ public class WebSecurityConfig {
 //
 //        return http.build();
 //    }
+public OAuth2AuthorizationRequestResolver customOAuth2AuthorizationRequestResolver() {
+    return new CustomAuthorizationRequestResolver(clientRegistrationRepository);
+}
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {

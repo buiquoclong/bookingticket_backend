@@ -14,5 +14,5 @@ public interface ContactService {
     Contact getContactByID(int id);
     Contact updateContactByID(ContactDTO contactDTO, int id);
     void deleteContactByID(int id);
-    Page<Contact> getAllContactPage(Pageable pageable);
+    Page<Contact> getAllContactPage(String email, Pageable pageable);
 }

@@ -2,11 +2,15 @@ package vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.impl;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.ContactDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Contact;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Trip;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.ContactRepository;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.specification.ContactSpecification;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.specification.TripSpecifications;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.ContactService;
 
 import java.time.LocalDateTime;
@@ -60,7 +64,8 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public Page<Contact> getAllContactPage(Pageable pageable) {
-        return contactRepository.findAll(pageable);
+    public Page<Contact> getAllContactPage(String email, Pageable pageable) {
+        Specification<Contact> spec = Specification.where(ContactSpecification.hasEmail(email));
+        return contactRepository.findAll(spec, pageable);
     }
 }

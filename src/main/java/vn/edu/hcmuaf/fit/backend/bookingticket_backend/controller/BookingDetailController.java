@@ -48,26 +48,36 @@ public class BookingDetailController {
         return new ResponseEntity<>(bookingDetailService.getAllBookingDetailByUserId(userId), HttpStatus.OK);
     }
 
-//    @GetMapping("/user/{userId}")
-//    public ResponseEntity<Map<BookingDetail>> getBookingDetailsByUserId(@PathVariable int userId,
-//                                                                         @RequestParam(defaultValue = "0") int page,
-//                                                                         @RequestParam(defaultValue = "10") int size) {
+//    @GetMapping("/user/{userId}/booking_details/page")
+//    public ResponseEntity<Map<String, Object>> getBookingDetailsByUserId(
+//            @PathVariable int userId,
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int size) {
 //        Pageable pageable = PageRequest.of(page - 1, size);
-//        Page<BookingDetail> bookingDetails = bookingDetailService.getBookingDetailsByUserId(userId, pageable);
-//        return new ResponseEntity<>(bookingDetails, HttpStatus.OK);
+//        Page<BookingDetail> bookingDetailsPage = bookingDetailService.getBookingDetailsByUserId(userId, pageable);
+//        Map<String, Object> response = new HashMap<>();
+//        response.put("bookingDetails", bookingDetailsPage.getContent());
+//        response.put("currentPage", bookingDetailsPage.getNumber());
+//        response.put("totalItems", bookingDetailsPage.getTotalElements());
+//        response.put("totalPages", bookingDetailsPage.getTotalPages());
+//        return new ResponseEntity<>(response, HttpStatus.OK);
 //    }
     @GetMapping("/user/{userId}/booking_details/page")
     public ResponseEntity<Map<String, Object>> getBookingDetailsByUserId(
             @PathVariable int userId,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String id) {
+
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<BookingDetail> bookingDetailsPage = bookingDetailService.getBookingDetailsByUserId(userId, pageable);
+        Page<BookingDetail> bookingDetailsPage = bookingDetailService.getBookingDetailsByUserId(userId, pageable, id);
+
         Map<String, Object> response = new HashMap<>();
         response.put("bookingDetails", bookingDetailsPage.getContent());
         response.put("currentPage", bookingDetailsPage.getNumber());
         response.put("totalItems", bookingDetailsPage.getTotalElements());
         response.put("totalPages", bookingDetailsPage.getTotalPages());
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,6 +19,7 @@ import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.UserDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.User;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.UserRepository;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.specification.UserSpecification;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.EmailService;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.UserService;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.utils.JwtTokenUtils;
@@ -188,6 +190,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Page<User> getAllUserPage(Pageable pageable, String name, String email, String phone, Integer role, Integer status) {
+        Specification<User> spec = Specification.where(UserSpecification.hasName(name))
+                .and(UserSpecification.hasEmail(email))
+                .and(UserSpecification.hasPhone(phone))
+                .and(UserSpecification.hasRole(role))
+                .and(UserSpecification.hasStatus(status));
+        return userRepository.findAll(spec, pageable);
+    }
+
+    @Override
     public String changePassword(int userId, String oldPassword, String newPassword) {
         User user = userRepository.findById(userId).orElseThrow(() ->
                 new ResourceNotFoundException("User", "Id", userId));
@@ -211,7 +223,7 @@ public class UserServiceImpl implements UserService {
             user.setName(username);
             user.setEmail(email);
             user.setRole(1);
-            user.setStatus(1);
+            user.setStatus(2);
             user.setType("GOOGLE");
             user.setCreatedAt(LocalDateTime.now());
             user.setUpdatedAt(LocalDateTime.now());

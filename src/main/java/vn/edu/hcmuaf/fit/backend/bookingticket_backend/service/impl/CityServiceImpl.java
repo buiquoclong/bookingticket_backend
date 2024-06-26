@@ -2,12 +2,16 @@ package vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.impl;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.CityDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.CatchPoint;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.City;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.CityRepository;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.specification.CatchPointSpecification;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.specification.CitySpecification;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.CityService;
 
 import java.io.File;
@@ -89,7 +93,8 @@ public class CityServiceImpl implements CityService {
     }
 
     @Override
-    public Page<City> getAllCityPage(Pageable pageable) {
-        return cityRepository.findAll(pageable);
+    public Page<City> getAllCityPage(String name, Pageable pageable) {
+        Specification<City> spec = Specification.where(CitySpecification.hasName(name));
+        return cityRepository.findAll(spec, pageable);
     }
 }

@@ -12,7 +12,7 @@ public interface LogService {
     Log createLog(LogDTO logDTO);
     List<Log> getAllLog();
     Log getLogByID(int id);
-    Page<Log> getAllLogPage(Pageable pageable);
+    Page<Log> getAllLogPage(String userName, Integer level, Pageable pageable);
     List<Log> getLogsByUserId(int userId);
     LogDTO convertToLogDTO(int userId, String message, int level);
 }

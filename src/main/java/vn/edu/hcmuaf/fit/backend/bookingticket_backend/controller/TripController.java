@@ -11,12 +11,14 @@ import org.springframework.web.bind.annotation.*;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.LogDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.TripDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.TripSearchDTO;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Seat;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Trip;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.LogService;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.TripService;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.utils.JwtTokenUtils;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,9 +51,15 @@ public class TripController {
         }
 
         int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
-        LogDTO logData =  logService.convertToLogDTO(userId, "Tạo chuyến đi ", 1);
-        logService.createLog(logData);
-        return new ResponseEntity<>(tripService.createTrip(tripDTO), HttpStatus.CREATED);
+        try {
+            Trip createTrip = tripService.createTrip(tripDTO);
+
+            LogDTO logData =  logService.convertToLogDTO(userId, "Tạo chuyến đi ", 1);
+            logService.createLog(logData);
+            return new ResponseEntity<>(createTrip, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     // Get Trip By id
@@ -61,12 +69,27 @@ public class TripController {
     }
 
     // phân trang
+//    @GetMapping("page")
+//    public ResponseEntity<Map<String, Object>> getAllTripByPage(
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int size) {
+//        Pageable pageable = PageRequest.of(page - 1, size);
+//        Page<Trip> tripPage = tripService.getAllTripPage(pageable);
+//        Map<String, Object> response = new HashMap<>();
+//        response.put("trips", tripPage.getContent());
+//        response.put("currentPage", tripPage.getNumber());
+//        response.put("totalItems", tripPage.getTotalElements());
+//        response.put("totalPages", tripPage.getTotalPages());
+//        return new ResponseEntity<>(response, HttpStatus.OK);
+//    }
     @GetMapping("page")
     public ResponseEntity<Map<String, Object>> getAllTripByPage(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) Integer routeId,
+            @RequestParam(required = false) LocalDate dayStart) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<Trip> tripPage = tripService.getAllTripPage(pageable);
+        Page<Trip> tripPage = tripService.getTrips(routeId, dayStart, pageable);
         Map<String, Object> response = new HashMap<>();
         response.put("trips", tripPage.getContent());
         response.put("currentPage", tripPage.getNumber());
@@ -84,9 +107,17 @@ public class TripController {
         }
 
         int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
-        LogDTO logData =  logService.convertToLogDTO(userId, "Cập nhật chuyến đi Id: "+ id, 2);
-        logService.createLog(logData);
-        return new ResponseEntity<>(tripService.updateTripByID(tripDTO, id), HttpStatus.OK);
+        try{
+            Trip updateTrip = tripService.updateTripByID(tripDTO, id);
+
+            LogDTO logData =  logService.convertToLogDTO(userId, "Cập nhật chuyến đi Id: "+ id, 2);
+            logService.createLog(logData);
+            return new ResponseEntity<>(updateTrip, HttpStatus.OK);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PutMapping("p1/{id}")
@@ -103,10 +134,19 @@ public class TripController {
         }
 
         int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
-        LogDTO logData =  logService.convertToLogDTO(userId, "Xóa chuyến đi Id: "+ id, 2);
-        logService.createLog(logData);
-        tripService.deleteTripByID(id);
-        return new ResponseEntity<>("Trip " + id + " is deleted successfully", HttpStatus.OK);
+        try {
+            tripService.deleteTripByID(id);
+
+            // Ghi log sau khi hành động thành công
+            LogDTO logData =  logService.convertToLogDTO(userId, "Xóa chuyến đi Id: "+ id, 2);
+            logService.createLog(logData);
+
+            return new ResponseEntity<>("Trip " + id + " is deleted successfully", HttpStatus.OK);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>("Trip " + id + " not found", HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping("/search")

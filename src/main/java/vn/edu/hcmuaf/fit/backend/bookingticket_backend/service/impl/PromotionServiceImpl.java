@@ -2,11 +2,15 @@ package vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.impl;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.PromotionDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Promotion;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Trip;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.PromotionRepository;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.specification.PromotionSpecifications;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.specification.TripSpecifications;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.PromotionService;
 
 import java.time.LocalDateTime;
@@ -75,8 +79,9 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public Page<Promotion> getAllPromotionPage(Pageable pageable) {
-        return promotionRepository.findAll(pageable);
+    public Page<Promotion> getAllPromotionPage(String description, Pageable pageable) {
+        Specification<Promotion> spec = Specification.where(PromotionSpecifications.hasDes(description));
+        return promotionRepository.findAll(spec, pageable);
     }
 
     @Override

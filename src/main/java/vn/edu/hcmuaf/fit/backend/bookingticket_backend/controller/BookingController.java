@@ -23,6 +23,7 @@ import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.LogService;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.utils.JwtTokenUtils;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.HashMap;
 import java.util.List;
@@ -67,9 +68,15 @@ public class BookingController {
         }
 
         int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
-        LogDTO logData =  logService.convertToLogDTO(userId, "Đặt vé", 1);
-        logService.createLog(logData);
-        return new ResponseEntity<>(bookingService.createBooking(bookingDTO), HttpStatus.CREATED);
+        try {
+            Booking createBooking = bookingService.createBooking(bookingDTO);
+
+            LogDTO logData =  logService.convertToLogDTO(userId, "Đặt vé", 1);
+            logService.createLog(logData);
+            return new ResponseEntity<>(createBooking, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     // Get Booking by id
@@ -105,9 +112,18 @@ public class BookingController {
     @GetMapping("page")
     public ResponseEntity<Map<String, Object>> getAllBookingByPage(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) Integer id,
+            @RequestParam(required = false) String userName,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String phone,
+            @RequestParam(required = false) Integer userId,
+            @RequestParam(required = false) String kindPay,
+            @RequestParam(required = false) Integer isPaid,
+            @RequestParam(required = false) Integer roundTrip) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<Booking> bookingPage = bookingService.getAllBookingPage(pageable);
+//        Page<Booking> bookingPage = bookingService.getAllBookingPage(pageable);
+        Page<Booking> bookingPage = bookingService.getAllBookingPage(pageable, id, userName, email, phone, userId , kindPay, isPaid, roundTrip);
         Map<String, Object> response = new HashMap<>();
         response.put("bookings", bookingPage.getContent());
         response.put("currentPage", bookingPage.getNumber());

@@ -7,6 +7,7 @@ import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.TripSearchDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Seat;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Trip;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface TripService {
@@ -17,4 +18,5 @@ public interface TripService {
     void deleteTripByID(int id);
     List<Trip> searchTrips(TripSearchDTO tripSearchDTO);
     Page<Trip> getAllTripPage(Pageable pageable);
+    Page<Trip> getTrips(Integer routeId, LocalDate dayStart, Pageable pageable);
 }

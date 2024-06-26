@@ -2,11 +2,15 @@ package vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.impl;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.KindVehicleDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.KindVehicle;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Trip;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.KindVehicleRepository;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.specification.KindVehicleSpecification;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.specification.TripSpecifications;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.KindVehicleService;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.KindVehicleService;
 
@@ -56,7 +60,8 @@ public class KindVehicleServiceImpl implements KindVehicleService {
     }
 
     @Override
-    public Page<KindVehicle> getAllKindVehiclePage(Pageable pageable) {
-        return kindVehicleRepository.findAll(pageable);
+    public Page<KindVehicle> getAllKindVehiclePage(String name, Pageable pageable) {
+        Specification<KindVehicle> spec = Specification.where(KindVehicleSpecification.hasName(name));
+        return kindVehicleRepository.findAll(spec, pageable);
     }
 }

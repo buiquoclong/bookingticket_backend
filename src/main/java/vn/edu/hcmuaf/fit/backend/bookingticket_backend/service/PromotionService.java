@@ -6,6 +6,7 @@ import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.PromotionDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Promotion;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Seat;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface PromotionService {
@@ -14,6 +15,6 @@ public interface PromotionService {
     Promotion getPromotionByID(int id);
     Promotion updatePromotionByID(PromotionDTO promotionDTO, int id);
     void deletePromotionByID(int id);
-    Page<Promotion> getAllPromotionPage(Pageable pageable);
+    Page<Promotion> getAllPromotionPage(String description, Pageable pageable);
     String checkPromotionCode(String code);
 }

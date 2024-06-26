@@ -2,6 +2,7 @@ package vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.impl;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.SeatReservationDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
@@ -13,6 +14,8 @@ import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.BookingReposit
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.SeatRepository;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.SeatReservationRepository;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.TripRepository;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.specification.SeatReservationSpecifications;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.specification.TripSpecifications;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.SeatReservationService;
 
 import java.time.LocalDateTime;
@@ -100,7 +103,8 @@ public class SeatReservationServiceImpl implements SeatReservationService {
     }
 
     @Override
-    public Page<SeatReservation> getAllSeatReservationPage(Pageable pageable) {
-        return seatReservationRepository.findAll(pageable);
+    public Page<SeatReservation> getAllSeatReservationPage(String name, Pageable pageable) {
+        Specification<SeatReservation> spec = Specification.where(SeatReservationSpecifications.hasName(name));
+        return seatReservationRepository.findAll(spec, pageable);
     }
 }

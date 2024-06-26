@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.LogDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.VehicleDTO;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.City;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Seat;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Vehicle;
@@ -64,14 +65,20 @@ public class VehicleController {
         }
 
         int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
-        LogDTO logData =  logService.convertToLogDTO(userId, "Tạo phương tiện tên: "+ vehicleDTO.getName(), 1);
-        logService.createLog(logData);
-        return new ResponseEntity<>(vehicleService.createVehicle(vehicleDTO), HttpStatus.CREATED);
+        try {
+            Vehicle createVehicle = vehicleService.createVehicle(vehicleDTO);
+
+            LogDTO logData =  logService.convertToLogDTO(userId, "Tạo phương tiện tên: "+ vehicleDTO.getName(), 1);
+            logService.createLog(logData);
+            return new ResponseEntity<>(createVehicle, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     // Get Vehicle By id
     @GetMapping("{id}")
-    public ResponseEntity<Vehicle> createVehicle(@PathVariable ("id") int id){
+    public ResponseEntity<Vehicle> getVehicleById(@PathVariable ("id") int id){
         return new ResponseEntity<>(vehicleService.getVehicleByID(id), HttpStatus.OK);
     }
 
@@ -79,9 +86,12 @@ public class VehicleController {
     @GetMapping("page")
     public ResponseEntity<Map<String, Object>> getAllVehicleByPage(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String kindVehiclename,
+            @RequestParam(required = false) String vehicleNumber) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<Vehicle> vehiclePage = vehicleService.getAllVehiclePage(pageable);
+        Page<Vehicle> vehiclePage = vehicleService.getAllVehiclePage(name, kindVehiclename, vehicleNumber, pageable);
         Map<String, Object> response = new HashMap<>();
         response.put("vehicles", vehiclePage.getContent());
         response.put("currentPage", vehiclePage.getNumber());
@@ -99,9 +109,17 @@ public class VehicleController {
         }
 
         int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
-        LogDTO logData =  logService.convertToLogDTO(userId, "Cập nhật phương tiện Id: "+ id, 2);
-        logService.createLog(logData);
-        return new ResponseEntity<>(vehicleService.updateVehicleByID(vehicleDTO, id), HttpStatus.OK);
+        try {
+            Vehicle updateVehicle = vehicleService.updateVehicleByID(vehicleDTO, id);
+
+            LogDTO logData =  logService.convertToLogDTO(userId, "Cập nhật phương tiện Id: "+ id, 2);
+            logService.createLog(logData);
+            return new ResponseEntity<>(updateVehicle, HttpStatus.OK);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     // Delete Vehicle by id
@@ -113,9 +131,18 @@ public class VehicleController {
         }
 
         int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
-        LogDTO logData =  logService.convertToLogDTO(userId, "Xóa phương tiện Id: "+ id, 2);
-        logService.createLog(logData);
-        vehicleService.deleteVehicleByID(id);
-        return new ResponseEntity<>("Vehicle " + id + " is deleted successfully", HttpStatus.OK);
+        try {
+            vehicleService.deleteVehicleByID(id);
+
+            // Ghi log sau khi hành động thành công
+            LogDTO logData =  logService.convertToLogDTO(userId, "Xóa phương tiện Id: "+ id, 2);
+            logService.createLog(logData);
+
+            return new ResponseEntity<>("Vehicle " + id + " is deleted successfully", HttpStatus.OK);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>("Vehicle " + id + " not found", HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

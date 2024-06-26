@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.LogDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.ReviewDTO;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Review;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Seat;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Vehicle;
@@ -50,9 +51,15 @@ public class ReviewController {
         }
 
         int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
-        LogDTO logData =  logService.convertToLogDTO(userId, "Tạo đánh giá ", 1);
-        logService.createLog(logData);
-        return new ResponseEntity<>(reviewService.createReview(ReviewDTO), HttpStatus.CREATED);
+        try {
+            Review createReview = reviewService.createReview(ReviewDTO);
+
+            LogDTO logData =  logService.convertToLogDTO(userId, "Tạo đánh giá ", 1);
+            logService.createLog(logData);
+            return new ResponseEntity<>(createReview, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     // Get Review by id
@@ -87,9 +94,12 @@ public class ReviewController {
     @GetMapping("page")
     public ResponseEntity<Map<String, Object>> getAllReviewByPage(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) Integer userId,
+            @RequestParam(required = false) String userName,
+            @RequestParam(required = false) Integer rating) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<Review> reviewPage = reviewService.getAllReviewPage(pageable);
+        Page<Review> reviewPage = reviewService.getAllReviewPage(userId, userName, rating, pageable);
         Map<String, Object> response = new HashMap<>();
         response.put("reviews", reviewPage.getContent());
         response.put("currentPage", reviewPage.getNumber());
@@ -107,9 +117,17 @@ public class ReviewController {
         }
 
         int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
-        LogDTO logData =  logService.convertToLogDTO(userId, "Cập nhật đánh giá Id: "+ id, 2);
-        logService.createLog(logData);
-        return new ResponseEntity<>(reviewService.updateReviewByID(reviewDTO, id), HttpStatus.OK);
+        try{
+            Review updateReview = reviewService.updateReviewByID(reviewDTO, id);
+
+            LogDTO logData =  logService.convertToLogDTO(userId, "Cập nhật đánh giá Id: "+ id, 2);
+            logService.createLog(logData);
+            return new ResponseEntity<>(updateReview, HttpStatus.OK);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     // Delete Review by id
@@ -121,9 +139,18 @@ public class ReviewController {
         }
 
         int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
-        LogDTO logData =  logService.convertToLogDTO(userId, "Xóa đánh giá Id: "+ id, 2);
-        logService.createLog(logData);
-        reviewService.deleteReviewByID(id);
-        return new ResponseEntity<>("Review " + id + " is deleted successfully", HttpStatus.OK);
+        try {
+            reviewService.deleteReviewByID(id);
+
+            // Ghi log sau khi hành động thành công
+            LogDTO logData =  logService.convertToLogDTO(userId, "Xóa đánh giá Id: "+ id, 2);
+            logService.createLog(logData);
+
+            return new ResponseEntity<>("Review " + id + " is deleted successfully", HttpStatus.OK);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>("Review " + id + " not found", HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

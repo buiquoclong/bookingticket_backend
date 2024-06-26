@@ -10,12 +10,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.LogDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.PromotionDTO;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Promotion;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Seat;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.LogService;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.PromotionService;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.utils.JwtTokenUtils;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,9 +51,16 @@ public class PromotionController {
         }
 
         int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
-        LogDTO logData =  logService.convertToLogDTO(userId, "Tạo mã giảm giá cho: "+ promotionDTO.getDescription(), 1);
-        logService.createLog(logData);
-        return new ResponseEntity<>(promotionService.createPromotion(promotionDTO), HttpStatus.CREATED);
+        try {
+            Promotion createPromotion = promotionService.createPromotion(promotionDTO);
+
+            LogDTO logData =  logService.convertToLogDTO(userId, "Tạo mã giảm giá cho: "+ promotionDTO.getDescription(), 1);
+            logService.createLog(logData);
+
+            return new ResponseEntity<>(createPromotion, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     // Get Promotion by id
@@ -64,9 +73,10 @@ public class PromotionController {
     @GetMapping("page")
     public ResponseEntity<Map<String, Object>> getAllPromotionByPage(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String description) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<Promotion> promotionPage = promotionService.getAllPromotionPage(pageable);
+        Page<Promotion> promotionPage = promotionService.getAllPromotionPage(description, pageable);
         Map<String, Object> response = new HashMap<>();
         response.put("promotions", promotionPage.getContent());
         response.put("currentPage", promotionPage.getNumber());
@@ -84,9 +94,18 @@ public class PromotionController {
         }
 
         int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
-        LogDTO logData =  logService.convertToLogDTO(userId, "Cập nhật mã giảm giá Id: "+ id, 2);
-        logService.createLog(logData);
-        return new ResponseEntity<>(promotionService.updatePromotionByID(promotionDTO, id), HttpStatus.OK);
+        try{
+            Promotion updatePromotion = promotionService.updatePromotionByID(promotionDTO, id);
+
+            LogDTO logData =  logService.convertToLogDTO(userId, "Cập nhật mã giảm giá Id: "+ id, 2);
+            logService.createLog(logData);
+
+            return new ResponseEntity<>(updatePromotion, HttpStatus.OK);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     // Delete Promotion by id
@@ -98,10 +117,19 @@ public class PromotionController {
         }
 
         int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
-        LogDTO logData =  logService.convertToLogDTO(userId, "Xóa mã giảm giá Id: "+ id, 2);
-        logService.createLog(logData);
-        promotionService.deletePromotionByID(id);
-        return new ResponseEntity<>("Promotion " + id + " is deleted successfully", HttpStatus.OK);
+        try {
+            promotionService.deletePromotionByID(id);
+
+            // Ghi log sau khi hành động thành công
+            LogDTO logData =  logService.convertToLogDTO(userId, "Xóa mã giảm giá Id: "+ id, 2);
+            logService.createLog(logData);
+
+            return new ResponseEntity<>("Promotion " + id + " is deleted successfully", HttpStatus.OK);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>("Promotion " + id + " not found", HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     // check Mã giảm giá
     @GetMapping("/check")

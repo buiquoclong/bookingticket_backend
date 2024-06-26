@@ -60,9 +60,10 @@ public class SeatReservationController {
     @GetMapping("page")
     public ResponseEntity<Map<String, Object>> getAllSeatReservationByPage(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String name) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<SeatReservation> seatReservationPage = seatReservationService.getAllSeatReservationPage(pageable);
+        Page<SeatReservation> seatReservationPage = seatReservationService.getAllSeatReservationPage(name,pageable);
         Map<String, Object> response = new HashMap<>();
         response.put("seatReservations", seatReservationPage.getContent());
         response.put("currentPage", seatReservationPage.getNumber());

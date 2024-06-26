@@ -17,5 +17,5 @@ public interface SeatReservationService {
     List<SeatReservation> getSeatReservationsByTripId(int tripId);
     List<SeatReservation> getSeatReservationsByBookingId(int bookingId);
     void deleteSeatReservationsByBookingId(int bookingId);
-    Page<SeatReservation> getAllSeatReservationPage(Pageable pageable);
+    Page<SeatReservation> getAllSeatReservationPage(String name, Pageable pageable);
 }

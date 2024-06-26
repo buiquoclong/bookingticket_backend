@@ -46,9 +46,11 @@ public class LogController {
     @GetMapping("page")
     public ResponseEntity<Map<String, Object>> getAllLogByPage(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String userName,
+            @RequestParam(required = false) Integer level) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<Log> logPage = logService.getAllLogPage(pageable);
+        Page<Log> logPage = logService.getAllLogPage(userName, level, pageable);
         Map<String, Object> response = new HashMap<>();
         response.put("logs", logPage.getContent());
         response.put("currentPage", logPage.getNumber());

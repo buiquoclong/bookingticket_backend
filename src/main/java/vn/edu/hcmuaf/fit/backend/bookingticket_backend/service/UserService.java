@@ -18,6 +18,8 @@ public interface UserService {
     public String sendMailConfirmAccount(int userId);
     String forgotPassword(String email);
     Page<User> getAllUserPage(Pageable pageable);
+    Page<User> getAllUserPage(Pageable pageable, String name, String email, String phone, Integer role, Integer status);
+
     String  changePassword(int userId, String oldPassword, String newPassword);
     public long getTotalUsers();
     User processOAuthPostLogin(String email, String username);

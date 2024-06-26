@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.CityDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.LogDTO;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.City;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Seat;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.CityService;
@@ -43,16 +44,17 @@ public class CityController {
     // Create a new City
     @PostMapping
     public ResponseEntity<City> createCity(@RequestPart("city") CityDTO cityDTO, @RequestPart("file") MultipartFile file, HttpServletRequest request) {
-        try {
-            String token = jwtTokenUtils.extractJwtFromRequest(request);
-            if (token == null) {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            }
+        String token = jwtTokenUtils.extractJwtFromRequest(request);
+        if (token == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
 
-            int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        try {
+            City city = cityService.createCity(cityDTO, file);
+
             LogDTO logData =  logService.convertToLogDTO(userId, "Tạo thành phố tên: "+ cityDTO.getName(), 1);
             logService.createLog(logData);
-            City city = cityService.createCity(cityDTO, file);
             return new ResponseEntity<>(city, HttpStatus.CREATED);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
@@ -70,9 +72,10 @@ public class CityController {
     @GetMapping("page")
     public ResponseEntity<Map<String, Object>> getAllCityByPage(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String name) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<City> cityPage = cityService.getAllCityPage(pageable);
+        Page<City> cityPage = cityService.getAllCityPage(name,pageable);
         Map<String, Object> response = new HashMap<>();
         response.put("cities", cityPage.getContent());
         response.put("currentPage", cityPage.getNumber());
@@ -87,19 +90,22 @@ public class CityController {
                                                @RequestPart("city") CityDTO cityDTO,
                                                @RequestPart(value = "file", required = false) MultipartFile file,
                                                HttpServletRequest request) {
-        try {
-            String token = jwtTokenUtils.extractJwtFromRequest(request);
-            if (token == null) {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            }
+        String token = jwtTokenUtils.extractJwtFromRequest(request);
+        if (token == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
 
-            int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        try {
+            City updatedCity = cityService.updateCityByID(cityDTO, file, id);
+
             LogDTO logData =  logService.convertToLogDTO(userId, "Cập nhật Thành phố Id: "+ id, 2);
             logService.createLog(logData);
-            City updatedCity = cityService.updateCityByID(cityDTO, file, id);
             return new ResponseEntity<>(updatedCity, HttpStatus.OK);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -112,10 +118,19 @@ public class CityController {
         }
 
         int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
-        LogDTO logData =  logService.convertToLogDTO(userId, "Xóa thành phố Id: "+ id, 2);
-        logService.createLog(logData);
-        cityService.deleteCityByID(id);
-        return new ResponseEntity<>("City " + id + " is deleted successfully", HttpStatus.OK);
+        try {
+            cityService.deleteCityByID(id);
+
+            // Ghi log sau khi hành động thành công
+            LogDTO logData =  logService.convertToLogDTO(userId, "Xóa thành phố Id: "+ id, 2);
+            logService.createLog(logData);
+
+            return new ResponseEntity<>("City " + id + " is deleted successfully", HttpStatus.OK);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>("City " + id + " not found", HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 }

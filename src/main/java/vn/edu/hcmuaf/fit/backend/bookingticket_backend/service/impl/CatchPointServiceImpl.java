@@ -3,6 +3,7 @@ package vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.impl;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.CatchPointDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
@@ -14,6 +15,8 @@ import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.CatchPointRepo
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.RouteRepository;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.TripRepository;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.UserRepository;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.specification.CatchPointSpecification;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.specification.TripSpecifications;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.CatchPointService;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.CatchPointService;
 
@@ -64,8 +67,9 @@ public class CatchPointServiceImpl implements CatchPointService {
 //    }
 
     @Override
-    public Page<CatchPoint> getAllCatchPointPage(Pageable pageable) {
-        return catchPointRepository.findAll(pageable);
+    public Page<CatchPoint> getAllCatchPointPage(String address, Pageable pageable) {
+        Specification<CatchPoint> spec = Specification.where(CatchPointSpecification.hasAddress(address));
+        return catchPointRepository.findAll(spec,pageable);
     }
 
     @Override

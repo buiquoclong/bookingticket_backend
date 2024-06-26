@@ -73,8 +73,19 @@ public class UserController {
         }
 
         int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
-        LogDTO logData =  logService.convertToLogDTO(userId, "Tạo tài khoản tên: "+ userDTO.getName(), 1);
-        logService.createLog(logData);
+        try {
+            String createUser = userService.createUser(userDTO);
+
+            LogDTO logData =  logService.convertToLogDTO(userId, "Tạo tài khoản tên: "+ userDTO.getName(), 1);
+            logService.createLog(logData);
+
+            return createUser;
+        } catch (Exception e) {
+            return "" + e;
+        }
+    }
+    @PostMapping("register")
+    public String register(@RequestBody UserDTO userDTO){
         return userService.createUser(userDTO);
     }
 
@@ -85,17 +96,38 @@ public class UserController {
     }
 
     // phân trang
+//    @GetMapping("page")
+//    public ResponseEntity<Map<String, Object>> getAllUserByPage1(
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int size) {
+//        Pageable pageable = PageRequest.of(page - 1, size);
+//        Page<User> userPage = userService.getAllUserPage(pageable);
+//        Map<String, Object> response = new HashMap<>();
+//        response.put("users", userPage.getContent());
+//        response.put("currentPage", userPage.getNumber());
+//        response.put("totalItems", userPage.getTotalElements());
+//        response.put("totalPages", userPage.getTotalPages());
+//        return new ResponseEntity<>(response, HttpStatus.OK);
+//    }
     @GetMapping("page")
     public ResponseEntity<Map<String, Object>> getAllUserByPage(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String phone,
+            @RequestParam(required = false) Integer role,
+            @RequestParam(required = false) Integer status) {
+
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<User> userPage = userService.getAllUserPage(pageable);
+        Page<User> userPage = userService.getAllUserPage(pageable, name, email, phone, role, status);
+
         Map<String, Object> response = new HashMap<>();
         response.put("users", userPage.getContent());
         response.put("currentPage", userPage.getNumber());
         response.put("totalItems", userPage.getTotalElements());
         response.put("totalPages", userPage.getTotalPages());
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -148,6 +180,10 @@ public class UserController {
         logService.createLog(logData);
 
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+    }
+    @PutMapping("update/{id}")
+    public ResponseEntity<User> ClientUpdateUserById(@PathVariable ("id") int id, @RequestBody UserDTO userDTO){
+        return new ResponseEntity<>(userService.updateUserByID(userDTO, id), HttpStatus.OK);
     }
 
     // Delete User by id

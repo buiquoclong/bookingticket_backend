@@ -15,5 +15,5 @@ public interface KindVehicleService {
     KindVehicle getKindVehicleByID(int id);
     KindVehicle updateKindVehicleByID(KindVehicleDTO kindVehicleDTO, int id);
     void deleteKindVehicleByID(int id);
-    Page<KindVehicle> getAllKindVehiclePage(Pageable pageable);
+    Page<KindVehicle> getAllKindVehiclePage(String name, Pageable pageable);
 }

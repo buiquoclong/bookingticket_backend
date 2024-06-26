@@ -2,14 +2,18 @@ package vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.impl;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.SeatDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.KindVehicle;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Seat;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Trip;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Vehicle;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.KindVehicleRepository;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.SeatRepository;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.specification.SeatSpecifications;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.specification.TripSpecifications;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.SeatService;
 
 import java.time.LocalDateTime;
@@ -54,8 +58,10 @@ public class SeatServiceImpl implements SeatService {
 
     // phân trang
     @Override
-    public Page<Seat> getAllSeatPage(Pageable pageable) {
-        return seatRepository.findAll(pageable);
+    public Page<Seat> getAllSeatPage(String name, String kindVehicleName, Pageable pageable) {
+        Specification<Seat> spec = Specification.where(SeatSpecifications.hasName(name)
+                .and(SeatSpecifications.hasUserKindVehicleName(kindVehicleName)));
+        return seatRepository.findAll(spec, pageable);
     }
 
     @Override

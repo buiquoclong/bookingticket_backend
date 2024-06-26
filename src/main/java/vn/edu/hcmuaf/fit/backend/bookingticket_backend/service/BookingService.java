@@ -9,6 +9,7 @@ import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.BookingDetail;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Seat;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.List;
 
@@ -37,5 +38,7 @@ public interface BookingService {
     Integer countPaidBookingsByMonth(YearMonth yearMonth);
     // Số vé đã bị hủy
     Integer countCancelledBookingsByMonth(YearMonth yearMonth);
+    Page<Booking> getAllBookingPage(Pageable pageable, Integer id, String userName, String email, String phone, Integer userId, String kindPay, Integer isPaid, Integer roundTrip);
+
 
 }
