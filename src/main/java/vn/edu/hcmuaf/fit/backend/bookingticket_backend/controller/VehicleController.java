@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,7 @@ import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.LogService;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.VehicleService;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.utils.JwtTokenUtils;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -144,5 +146,13 @@ public class VehicleController {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/available/{kindVehicleId}")
+    public ResponseEntity<List<Vehicle>> getAvailableVehiclesByKindVehicleId(
+            @PathVariable int kindVehicleId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dayStart) {
+        List<Vehicle> availableVehicles = vehicleService.findAvailableVehiclesByKindVehicleId(kindVehicleId, dayStart);
+        return ResponseEntity.ok(availableVehicles);
     }
 }

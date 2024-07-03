@@ -9,13 +9,14 @@ import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Seat;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.User;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.List;
 
 public interface CityService {
-    City createCity(CityDTO cityDTO, MultipartFile file) throws IOException;
+    City createCity(CityDTO cityDTO, MultipartFile file) throws IOException, GeneralSecurityException;
     List<City> getAllCity();
     City getCityByID(int id);
-    City updateCityByID(CityDTO cityDTO, MultipartFile file, int id) throws IOException;
+    City updateCityByID(CityDTO cityDTO, MultipartFile file, int id) throws IOException, GeneralSecurityException;
     void deleteCityByID(int id);
     Page<City> getAllCityPage(String name, Pageable pageable);
 }

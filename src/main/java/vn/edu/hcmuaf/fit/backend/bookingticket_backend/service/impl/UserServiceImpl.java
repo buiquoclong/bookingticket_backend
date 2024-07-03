@@ -157,10 +157,27 @@ public class UserServiceImpl implements UserService {
     public static String generatePassword(int length) {
         String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         SecureRandom RANDOM = new SecureRandom();
-        StringBuilder password = new StringBuilder(length);
-        for (int i = 0; i < length; i++) {
-            password.append(CHARACTERS.charAt(RANDOM.nextInt(CHARACTERS.length())));
-        }
+        StringBuilder password;
+        boolean hasLetter;
+        boolean hasDigit;
+
+        do {
+            password = new StringBuilder(length);
+            hasLetter = false;
+            hasDigit = false;
+
+            for (int i = 0; i < length; i++) {
+                char ch = CHARACTERS.charAt(RANDOM.nextInt(CHARACTERS.length()));
+                if (Character.isLetter(ch)) {
+                    hasLetter = true;
+                }
+                if (Character.isDigit(ch)) {
+                    hasDigit = true;
+                }
+                password.append(ch);
+            }
+        } while (!hasLetter || !hasDigit);
+
         return password.toString();
     }
     @Override

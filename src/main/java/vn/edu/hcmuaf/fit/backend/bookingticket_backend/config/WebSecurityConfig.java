@@ -117,12 +117,5 @@ public OAuth2AuthorizationRequestResolver customOAuth2AuthorizationRequestResolv
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-//    @Bean
-//    public DaoAuthenticationProvider authProvider() {
-//        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-//        authProvider.setUserDetailsService(userDetailsService);
-//        authProvider.setPasswordEncoder(passwordEncoderConfig.encoder());
-//        return authProvider;
-//    }
 
 }

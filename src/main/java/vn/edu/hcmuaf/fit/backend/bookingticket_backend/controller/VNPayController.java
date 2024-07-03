@@ -1,5 +1,6 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +63,7 @@ public class VNPayController {
     }
 
     @GetMapping("pay")
-    public String getPay(@PathParam("total") int total) throws UnsupportedEncodingException{
+    public String getPay(@PathParam("total") int total, HttpServletRequest request) throws UnsupportedEncodingException{
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String orderType = "other";
@@ -70,7 +71,7 @@ public class VNPayController {
         String bankCode = "NCB";
 
         String vnp_TxnRef = VNPayConfig.getRandomNumber(8);
-        String vnp_IpAddr = "172.17.88.156";
+        String vnp_IpAddr = request.getRemoteAddr();
 
         String vnp_TmnCode = VNPayConfig.vnp_TmnCode;
 
@@ -90,8 +91,10 @@ public class VNPayController {
         vnp_Params.put("vnp_ReturnUrl", VNPayConfig.vnp_ReturnUrl);
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 
-        Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
+        TimeZone timeZone = TimeZone.getTimeZone("Asia/Ho_Chi_Minh");
+        Calendar cld = Calendar.getInstance(timeZone);
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+        formatter.setTimeZone(timeZone);
         String vnp_CreateDate = formatter.format(cld.getTime());
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
 
@@ -131,7 +134,7 @@ public class VNPayController {
     }
 
     @GetMapping("pay-boooking")
-    public String getPayNow(@PathParam("total") int total,@PathParam("bookingId") Integer bookingId) throws UnsupportedEncodingException{
+    public String getPayNow(@PathParam("total") int total,@PathParam("bookingId") Integer bookingId, HttpServletRequest request) throws UnsupportedEncodingException{
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String orderType = "other";
@@ -139,7 +142,7 @@ public class VNPayController {
         String bankCode = "NCB";
 
         String vnp_TxnRef = VNPayConfig.getRandomNumber(8);
-        String vnp_IpAddr = "172.17.88.156";
+        String vnp_IpAddr = request.getRemoteAddr();
 
         String vnp_TmnCode = VNPayConfig.vnp_TmnCode;
 
@@ -159,8 +162,10 @@ public class VNPayController {
         vnp_Params.put("vnp_ReturnUrl", VNPayConfig.vnp_ReturnUrl1+"?bookingId="+bookingId);
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 
-        Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
+        TimeZone timeZone = TimeZone.getTimeZone("Asia/Ho_Chi_Minh");
+        Calendar cld = Calendar.getInstance(timeZone);
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+        formatter.setTimeZone(timeZone);
         String vnp_CreateDate = formatter.format(cld.getTime());
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
 

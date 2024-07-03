@@ -11,7 +11,7 @@
  Target Server Version : 100427 (10.4.27-MariaDB)
  File Encoding         : 65001
 
- Date: 23/06/2024 19:21:46
+ Date: 27/06/2024 16:36:35
 */
 
 SET NAMES utf8mb4;
@@ -37,7 +37,7 @@ CREATE TABLE `booking`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `FKkgseyy7t56x7lkjgu3wah5s3t`(`user_id` ASC) USING BTREE,
   CONSTRAINT `FKkgseyy7t56x7lkjgu3wah5s3t` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 10 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of booking
@@ -51,6 +51,7 @@ INSERT INTO `booking` VALUES (6, 'Bùi Quốc Long', 'buiquoclongkt123@gmail.com
 INSERT INTO `booking` VALUES (7, 'Bùi Quốc Long', 'buiquoclongkt123@gmail.com', '12345678', 4, '2024-06-21 10:21:31.000000', 481000, 'Thanh toán bằng VNPay', 1, 1, '2024-06-21 10:21:31.000000', '2024-06-21 10:21:31.000000');
 INSERT INTO `booking` VALUES (8, 'Bùi Quốc Long', 'buiquoclongkt123@gmail.com', '12345678', 4, '2024-06-21 10:30:04.000000', 481000, 'Thanh toán bằng VNPay', 1, 1, '2024-06-21 10:30:04.000000', '2024-06-21 10:30:04.000000');
 INSERT INTO `booking` VALUES (9, 'Bùi Quốc Long', '', '0123456789', 3, '2024-06-21 10:50:01.000000', 560000, 'Thanh toán tiền mặt', 1, 1, '2024-06-21 10:50:01.000000', '2024-06-21 10:50:01.000000');
+INSERT INTO `booking` VALUES (10, 'Bùi Quốc Long', 'buiquoclongkt123@gmail.com', '12345', 4, '2024-06-27 15:54:24.000000', 240000, 'Thanh toán khi lên xe', 0, 0, '2024-06-27 15:54:24.000000', '2024-06-27 15:54:24.000000');
 
 -- ----------------------------
 -- Table structure for booking_detail
@@ -77,6 +78,7 @@ CREATE TABLE `booking_detail`  (
 -- ----------------------------
 -- Records of booking_detail
 -- ----------------------------
+INSERT INTO `booking_detail` VALUES ('209rHdtA', 10, 2, 0, 2, 'A10, A11', 240000, 'Tại nhà xe', 'Không có ghi chú', '2024-06-27 15:54:24.000000');
 INSERT INTO `booking_detail` VALUES ('cZpQRZap', 5, 3, 0, 1, 'A07', 121000, 'Tại nhà xe', 'Không có ghi chú', '2024-06-20 17:22:41.000000');
 INSERT INTO `booking_detail` VALUES ('dzSaWhyN', 1, 1, 0, 3, 'A01, A02, A03', 360000, 'Tại nhà xe', 'Không có ghi chú', '2024-06-20 14:37:42.000000');
 INSERT INTO `booking_detail` VALUES ('fE3ErGF0', 8, 3, 0, 1, 'A11', 121000, 'Tại nhà xe', 'Không có ghi chú', '2024-06-21 10:30:04.000000');
@@ -123,17 +125,17 @@ CREATE TABLE `city`  (
   `created_at` datetime(6) NULL DEFAULT NULL,
   `updated_at` datetime(6) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of city
 -- ----------------------------
-INSERT INTO `city` VALUES (1, 'Bà Rịa - Vũng tàu', 'img/1718864767785_vungtau.jpg', '2024-06-20 13:26:07.000000', '2024-06-20 13:26:07.000000');
-INSERT INTO `city` VALUES (2, 'Bình Dương', 'img/1718864785722_binhduong.jpg', '2024-06-20 13:26:25.000000', '2024-06-20 13:26:25.000000');
-INSERT INTO `city` VALUES (3, 'Bình Phước', 'img/1718864803080_binhphuoc.jpg', '2024-06-20 13:26:43.000000', '2024-06-20 13:26:43.000000');
-INSERT INTO `city` VALUES (4, 'Đồng Nai', 'img/1718864827295_dongnai.jpg', '2024-06-20 13:27:07.000000', '2024-06-20 13:27:07.000000');
-INSERT INTO `city` VALUES (5, 'Tây Ninh', 'img/1718865114542_tayninh.jpg', '2024-06-20 13:31:54.000000', '2024-06-20 13:31:54.000000');
-INSERT INTO `city` VALUES (6, 'TP. Hồ Chí Minh', 'img/1718865181286_t1.png', '2024-06-20 13:33:01.000000', '2024-06-20 14:26:01.000000');
+INSERT INTO `city` VALUES (1, 'Bà Rịa - Vũng tàu', 'https://drive.google.com/thumbnail?id=1hvDCq1x-g9vmx7235RlW8uCv_u-QW8o9', '2024-06-20 13:26:07.000000', '2024-06-27 15:24:18.000000');
+INSERT INTO `city` VALUES (2, 'Bình Dương', 'https://drive.google.com/thumbnail?id=1XpLJGuViEo2mt_VMhl5_UxmlAtf1fG2A', '2024-06-20 13:26:25.000000', '2024-06-27 15:24:34.000000');
+INSERT INTO `city` VALUES (3, 'Bình Phước', 'https://drive.google.com/thumbnail?id=1VUqPM7yoLXn8Tcz_gs_aR2haMMP3tyIM', '2024-06-20 13:26:43.000000', '2024-06-27 15:24:48.000000');
+INSERT INTO `city` VALUES (4, 'Đồng Nai', 'https://drive.google.com/thumbnail?id=160o0mrhn71evwKVfmob98qnkATonu4Er', '2024-06-20 13:27:07.000000', '2024-06-27 15:25:02.000000');
+INSERT INTO `city` VALUES (5, 'Tây Ninh', 'https://drive.google.com/thumbnail?id=1mbuhUkur3BqaB5Ybkecpxn7P0hSvJTBl', '2024-06-20 13:31:54.000000', '2024-06-27 15:25:18.000000');
+INSERT INTO `city` VALUES (6, 'TP. Hồ Chí Minh', 'https://drive.google.com/thumbnail?id=1jjBTnl34L0hxcNQGGkGq8Oq14w-Nu87c', '2024-06-20 13:33:01.000000', '2024-06-27 15:25:34.000000');
 
 -- ----------------------------
 -- Table structure for contact
@@ -147,11 +149,12 @@ CREATE TABLE `contact`  (
   `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `created_at` datetime(6) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of contact
 -- ----------------------------
+INSERT INTO `contact` VALUES (1, 'Cần liên hệ', 'nguyenvana@gmail.com', 'Nguyễn Văn A', 'Cần liên hệ', '2024-06-27 06:58:34.000000');
 
 -- ----------------------------
 -- Table structure for driver
@@ -188,7 +191,7 @@ CREATE TABLE `kindvehicle`  (
   `created_at` datetime(6) NULL DEFAULT NULL,
   `updated_at` datetime(6) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of kindvehicle
@@ -196,6 +199,7 @@ CREATE TABLE `kindvehicle`  (
 INSERT INTO `kindvehicle` VALUES (1, 'Giường nằm', '2024-04-14 22:53:40.000000', '2024-04-21 21:24:15.000000');
 INSERT INTO `kindvehicle` VALUES (2, 'Limousine', '2024-04-14 22:53:40.000000', '2024-04-21 21:24:15.000000');
 INSERT INTO `kindvehicle` VALUES (3, 'Ghế ngồi', '2024-04-14 22:53:40.000000', '2024-04-21 21:24:15.000000');
+INSERT INTO `kindvehicle` VALUES (4, 'một ', '2024-06-27 04:03:40.000000', '2024-06-27 04:03:40.000000');
 
 -- ----------------------------
 -- Table structure for log
@@ -210,7 +214,7 @@ CREATE TABLE `log`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `FK3wxdofviqe2smmvh1w1yf98o1`(`user_id` ASC) USING BTREE,
   CONSTRAINT `FK3wxdofviqe2smmvh1w1yf98o1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 74 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 96 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of log
@@ -288,6 +292,28 @@ INSERT INTO `log` VALUES (70, 4, 'Cập nhật đánh giá Id: 1', 2, '2024-06-2
 INSERT INTO `log` VALUES (71, 3, 'Đặt vé', 1, '2024-06-21 10:50:01.000000');
 INSERT INTO `log` VALUES (72, 3, 'Tạo tài xế tên: a', 1, '2024-06-22 10:10:11.000000');
 INSERT INTO `log` VALUES (73, 3, 'Xóa tài xế Id: 7', 2, '2024-06-22 10:15:14.000000');
+INSERT INTO `log` VALUES (74, 3, 'Tạo loại xe tên: một ', 1, '2024-06-27 04:03:40.000000');
+INSERT INTO `log` VALUES (75, 3, 'Tạo mã giảm giá cho: xzdsa', 1, '2024-06-27 04:04:01.000000');
+INSERT INTO `log` VALUES (76, 3, 'Tạo thành phố tên: hà nội', 1, '2024-06-27 04:36:11.000000');
+INSERT INTO `log` VALUES (77, 3, 'Xóa thành phố Id: 7', 2, '2024-06-27 04:37:44.000000');
+INSERT INTO `log` VALUES (78, 3, 'Tạo thành phố tên: Hà Nội', 1, '2024-06-27 04:38:00.000000');
+INSERT INTO `log` VALUES (79, 3, 'Xóa thành phố Id: 8', 2, '2024-06-27 04:42:04.000000');
+INSERT INTO `log` VALUES (80, 3, 'Tạo thành phố tên: Hà Nội ', 1, '2024-06-27 04:42:21.000000');
+INSERT INTO `log` VALUES (81, 3, 'Xóa thành phố Id: 9', 2, '2024-06-27 04:46:19.000000');
+INSERT INTO `log` VALUES (82, 3, 'Xóa mã giảm giá Id: 2', 2, '2024-06-27 06:57:01.000000');
+INSERT INTO `log` VALUES (83, 3, 'Tạo thành phố tên: abc', 1, '2024-06-27 07:02:02.000000');
+INSERT INTO `log` VALUES (84, 3, 'Cập nhật Thành phố Id: 10', 2, '2024-06-27 07:02:22.000000');
+INSERT INTO `log` VALUES (85, 3, 'Cập nhật Thành phố Id: 10', 2, '2024-06-27 07:02:27.000000');
+INSERT INTO `log` VALUES (86, 3, 'Xóa thành phố Id: 10', 2, '2024-06-27 07:02:46.000000');
+INSERT INTO `log` VALUES (87, 3, 'Cập nhật Thành phố Id: 1', 2, '2024-06-27 15:24:22.000000');
+INSERT INTO `log` VALUES (88, 3, 'Cập nhật Thành phố Id: 2', 2, '2024-06-27 15:24:37.000000');
+INSERT INTO `log` VALUES (89, 3, 'Cập nhật Thành phố Id: 3', 2, '2024-06-27 15:24:50.000000');
+INSERT INTO `log` VALUES (90, 3, 'Cập nhật Thành phố Id: 4', 2, '2024-06-27 15:25:05.000000');
+INSERT INTO `log` VALUES (91, 3, 'Cập nhật Thành phố Id: 5', 2, '2024-06-27 15:25:20.000000');
+INSERT INTO `log` VALUES (92, 3, 'Cập nhật Thành phố Id: 6', 2, '2024-06-27 15:25:37.000000');
+INSERT INTO `log` VALUES (93, 3, 'Cập nhật chuyến đi Id: 1', 2, '2024-06-27 15:41:11.000000');
+INSERT INTO `log` VALUES (94, 3, 'Cập nhật chuyến đi Id: 1', 2, '2024-06-27 15:41:51.000000');
+INSERT INTO `log` VALUES (95, 3, 'Cập nhật chuyến đi Id: 2', 2, '2024-06-27 15:49:20.000000');
 
 -- ----------------------------
 -- Table structure for promotion
@@ -303,7 +329,7 @@ CREATE TABLE `promotion`  (
   `created_at` datetime(6) NULL DEFAULT NULL,
   `updated_at` datetime(6) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of promotion
@@ -491,7 +517,7 @@ CREATE TABLE `seat_reservsation`  (
   CONSTRAINT `FK86bskijp07j65wdyb5u939d5h` FOREIGN KEY (`booking_id`) REFERENCES `booking` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `FKc27yd48ljgw68twxfjbdoxdof` FOREIGN KEY (`trip_id`) REFERENCES `trip` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `FKdogs4skrjosgkdt8yrxd1r264` FOREIGN KEY (`ghe_id`) REFERENCES `seat` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 26 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 28 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of seat_reservsation
@@ -521,6 +547,8 @@ INSERT INTO `seat_reservsation` VALUES (22, 9, 4, 54, 1, '2024-06-21 10:50:01.00
 INSERT INTO `seat_reservsation` VALUES (23, 9, 2, 28, 1, '2024-06-21 10:50:01.000000', '2024-06-21 10:50:01.000000');
 INSERT INTO `seat_reservsation` VALUES (24, 9, 2, 29, 1, '2024-06-21 10:50:01.000000', '2024-06-21 10:50:01.000000');
 INSERT INTO `seat_reservsation` VALUES (25, 9, 2, 30, 1, '2024-06-21 10:50:01.000000', '2024-06-21 10:50:01.000000');
+INSERT INTO `seat_reservsation` VALUES (26, 10, 2, 31, 1, '2024-06-27 15:54:24.000000', '2024-06-27 15:54:24.000000');
+INSERT INTO `seat_reservsation` VALUES (27, 10, 2, 32, 1, '2024-06-27 15:54:24.000000', '2024-06-27 15:54:24.000000');
 
 -- ----------------------------
 -- Table structure for trip
@@ -550,8 +578,8 @@ CREATE TABLE `trip`  (
 -- ----------------------------
 -- Records of trip
 -- ----------------------------
-INSERT INTO `trip` VALUES (1, 30, 1, '2024-06-21', '15:09:00.000000', 120000, 1, 17, 2, '2024-06-20 14:09:18.000000', '2024-06-20 14:42:30.000000');
-INSERT INTO `trip` VALUES (2, 29, 2, '2024-06-22', '14:10:00.000000', 120000, 2, 12, 1, '2024-06-20 14:09:54.000000', '2024-06-21 10:50:01.000000');
+INSERT INTO `trip` VALUES (1, 30, 1, '2024-07-01', '15:09:00.000000', 120000, 1, 17, 1, '2024-06-20 14:09:18.000000', '2024-06-27 16:33:20.000000');
+INSERT INTO `trip` VALUES (2, 29, 2, '2024-07-01', '14:10:00.000000', 120000, 2, 10, 1, '2024-06-20 14:09:54.000000', '2024-06-27 16:33:20.000000');
 INSERT INTO `trip` VALUES (3, 30, 3, '2024-06-21', '17:10:00.000000', 121000, 3, 10, 1, '2024-06-20 14:10:36.000000', '2024-06-21 10:30:04.000000');
 INSERT INTO `trip` VALUES (4, 30, 2, '2024-06-21', '18:11:00.000000', 200000, 4, 20, 1, '2024-06-20 14:11:13.000000', '2024-06-21 10:50:01.000000');
 
@@ -624,12 +652,10 @@ CREATE TABLE `waiting_seat`  (
   INDEX `FKdgkoylnn9b9db0g7dtruvuttw`(`trip_id` ASC) USING BTREE,
   CONSTRAINT `FKdgkoylnn9b9db0g7dtruvuttw` FOREIGN KEY (`trip_id`) REFERENCES `trip` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `FKkood0ttlamq7wvedqa6mnb0r9` FOREIGN KEY (`ghe_id`) REFERENCES `seat` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 21 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of waiting_seat
 -- ----------------------------
-INSERT INTO `waiting_seat` VALUES (3, 2, 52, '2024-06-21 10:19:34.000000');
-INSERT INTO `waiting_seat` VALUES (4, 2, 53, '2024-06-21 10:29:27.000000');
 
 SET FOREIGN_KEY_CHECKS = 1;

@@ -7,6 +7,7 @@ import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.City;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Driver;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Seat;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface DriverService {
@@ -16,4 +17,5 @@ public interface DriverService {
     Driver updateDriverByID(DriverDTO driverDTO, int id);
     void deleteDriverByID(int id);
     Page<Driver> getAllDriverPage(String name, String email, String phone, Pageable pageable);
+    List<Driver> findAvailableDrivers(LocalDate dayStart);
 }

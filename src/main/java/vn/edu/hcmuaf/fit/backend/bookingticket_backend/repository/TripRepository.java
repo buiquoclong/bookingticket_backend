@@ -2,6 +2,7 @@ package vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Trip;
 
@@ -30,5 +31,7 @@ public interface TripRepository extends JpaRepository<Trip, Integer>, JpaSpecifi
     // Sắp xếp chuyến theo giá tăng dần hoặc giảm dần
     List<Trip> findAllByOrderByPriceAsc();
     List<Trip> findAllByOrderByPriceDesc();
+    @Query("SELECT t.id FROM Trip t WHERE t.dayStart = :dayStart")
+    List<Integer> findTripIdsByDayStart(LocalDate dayStart);
 
 }

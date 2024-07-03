@@ -1,5 +1,6 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -10,11 +11,13 @@ import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.KindVehicle;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Trip;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Vehicle;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.KindVehicleRepository;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.TripRepository;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.VehicleRepository;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.specification.TripSpecifications;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.specification.VehicleSpecifications;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.VehicleService;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,6 +26,8 @@ import java.util.stream.Collectors;
 public class VehicleServiceImpl implements VehicleService {
     private VehicleRepository vehicleRepository;
     private KindVehicleRepository kindVehicleRepository;
+    @Autowired
+    private TripRepository tripRepository;
 
 //    public VehicleServiceImpl(VehicleRepository vehicleRepository) {
 //        this.vehicleRepository = vehicleRepository;
@@ -60,6 +65,21 @@ public class VehicleServiceImpl implements VehicleService {
         return vehicles.stream()
                 .filter(vehicle -> vehicle.getStatus() == 1)
                 .collect(Collectors.toList());
+    }
+    // Lấy danh sách các xe khả dụng khi tạo chuyến
+    @Override
+    public List<Vehicle> findAvailableVehiclesByKindVehicleId(int kindVehicleId, LocalDate dayStart) {
+        List<Vehicle> allVehicles = vehicleRepository.findByKindVehicleId(kindVehicleId); // Lấy tất cả các xe theo loại xe
+
+        // Lọc những xe không có trong danh sách các chuyến có cùng ngày bắt đầu và có status = 1
+        List<Integer> tripIds = tripRepository.findTripIdsByDayStart(dayStart);
+        List<Vehicle> availableVehicles = allVehicles.stream()
+                .filter(vehicle -> vehicle.getStatus() == 1)
+                .filter(vehicle -> vehicle.getTrips().stream()
+                        .noneMatch(trip -> trip.getDayStart().equals(dayStart) && tripIds.contains(trip.getId())))
+                .collect(Collectors.toList());
+
+        return availableVehicles;
     }
 
     @Override

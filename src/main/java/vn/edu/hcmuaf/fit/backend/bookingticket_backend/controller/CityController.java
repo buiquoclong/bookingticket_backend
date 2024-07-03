@@ -19,6 +19,7 @@ import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.LogService;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.utils.JwtTokenUtils;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +59,8 @@ public class CityController {
             return new ResponseEntity<>(city, HttpStatus.CREATED);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        } catch (GeneralSecurityException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -106,6 +109,8 @@ public class CityController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (IOException e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (GeneralSecurityException e) {
+            throw new RuntimeException(e);
         }
     }
 

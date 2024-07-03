@@ -6,6 +6,7 @@ import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.VehicleDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Seat;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Vehicle;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface VehicleService {
@@ -15,5 +16,6 @@ public interface VehicleService {
     Vehicle updateVehicleByID(VehicleDTO vehicleDTO, int id);
     void deleteVehicleByID(int id);
     List<Vehicle> getVehiclesByKindVehicleId(int kindVehicleId);
+    List<Vehicle> findAvailableVehiclesByKindVehicleId(int kindVehicleId, LocalDate dayStart);
     Page<Vehicle> getAllVehiclePage(String name, String kindVehiclename, String vehicleNumber, Pageable pageable);
 }

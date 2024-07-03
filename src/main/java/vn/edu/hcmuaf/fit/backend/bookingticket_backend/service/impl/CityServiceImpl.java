@@ -1,5 +1,7 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.impl;
 
+import org.checkerframework.checker.units.qual.t;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -20,11 +22,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.security.GeneralSecurityException;
 import java.time.LocalDateTime;
 import java.util.List;
 @Service
 public class CityServiceImpl implements CityService {
     private CityRepository cityRepository;
+    @Autowired
+    private ImageImpl image;
     private final Path fileStorageLocation = Paths.get("src/main/resources/static/img").toAbsolutePath().normalize();
 
     public CityServiceImpl(CityRepository cityRepository) {
@@ -37,21 +42,24 @@ public class CityServiceImpl implements CityService {
     }
 
     @Override
-    public City createCity(CityDTO cityDTO, MultipartFile file) throws IOException {
-        String originalFileName = file.getOriginalFilename();
-        String fileName = System.currentTimeMillis() + "_" + originalFileName;
-        Path targetLocation = this.fileStorageLocation.resolve(fileName);
-
-        Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+    public City createCity(CityDTO cityDTO, MultipartFile file) throws IOException, GeneralSecurityException {
+//        String originalFileName = file.getOriginalFilename();
+//        String fileName = System.currentTimeMillis() + "_" + originalFileName;
+//        Path targetLocation = this.fileStorageLocation.resolve(fileName);
+//
+//        Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+        File tempFile = File.createTempFile("temp", null);
+        file.transferTo(tempFile);
+        String ImgUrl = image.uploadImageToDrive(tempFile);
 
         City city = new City();
         city.setName(cityDTO.getName());
-        city.setImgUrl("img/" + fileName);
+        city.setImgUrl(ImgUrl);
         city.setCreatedAt(LocalDateTime.now());
         city.setUpdatedAt(LocalDateTime.now());
-        City savedCity = cityRepository.save(city);
-        savedCity.setImgUrl("/static/img/" + fileName);
-        return savedCity;
+//        City savedCity = cityRepository.save(city);
+//        savedCity.setImgUrl("/static/img/" + fileName);
+        return cityRepository.save(city);
     }
 
     @Override
@@ -66,7 +74,7 @@ public class CityServiceImpl implements CityService {
     }
 
     @Override
-    public City updateCityByID(CityDTO cityDTO, MultipartFile file, int id) throws IOException  {
+    public City updateCityByID(CityDTO cityDTO, MultipartFile file, int id) throws IOException, GeneralSecurityException {
         City existingCity = cityRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("City", "Id", id));
         // Cập nhật thông tin thành phố
@@ -74,12 +82,15 @@ public class CityServiceImpl implements CityService {
         existingCity.setUpdatedAt(LocalDateTime.now());
         // Nếu có tệp ảnh mới được cung cấp, cập nhật ảnh mới
         if (file != null) {
-            String originalFileName = file.getOriginalFilename();
-            String fileName = System.currentTimeMillis() + "_" + originalFileName;
-            Path targetLocation = this.fileStorageLocation.resolve(fileName);
-            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+//            String originalFileName = file.getOriginalFilename();
+//            String fileName = System.currentTimeMillis() + "_" + originalFileName;
+//            Path targetLocation = this.fileStorageLocation.resolve(fileName);
+//            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            File tempFile = File.createTempFile("temp", null);
+            file.transferTo(tempFile);
+            String ImgUrl = image.uploadImageToDrive(tempFile);
 
-            existingCity.setImgUrl("img/" + fileName);
+            existingCity.setImgUrl(ImgUrl);
         }
 
         return cityRepository.save(existingCity);
