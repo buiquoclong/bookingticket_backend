@@ -1,0 +1,66 @@
+version: '3.9'
+
+services:
+    booking-client:
+      container_name: booking-client
+      image: booking-client
+      restart: always
+      depends_on:
+        - booking-server
+      build:
+        context: ../bookingticket_frontend
+        dockerfile: Dockerfile
+      ports:
+        - 3000:80
+      networks:
+        - network
+
+    booking-server:
+      container_name: booking-server
+      image: booking-server
+      restart: on-failure
+      depends_on:
+        booking-database:
+          condition: service_healthy
+      build:
+        context: ../bookingticket_backend
+        dockerfile: Dockerfile
+      environment:
+        SPRING_DATASOURCE_URL: jdbc:mysql://booking_database:3306/bookingticket
+        SPRING_DATASOURCE_USERNAME: root
+        SPRING_DATASOURCE_PASSWORD: 123456
+      ports:
+        - 8081:8081
+      networks:
+        - network
+
+    
+    booking-database:
+      container_name: booking_database
+      image: mysql:8.0
+      restart: unless-stopped
+      cap_add:
+        - SYS_NICE
+      environment:
+        MYSQL_ROOT_PASSWORD: 123456
+        MYSQL_DATABASE: bookingticket
+        LANG: C.UTF-8
+      ports:
+        - 3308:3306
+      networks:
+        - network    
+      command: --sql_mode="STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION" --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --general-log=1 --general-log-file=/tmp/mysql-general-log.log
+      healthcheck:
+        # Reference: https://stackoverflow.com/a/74905088
+        test: 'cat /tmp/mysql-general-log.log | grep "Tcp port: 3306"'
+        interval: 5s
+        timeout: 30s
+        retries: 20
+volumes:
+  storage:
+    driver: local
+
+networks:
+  network:
+    driver: bridge
+
