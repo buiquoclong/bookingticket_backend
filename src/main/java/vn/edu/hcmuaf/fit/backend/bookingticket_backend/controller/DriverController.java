@@ -39,15 +39,6 @@ public class DriverController {
     }
 
 
-    // Ghi Log
-//    private void logAction(int userId, String action, String details, Integer level) {
-//        LogDTO logDTO = new LogDTO();
-//        logDTO.setUserId(userId);
-//        logDTO.setMessage(action + ": " + details);
-//        logDTO.setLevel(level);
-//        logService.createLog(logDTO);
-//    }
-
     // Get all Driver
     @GetMapping
     public List<Driver> getAllDrivers(){
@@ -62,7 +53,16 @@ public class DriverController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        if (jwtTokenUtils.isTokenExpired(token)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        int userId = jwtTokenUtils.extractUserId(token);
+        Integer userRole = jwtTokenUtils.extractRole(token);
+
+        if (userRole == null ||  (userRole != 2 && userRole != 3)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         try {
             Driver creatDriver = driverService.createDriver(driverDTO);
 
@@ -106,7 +106,16 @@ public class DriverController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        if (jwtTokenUtils.isTokenExpired(token)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        int userId = jwtTokenUtils.extractUserId(token);
+        Integer userRole = jwtTokenUtils.extractRole(token);
+
+        if (userRole == null ||  (userRole != 2 && userRole != 3)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         try {
             Driver updateDriver = driverService.updateDriverByID(driverDTO, id);
 
@@ -128,7 +137,16 @@ public class DriverController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        if (jwtTokenUtils.isTokenExpired(token)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        int userId = jwtTokenUtils.extractUserId(token);
+        Integer userRole = jwtTokenUtils.extractRole(token);
+
+        if (userRole == null ||  (userRole != 2 && userRole != 3)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         try {
             driverService.deleteDriverByID(id);
 
