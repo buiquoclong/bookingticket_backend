@@ -14,4 +14,10 @@ public class SeatDTO {
     private int status;
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt;
+
+    public SeatDTO(int id, String name, int status) {
+        this.id = id;
+        this.name = name;
+        this.status = status;
+    }
 }
