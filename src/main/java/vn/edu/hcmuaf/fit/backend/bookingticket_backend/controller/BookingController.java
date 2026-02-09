@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.BookingDTO;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.BookingRequest;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.LogDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.MonthlyRevenueDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
@@ -34,8 +35,8 @@ import java.util.Map;
 @CrossOrigin("http://localhost:3000")
 public class BookingController {
     private BookingService bookingService;
-    @Autowired
-    private EmailService emailService;
+//    @Autowired
+//    private EmailService emailService;
     @Autowired
     private JwtTokenUtils jwtTokenUtils;
     @Autowired
@@ -55,26 +56,48 @@ public class BookingController {
     public List<Booking> getAllBookings(){return bookingService.getAllBooking();}
 
     // Create a new Booking
-    @PostMapping
-    public ResponseEntity<Booking> createBooking(@RequestBody BookingDTO bookingDTO){
-        return new ResponseEntity<>(bookingService.createBooking(bookingDTO), HttpStatus.CREATED);
+//    @PostMapping
+//    public ResponseEntity<Booking> createBooking(@RequestBody BookingDTO bookingDTO){
+//        return new ResponseEntity<>(bookingService.createBooking(bookingDTO), HttpStatus.CREATED);
+//    }
+    @PostMapping("/create")
+    public ResponseEntity<?> createBooking(@RequestBody BookingRequest request) {
+        try {
+            Booking booking = bookingService.createBooking(request);
+            return ResponseEntity.ok(booking);
+        } catch (RuntimeException | MessagingException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 
+    // Nhân viên đặt vé
     @PostMapping("/for-emp")
-    public ResponseEntity<Booking> createBookingForEmployee(@RequestBody BookingDTO bookingDTO, HttpServletRequest request){
+    public ResponseEntity<Booking> createBookingForEmployee(@RequestBody  BookingRequest bookingRequest, HttpServletRequest request){
         String token = jwtTokenUtils.extractJwtFromRequest(request);
         if (token == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
+        // Kiểm tra token hết hạn
+        if (jwtTokenUtils.isTokenExpired(token)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
 
-        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        int userId = jwtTokenUtils.extractUserId(token);
+        Integer userRole = jwtTokenUtils.extractRole(token);
+        if (userRole == null || userRole != 2 && userRole != 3) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         try {
-            Booking createBooking = bookingService.createBooking(bookingDTO);
+            bookingRequest.setIsPaid(1); // đã thanh toán
+            bookingRequest.setKindPay("Thanh toán tại quầy"); // nhân viên thu tiền
+            bookingRequest.setSendMail(false); // không gửi mail nếu không cần
+            Booking createBooking = bookingService.createBooking(bookingRequest);
 
             LogDTO logData =  logService.convertToLogDTO(userId, "Đặt vé", 1);
             logService.createLog(logData);
             return new ResponseEntity<>(createBooking, HttpStatus.CREATED);
         } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -122,7 +145,6 @@ public class BookingController {
             @RequestParam(required = false) Integer isPaid,
             @RequestParam(required = false) Integer roundTrip) {
         Pageable pageable = PageRequest.of(page - 1, size);
-//        Page<Booking> bookingPage = bookingService.getAllBookingPage(pageable);
         Page<Booking> bookingPage = bookingService.getAllBookingPage(pageable, id, userName, email, phone, userId , kindPay, isPaid, roundTrip);
         Map<String, Object> response = new HashMap<>();
         response.put("bookings", bookingPage.getContent());
@@ -139,8 +161,12 @@ public class BookingController {
         if (token == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
+// Kiểm tra token hết hạn
+        if (jwtTokenUtils.isTokenExpired(token)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
 
-        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        int userId = jwtTokenUtils.extractUserId(token);
 
         Booking updatedBooking;
         try {
@@ -181,16 +207,6 @@ public class BookingController {
         return new ResponseEntity<>("Booking " + id + " is deleted successfully", HttpStatus.OK);
     }
 
-    // send mail booking
-    @PostMapping("/sendBookingEmail/{bookingId}")
-    public String sendBookingEmail(@PathVariable int bookingId) {
-        try {
-            emailService.sendBookingDetailsEmail(bookingId);
-            return "Email sent successfully";
-        } catch (MessagingException e) {
-            return "Error while sending email";
-        }
-    }
     // Tổng hóa đơn
     @GetMapping("/total-bookings")
     public ResponseEntity<Long> getTotalBookings() {
@@ -206,16 +222,18 @@ public class BookingController {
 
     // thống kê doanh thu theo ngày
     @GetMapping("/total-by-day")
-    public Integer getRevenueByDay(@RequestParam("date") String date) {
+    public ResponseEntity<Integer> getRevenueByDay(@RequestParam("date") String date) {
         LocalDate localDate = LocalDate.parse(date);
-        return bookingService.getTotalRevenueByDay(localDate);
+        Integer total = bookingService.getTotalRevenueByDay(localDate);
+        return ResponseEntity.ok(total != null ? total : 0);
     }
 
     // thống kê doanh thu theo tháng
     @GetMapping("/total-by-month")
-    public Integer getRevenueByMonth(@RequestParam("yearMonth") String yearMonth) {
+    public ResponseEntity<Integer> getRevenueByMonth(@RequestParam("yearMonth") String yearMonth) {
         YearMonth ym = YearMonth.parse(yearMonth);
-        return bookingService.getTotalRevenueByMonth(ym);
+        Integer total = bookingService.getTotalRevenueByMonth(ym);
+        return ResponseEntity.ok(total != null ? total : 0);
     }
 
     @GetMapping("/total/lastNineMonths")
@@ -236,4 +254,44 @@ public class BookingController {
         Integer count = bookingService.countCancelledBookingsByMonth(ym);
         return new ResponseEntity<>(count, HttpStatus.OK);
     }
+
+    @PutMapping("/cancel/{bookingId}")
+    public ResponseEntity<?> cancelBooking(@PathVariable int bookingId, HttpServletRequest request) {
+        // Lấy token từ header
+        String token = jwtTokenUtils.extractJwtFromRequest(request);
+        if (token == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        // Kiểm tra token hết hạn
+        if (jwtTokenUtils.isTokenExpired(token)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        // Lấy thông tin user từ token
+        Integer userId = jwtTokenUtils.extractUserId(token);
+        Integer userRole = jwtTokenUtils.extractRole(token);
+
+        // Chỉ cho phép role 2 hoặc 3 hủy booking
+        if (userRole == null || (userRole != 2 && userRole != 3)) {
+            return new ResponseEntity<>("Bạn không có quyền hủy booking", HttpStatus.FORBIDDEN);
+        }
+
+        try {
+            Booking cancelledBooking = bookingService.cancelBooking(bookingId);
+
+            // Ghi log hành động
+            LogDTO logData = logService.convertToLogDTO(userId, "Hủy booking Id: " + bookingId, 2);
+            logService.createLog(logData);
+
+            return ResponseEntity.ok(cancelledBooking); // trả về Booking object
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("Lỗi khi hủy booking", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
 }

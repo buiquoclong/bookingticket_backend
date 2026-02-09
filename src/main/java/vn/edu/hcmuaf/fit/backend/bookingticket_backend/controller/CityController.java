@@ -44,13 +44,21 @@ public class CityController {
 
     // Create a new City
     @PostMapping
-    public ResponseEntity<City> createCity(@RequestPart("city") CityDTO cityDTO, @RequestPart("file") MultipartFile file, HttpServletRequest request) {
+    public ResponseEntity<City> createCity(@RequestPart("city") CityDTO cityDTO, @RequestPart(value = "file", required = false) MultipartFile file, HttpServletRequest request) {
         String token = jwtTokenUtils.extractJwtFromRequest(request);
         if (token == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
+        if (jwtTokenUtils.isTokenExpired(token)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
 
-        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        int userId = jwtTokenUtils.extractUserId(token);
+        Integer userRole = jwtTokenUtils.extractRole(token);
+
+        if (userRole == null ||  (userRole != 2 && userRole != 3)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         try {
             City city = cityService.createCity(cityDTO, file);
 
@@ -94,11 +102,17 @@ public class CityController {
                                                @RequestPart(value = "file", required = false) MultipartFile file,
                                                HttpServletRequest request) {
         String token = jwtTokenUtils.extractJwtFromRequest(request);
-        if (token == null) {
+
+        if (jwtTokenUtils.isTokenExpired(token)) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        int userId = jwtTokenUtils.extractUserId(token);
+        Integer userRole = jwtTokenUtils.extractRole(token);
+
+        if (userRole == null ||  (userRole != 2 && userRole != 3)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         try {
             City updatedCity = cityService.updateCityByID(cityDTO, file, id);
 
@@ -121,8 +135,16 @@ public class CityController {
         if (token == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
+        if (jwtTokenUtils.isTokenExpired(token)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
 
-        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        int userId = jwtTokenUtils.extractUserId(token);
+        Integer userRole = jwtTokenUtils.extractRole(token);
+
+        if (userRole == null ||  (userRole != 2 && userRole != 3)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         try {
             cityService.deleteCityByID(id);
 

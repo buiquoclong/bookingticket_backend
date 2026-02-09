@@ -53,8 +53,16 @@ public class CatchPointController {
         if (token == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
+        if (jwtTokenUtils.isTokenExpired(token)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
 
-        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        int userId = jwtTokenUtils.extractUserId(token);
+        Integer userRole = jwtTokenUtils.extractRole(token);
+
+        if (userRole == null ||  (userRole != 2 && userRole != 3)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         try {
             CatchPoint createdCatchPoint = catchPointService.createCatchPoint(catchPointDTO);
 
@@ -74,28 +82,29 @@ public class CatchPointController {
         return new ResponseEntity<>(catchPointService.getCatchPointByID(id), HttpStatus.OK);
     }
 
-    //get CatchPoint by userId
-//    @GetMapping("/user/{userId}")
-//    public ResponseEntity<List<CatchPoint>> getCatchPointByUserId(@PathVariable int userId) {
-//        List<CatchPoint> CatchPoints = CatchPointService.getCatchPointByUserId(userId);
-//        return new ResponseEntity<>(CatchPoints, HttpStatus.OK);
-//    }
 
     // phân trang
     @GetMapping("page")
     public ResponseEntity<Map<String, Object>> getAllCatchPointByPage(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String address) {
+            @RequestParam(required = false) String address,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Integer routeId) {
+
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<CatchPoint> catchPointPage = catchPointService.getAllCatchPointPage(address,pageable);
+
+        Page<CatchPoint> catchPointPage = catchPointService.getAllCatchPointPage(address, name, routeId, pageable);
+
         Map<String, Object> response = new HashMap<>();
         response.put("catchPoints", catchPointPage.getContent());
-        response.put("currentPage", catchPointPage.getNumber());
+        response.put("currentPage", catchPointPage.getNumber() + 1);
         response.put("totalItems", catchPointPage.getTotalElements());
         response.put("totalPages", catchPointPage.getTotalPages());
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
 
     // Update CatchPoint by id
     @PutMapping("{id}")
@@ -104,8 +113,17 @@ public class CatchPointController {
         if (token == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
+        if (jwtTokenUtils.isTokenExpired(token)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
 
-        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        int userId = jwtTokenUtils.extractUserId(token);
+        Integer userRole = jwtTokenUtils.extractRole(token);
+
+        if (userRole == null ||  (userRole != 2 && userRole != 3)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
         try {
             CatchPoint updatedCatchPoint = catchPointService.updateCatchPointByID(catchPointDTO, id);
 
@@ -128,8 +146,16 @@ public class CatchPointController {
         if (token == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
+        if (jwtTokenUtils.isTokenExpired(token)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
 
-        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        int userId = jwtTokenUtils.extractUserId(token);
+        Integer userRole = jwtTokenUtils.extractRole(token);
+
+        if (userRole == null ||  (userRole != 2 && userRole != 3)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         try {
             catchPointService.deleteCatchPointByID(id);
 

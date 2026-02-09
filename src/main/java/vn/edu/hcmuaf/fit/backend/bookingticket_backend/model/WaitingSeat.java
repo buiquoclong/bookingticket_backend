@@ -22,7 +22,7 @@ public class WaitingSeat {
     private Trip trip;
 
     @ManyToOne
-    @JoinColumn(name = "ghe_id", referencedColumnName = "id")
+    @JoinColumn(name = "seat_id", referencedColumnName = "id")
     private Seat seat;
 
     @Column(name = "created_at")

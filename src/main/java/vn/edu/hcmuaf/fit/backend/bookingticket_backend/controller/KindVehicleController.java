@@ -49,7 +49,16 @@ public class KindVehicleController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        if (jwtTokenUtils.isTokenExpired(token)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        int userId = jwtTokenUtils.extractUserId(token);
+        Integer userRole = jwtTokenUtils.extractRole(token);
+
+        if (userRole == null ||  (userRole != 2 && userRole != 3)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         try {
             KindVehicle createKindVehicle = kindVehicleService.createKindVehicle(kindVehicleDTO);
 
@@ -75,7 +84,16 @@ public class KindVehicleController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        if (jwtTokenUtils.isTokenExpired(token)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        int userId = jwtTokenUtils.extractUserId(token);
+        Integer userRole = jwtTokenUtils.extractRole(token);
+
+        if (userRole == null ||  (userRole != 2 && userRole != 3)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         try{
             KindVehicle updateKindVehicle = kindVehicleService.updateKindVehicleByID(kindVehicleDTO, id);
 
@@ -97,7 +115,16 @@ public class KindVehicleController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        if (jwtTokenUtils.isTokenExpired(token)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        int userId = jwtTokenUtils.extractUserId(token);
+        Integer userRole = jwtTokenUtils.extractRole(token);
+
+        if (userRole == null ||  (userRole != 2 && userRole != 3)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         try {
             kindVehicleService.deleteKindVehicleByID(id);
 
