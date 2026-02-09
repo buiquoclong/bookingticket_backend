@@ -57,37 +57,44 @@ public class ContactController {
     // phân trang
     @GetMapping("page")
     public ResponseEntity<Map<String, Object>> getAllContactByPage(
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String email) {
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String content) {
+
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<Contact> contactPage = contactService.getAllContactPage(email,pageable);
+        Page<Contact> contactPage = contactService.getAllContactPage(email, name, title, content, pageable);
+
         Map<String, Object> response = new HashMap<>();
         response.put("contacts", contactPage.getContent());
-        response.put("currentPage", contactPage.getNumber());
+        response.put("currentPage", contactPage.getNumber() + 1);
         response.put("totalItems", contactPage.getTotalElements());
         response.put("totalPages", contactPage.getTotalPages());
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
 
     // Update Contact by id
     @PutMapping("{id}")
     public ResponseEntity<Contact> updateContactById(@PathVariable ("id") int id, @RequestBody ContactDTO contactDTO, HttpServletRequest request){
-//        String token = jwtTokenUtils.extractJwtFromRequest(request);
-//        if (token == null) {
-//            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-//        }
-//
-//        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
-//        LogDTO logData =  logService.convertToLogDTO(userId, "Cập nhật liên hệ Id: "+ id, 2);
-//        logService.createLog(logData);
 
         String token = jwtTokenUtils.extractJwtFromRequest(request);
         if (token == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
+        if (jwtTokenUtils.isTokenExpired(token)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
 
-        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        int userId = jwtTokenUtils.extractUserId(token);
+        Integer userRole = jwtTokenUtils.extractRole(token);
+
+        if (userRole == null ||  (userRole != 2 && userRole != 3)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         try {
             Contact updateContact = contactService.updateContactByID(contactDTO, id);
 
@@ -110,8 +117,16 @@ public class ContactController {
         if (token == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
+        if (jwtTokenUtils.isTokenExpired(token)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
 
-        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        int userId = jwtTokenUtils.extractUserId(token);
+        Integer userRole = jwtTokenUtils.extractRole(token);
+
+        if (userRole == null ||  (userRole != 2 && userRole != 3)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         try {
             contactService.deleteContactByID(id);
 
