@@ -50,7 +50,16 @@ public class TripController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        if (jwtTokenUtils.isTokenExpired(token)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        int userId = jwtTokenUtils.extractUserId(token);
+        Integer userRole = jwtTokenUtils.extractRole(token);
+
+        if (userRole == null ||  (userRole != 2 && userRole != 3)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         try {
             Trip createTrip = tripService.createTrip(tripDTO);
 
@@ -68,20 +77,7 @@ public class TripController {
         return new ResponseEntity<>(tripService.getTripByID(id), HttpStatus.OK);
     }
 
-    // phân trang
-//    @GetMapping("page")
-//    public ResponseEntity<Map<String, Object>> getAllTripByPage(
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "10") int size) {
-//        Pageable pageable = PageRequest.of(page - 1, size);
-//        Page<Trip> tripPage = tripService.getAllTripPage(pageable);
-//        Map<String, Object> response = new HashMap<>();
-//        response.put("trips", tripPage.getContent());
-//        response.put("currentPage", tripPage.getNumber());
-//        response.put("totalItems", tripPage.getTotalElements());
-//        response.put("totalPages", tripPage.getTotalPages());
-//        return new ResponseEntity<>(response, HttpStatus.OK);
-//    }
+
     @GetMapping("page")
     public ResponseEntity<Map<String, Object>> getAllTripByPage(
             @RequestParam(defaultValue = "0") int page,
@@ -106,7 +102,16 @@ public class TripController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        if (jwtTokenUtils.isTokenExpired(token)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        int userId = jwtTokenUtils.extractUserId(token);
+        Integer userRole = jwtTokenUtils.extractRole(token);
+
+        if (userRole == null ||  (userRole != 2 && userRole != 3)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         try{
             Trip updateTrip = tripService.updateTripByID(tripDTO, id);
 
@@ -133,7 +138,16 @@ public class TripController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        if (jwtTokenUtils.isTokenExpired(token)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        int userId = jwtTokenUtils.extractUserId(token);
+        Integer userRole = jwtTokenUtils.extractRole(token);
+
+        if (userRole == null ||  (userRole != 2 && userRole != 3)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         try {
             tripService.deleteTripByID(id);
 

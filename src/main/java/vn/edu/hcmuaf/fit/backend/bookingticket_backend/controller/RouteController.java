@@ -56,7 +56,16 @@ public class RouteController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        if (jwtTokenUtils.isTokenExpired(token)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        int userId = jwtTokenUtils.extractUserId(token);
+        Integer userRole = jwtTokenUtils.extractRole(token);
+
+        if (userRole == null ||  (userRole != 2 && userRole != 3)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         try {
             Route createRoute = routeService.createRoute(routeDTO);
 
@@ -79,16 +88,26 @@ public class RouteController {
     public ResponseEntity<Map<String, Object>> getAllRouteByPage(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String name) {
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String khoangCach,
+            @RequestParam(required = false) String timeOfRoute,
+            @RequestParam(required = false) Integer status,
+            @RequestParam(required = false) Integer diemdi,
+            @RequestParam(required = false) Integer diemden) {
+
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<Route> routePage = routeService.getAllRoutePage(name, pageable);
+        Page<Route> routePage = routeService.getAllRoutePage(name, khoangCach, timeOfRoute, status, diemdi, diemden, pageable);
+
         Map<String, Object> response = new HashMap<>();
         response.put("routes", routePage.getContent());
         response.put("currentPage", routePage.getNumber());
         response.put("totalItems", routePage.getTotalElements());
         response.put("totalPages", routePage.getTotalPages());
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+
 
     // Update Route by id
     @PutMapping("{id}")
@@ -98,7 +117,16 @@ public class RouteController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        if (jwtTokenUtils.isTokenExpired(token)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        int userId = jwtTokenUtils.extractUserId(token);
+        Integer userRole = jwtTokenUtils.extractRole(token);
+
+        if (userRole == null ||  (userRole != 2 && userRole != 3)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         try{
             Route updateRoute = routeService.updateRouteByID(routeDTO, id);
 
@@ -120,7 +148,16 @@ public class RouteController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        if (jwtTokenUtils.isTokenExpired(token)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        int userId = jwtTokenUtils.extractUserId(token);
+        Integer userRole = jwtTokenUtils.extractRole(token);
+
+        if (userRole == null ||  (userRole != 2 && userRole != 3)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         try {
             routeService.deleteRouteByID(id);
 
