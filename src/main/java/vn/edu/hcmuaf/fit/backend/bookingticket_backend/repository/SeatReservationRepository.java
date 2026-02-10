@@ -13,4 +13,5 @@ import java.util.List;
 public interface SeatReservationRepository extends JpaRepository<SeatReservation, Integer>, JpaSpecificationExecutor<SeatReservation> {
     List<SeatReservation> findByTrip_Id(int tripId);
     List<SeatReservation> findByBooking_Id(int bookingId);
+    boolean existsByTripIdAndSeatIdIn(int tripId, List<Integer> seatIds);
 }
