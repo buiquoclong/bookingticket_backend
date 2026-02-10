@@ -11,4 +11,7 @@ import java.util.Optional;
 @Repository
 public interface SeatRepository extends JpaRepository<Seat, Integer>, JpaSpecificationExecutor<Seat> {
     List<Seat> findAllByKindVehicleId(int kindVehicleId);
+    Optional<Seat> findByName(String name);
+    // Tìm tất cả Seat theo tên ghế + kindVehicleId
+    List<Seat> findByNameAndKindVehicle_Id(String name, int kindVehicleId);
 }

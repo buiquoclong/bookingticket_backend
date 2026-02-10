@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.LogDTO;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.SeatCheckRequest;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.SeatDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Seat;
@@ -48,19 +49,24 @@ public class SeatController {
     // get all seat by page
     @GetMapping("page")
     public ResponseEntity<Map<String, Object>> getAllSeatByPage(
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String name,
-            @RequestParam(required = false) String kindVehicleName) {
+            @RequestParam(required = false) Integer status,
+            @RequestParam(required = false) Integer kindVehicleId) {
+
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<Seat> seatPage = seatService.getAllSeatPage(name, kindVehicleName, pageable);
+        Page<Seat> seatPage = seatService.getAllSeatPage(name, status, kindVehicleId, pageable);
+
         Map<String, Object> response = new HashMap<>();
         response.put("seats", seatPage.getContent());
-        response.put("currentPage", seatPage.getNumber());
+        response.put("currentPage", seatPage.getNumber() + 1);
         response.put("totalItems", seatPage.getTotalElements());
         response.put("totalPages", seatPage.getTotalPages());
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
     // Create a new Seat
     @PostMapping
     public ResponseEntity<Seat> createSeat(@RequestBody SeatDTO seatDTO, HttpServletRequest request){
@@ -70,7 +76,16 @@ public class SeatController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        if (jwtTokenUtils.isTokenExpired(token)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        int userId = jwtTokenUtils.extractUserId(token);
+        Integer userRole = jwtTokenUtils.extractRole(token);
+
+        if (userRole == null ||  (userRole != 2 && userRole != 3)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         try {
             Seat createSeat = seatService.createSeat(seatDTO);
 
@@ -97,7 +112,16 @@ public class SeatController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        if (jwtTokenUtils.isTokenExpired(token)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        int userId = jwtTokenUtils.extractUserId(token);
+        Integer userRole = jwtTokenUtils.extractRole(token);
+
+        if (userRole == null ||  (userRole != 2 && userRole != 3)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         try{
             Seat updateSeat = seatService.updateSeatByID(seatDTO, id);
 
@@ -119,7 +143,16 @@ public class SeatController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        if (jwtTokenUtils.isTokenExpired(token)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        int userId = jwtTokenUtils.extractUserId(token);
+        Integer userRole = jwtTokenUtils.extractRole(token);
+
+        if (userRole == null ||  (userRole != 2 && userRole != 3)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         try {
             seatService.deleteSeatByID(id);
 
@@ -133,5 +166,32 @@ public class SeatController {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/trip/{tripId}/kindVehicle/{kindVehicleId}")
+    public List<SeatDTO> getSeats(@PathVariable int tripId,
+                                  @PathVariable int kindVehicleId) {
+        return seatService.getSeatsByTrip(tripId, kindVehicleId);
+    }
+
+    // API kiểm tra ghế cả lượt đi và lượt về
+    @PostMapping("/check-roundtrip")
+    public ResponseEntity<Map<String, Object>> checkSeatsRoundTrip(
+            @RequestBody SeatCheckRequest request) {
+
+        boolean conflictedTrip = seatService.checkSeatsConflict(
+                request.getTripId(), request.getSeatIds());
+        boolean conflictedTripReturn = seatService.checkSeatsConflict(
+                request.getTripIdReturn(), request.getSeatIdsReturn());
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("conflictedTrip", conflictedTrip);
+        response.put("conflictedTripReturn", conflictedTripReturn);
+        response.put("conflicted", conflictedTrip || conflictedTripReturn);
+        response.put("message", (conflictedTrip || conflictedTripReturn) ?
+                "Một hoặc nhiều ghế đã được đặt/chờ đặt." :
+                "Tất cả ghế đều khả dụng.");
+
+        return ResponseEntity.ok(response);
     }
 }
