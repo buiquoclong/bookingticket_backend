@@ -44,17 +44,27 @@ public class UserController {
     public String loginToken(@RequestBody LoginDTO loginDTO){
         return userService.login(loginDTO);
     }
+
+
     @GetMapping("/token")
-    public ResponseEntity<String> getToken(HttpServletRequest request) {
+    public ResponseEntity<?> getToken(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session != null) {
             String token = (String) session.getAttribute("token");
             if (token != null) {
-                session.removeAttribute("token"); // Xóa token khỏi session sau khi lấy
-                return ResponseEntity.ok(token);
+                // 🔍 Kiểm tra token hết hạn
+                if (jwtTokenUtils.isTokenExpired(token)) {
+                    session.removeAttribute("token");
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                            .body(Map.of("message", "Token đã hết hạn"));
+                }
+
+                session.removeAttribute("token"); // ✅ Xóa token sau khi lấy thành công
+                return ResponseEntity.ok(Map.of("token", token));
             }
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token not found");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("message", "Token không tồn tại"));
     }
 
     // Get all User
@@ -62,7 +72,43 @@ public class UserController {
     public List<User> getAllUser() {
         return userService.getAllUser();
     }
+    // ✅ Admin tạo tài khoản mới
+    @PostMapping("create-by-admin")
+    public ResponseEntity<String> createUserByAdmin(@RequestBody UserDTO userDTO, HttpServletRequest request) {
+        String token = jwtTokenUtils.extractJwtFromRequest(request);
+        if (token == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Thiếu token xác thực");
+        }
 
+        if (jwtTokenUtils.isTokenExpired(token)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        int adminId = jwtTokenUtils.extractUserId(token);
+        Integer userRole = jwtTokenUtils.extractRole(token);
+
+        if (userRole == null ||   userRole != 3) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
+
+        try {
+            String response = userService.createUserByAdmin(userDTO);
+
+            // Ghi log
+            LogDTO logData = logService.convertToLogDTO(
+                    adminId,
+                    "Admin tạo tài khoản người dùng mới: " + userDTO.getEmail(),
+                    1
+            );
+            logService.createLog(logData);
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Lỗi khi tạo tài khoản: " + e.getMessage());
+        }
+    }
     // Create a new User
     @PostMapping
     public String creatUser(@RequestBody UserDTO userDTO, HttpServletRequest request){
@@ -72,7 +118,7 @@ public class UserController {
             return null;
         }
 
-        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        int userId = jwtTokenUtils.extractUserId(token);
         try {
             String createUser = userService.createUser(userDTO);
 
@@ -84,6 +130,7 @@ public class UserController {
             return "" + e;
         }
     }
+
     @PostMapping("register")
     public String register(@RequestBody UserDTO userDTO){
         return userService.createUser(userDTO);
@@ -96,19 +143,6 @@ public class UserController {
     }
 
     // phân trang
-//    @GetMapping("page")
-//    public ResponseEntity<Map<String, Object>> getAllUserByPage1(
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "10") int size) {
-//        Pageable pageable = PageRequest.of(page - 1, size);
-//        Page<User> userPage = userService.getAllUserPage(pageable);
-//        Map<String, Object> response = new HashMap<>();
-//        response.put("users", userPage.getContent());
-//        response.put("currentPage", userPage.getNumber());
-//        response.put("totalItems", userPage.getTotalElements());
-//        response.put("totalPages", userPage.getTotalPages());
-//        return new ResponseEntity<>(response, HttpStatus.OK);
-//    }
     @GetMapping("page")
     public ResponseEntity<Map<String, Object>> getAllUserByPage(
             @RequestParam(defaultValue = "0") int page,
@@ -138,8 +172,11 @@ public class UserController {
         if (token == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
+        if (jwtTokenUtils.isTokenExpired(token)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
 
-        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        int userId = jwtTokenUtils.extractUserId(token);
         User existingUser = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User", "Id", id));
         // Save old values for comparison
         int oldRole = existingUser.getRole();
@@ -181,6 +218,7 @@ public class UserController {
 
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
+
     @PutMapping("update/{id}")
     public ResponseEntity<User> ClientUpdateUserById(@PathVariable ("id") int id, @RequestBody UserDTO userDTO){
         return new ResponseEntity<>(userService.updateUserByID(userDTO, id), HttpStatus.OK);
@@ -201,8 +239,43 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+
+    @PostMapping("/confirm-account")
+    public ResponseEntity<?> confirmAccount(@RequestBody Map<String, String> requestBody) {
+        try {
+            int userId = Integer.parseInt(requestBody.get("userId"));
+            String token = requestBody.get("token");
+
+            if (token == null || token.isBlank()) {
+                return ResponseEntity.badRequest().body(Map.of("message", "Thiếu mã xác thực"));
+            }
+
+            String result = userService.confirmAccount(userId, token);
+
+            if ("Xác thực tài khoản thành công".equals(result)) {
+                logService.createLog(
+                        logService.convertToLogDTO(userId, result, 2)
+                );
+                return ResponseEntity.ok(Map.of("message", result));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("message", result));
+            }
+
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", "ID người dùng không hợp lệ"));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Lỗi hệ thống. Vui lòng thử lại sau."));
+        }
+    }
+
+
     // gửi lại mã xác thực
-    @PostMapping("change-confirm")
+    @PostMapping("change-confirmCode")
     public ResponseEntity<String> changeConfirm(@RequestBody Map<String, String> requestBody) {
         Integer userId = Integer.valueOf(requestBody.get("userId"));
         String response = userService.sendMailConfirmAccount(userId);

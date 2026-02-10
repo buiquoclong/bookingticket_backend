@@ -57,7 +57,7 @@ public class VehicleController {
 //            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 //        }
 //
-//        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+//        int userId = jwtTokenUtils.extractUserId(token);
 //        LogDTO logData =  logService.convertToLogDTO(userId, "Tạo phương tiện tên: "+ vehicleDTO.getName(), 1);
 //        logService.createLog(logData);
 
@@ -66,7 +66,16 @@ public class VehicleController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        if (jwtTokenUtils.isTokenExpired(token)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        int userId = jwtTokenUtils.extractUserId(token);
+        Integer userRole = jwtTokenUtils.extractRole(token);
+
+        if (userRole == null ||  (userRole != 2 && userRole != 3)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         try {
             Vehicle createVehicle = vehicleService.createVehicle(vehicleDTO);
 
@@ -87,20 +96,26 @@ public class VehicleController {
     // phân trang
     @GetMapping("page")
     public ResponseEntity<Map<String, Object>> getAllVehicleByPage(
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String name,
-            @RequestParam(required = false) String kindVehiclename,
-            @RequestParam(required = false) String vehicleNumber) {
+            @RequestParam(required = false) Integer kindVehicleId,
+            @RequestParam(required = false) String vehicleNumber,
+            @RequestParam(required = false) Integer value,
+            @RequestParam(required = false) Integer status
+    ) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<Vehicle> vehiclePage = vehicleService.getAllVehiclePage(name, kindVehiclename, vehicleNumber, pageable);
+        Page<Vehicle> vehiclePage = vehicleService.getAllVehiclePage(name, kindVehicleId, vehicleNumber, value, status, pageable);
+
         Map<String, Object> response = new HashMap<>();
         response.put("vehicles", vehiclePage.getContent());
-        response.put("currentPage", vehiclePage.getNumber());
+        response.put("currentPage", vehiclePage.getNumber() + 1);
         response.put("totalItems", vehiclePage.getTotalElements());
         response.put("totalPages", vehiclePage.getTotalPages());
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
 
     // Update Vehicle by id
     @PutMapping("{id}")
@@ -110,7 +125,16 @@ public class VehicleController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        if (jwtTokenUtils.isTokenExpired(token)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        int userId = jwtTokenUtils.extractUserId(token);
+        Integer userRole = jwtTokenUtils.extractRole(token);
+
+        if (userRole == null ||  (userRole != 2 && userRole != 3)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         try {
             Vehicle updateVehicle = vehicleService.updateVehicleByID(vehicleDTO, id);
 
@@ -132,7 +156,16 @@ public class VehicleController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        int userId = Integer.parseInt(jwtTokenUtils.extractUserId(token));
+        if (jwtTokenUtils.isTokenExpired(token)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        int userId = jwtTokenUtils.extractUserId(token);
+        Integer userRole = jwtTokenUtils.extractRole(token);
+
+        if (userRole == null ||  (userRole != 2 && userRole != 3)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         try {
             vehicleService.deleteVehicleByID(id);
 
