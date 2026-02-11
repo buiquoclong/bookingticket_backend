@@ -1,8 +1,10 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.service;
 
+import jakarta.mail.MessagingException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.BookingDTO;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.BookingRequest;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.MonthlyRevenueDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Booking;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.BookingDetail;
@@ -14,7 +16,7 @@ import java.time.YearMonth;
 import java.util.List;
 
 public interface BookingService {
-    Booking createBooking(BookingDTO bookingDTO);
+    Booking createBooking(BookingRequest bookingRequest) throws MessagingException;
     List<Booking> getAllBooking();
     Booking getBookingByID(int id);
     Booking updateBookingByID(BookingDTO bookingDTO, int id);
@@ -39,6 +41,6 @@ public interface BookingService {
     // Số vé đã bị hủy
     Integer countCancelledBookingsByMonth(YearMonth yearMonth);
     Page<Booking> getAllBookingPage(Pageable pageable, Integer id, String userName, String email, String phone, Integer userId, String kindPay, Integer isPaid, Integer roundTrip);
-
+    Booking cancelBooking(int bookingId);
 
 }
