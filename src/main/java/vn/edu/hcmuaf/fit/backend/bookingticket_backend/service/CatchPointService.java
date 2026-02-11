@@ -15,6 +15,6 @@ public interface CatchPointService {
     CatchPoint getCatchPointByID(int id);
     CatchPoint updateCatchPointByID(CatchPointDTO catchPointDTO, int id);
     void deleteCatchPointByID(int id);
-    Page<CatchPoint> getAllCatchPointPage(String address,Pageable pageable);
+    Page<CatchPoint> getAllCatchPointPage(String address, String name, Integer routeId, Pageable pageable);
     List<CatchPoint> getCatchPointsByRouteId(int routeId);
 }
