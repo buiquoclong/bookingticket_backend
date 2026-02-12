@@ -17,5 +17,7 @@ public interface SeatService {
     void deleteSeatByID(int id);
     @Query("SELECT s FROM Seat s JOIN FETCH s.kindVehicle kv WHERE kv.id = :kindVehicleId")
     List<Seat> getAllSeatsByKindVehicleId(@Param("kindVehicleId") int kindVehicleId);
-    Page<Seat> getAllSeatPage(String name, String kindVehicleName, Pageable pageable);
+    public Page<Seat> getAllSeatPage(String name, Integer status, Integer kindVehicleId, Pageable pageable);
+    List<SeatDTO> getSeatsByTrip(int tripId, int kindVehicleId);
+    boolean checkSeatsConflict(int tripId, List<Integer> seatIds);
 }
