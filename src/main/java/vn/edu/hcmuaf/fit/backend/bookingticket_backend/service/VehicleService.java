@@ -17,5 +17,5 @@ public interface VehicleService {
     void deleteVehicleByID(int id);
     List<Vehicle> getVehiclesByKindVehicleId(int kindVehicleId);
     List<Vehicle> findAvailableVehiclesByKindVehicleId(int kindVehicleId, LocalDate dayStart);
-    Page<Vehicle> getAllVehiclePage(String name, String kindVehiclename, String vehicleNumber, Pageable pageable);
+    public Page<Vehicle> getAllVehiclePage(String name, Integer kindVehicleId, String vehicleNumber, Integer value, Integer status, Pageable pageable);
 }

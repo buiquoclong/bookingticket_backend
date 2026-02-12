@@ -14,4 +14,5 @@ public interface WaitingSeatService {
     void deleteWaitingSeatByID(int id);
     void deleteWaitingSeatByTripAndSeatId(WaitingSeatDTO waitingSeatDTO);
     List<WaitingSeat> getWaitingSeatsByTripId(int tripId);
+    public void deleteWaitingSeatsBatch(int tripId, List<Integer> seatIds);
 }
