@@ -19,4 +19,5 @@ public interface TripService {
     List<Trip> searchTrips(TripSearchDTO tripSearchDTO);
     Page<Trip> getAllTripPage(Pageable pageable);
     Page<Trip> getTrips(Integer routeId, LocalDate dayStart, Pageable pageable);
+    void updateTripSeats(int tripId, List<Integer> seatIds);
 }
