@@ -67,10 +67,14 @@ public class CatchPointServiceImpl implements CatchPointService {
 //    }
 
     @Override
-    public Page<CatchPoint> getAllCatchPointPage(String address, Pageable pageable) {
-        Specification<CatchPoint> spec = Specification.where(CatchPointSpecification.hasAddress(address));
-        return catchPointRepository.findAll(spec,pageable);
+    public Page<CatchPoint> getAllCatchPointPage(String address, String name, Integer routeId, Pageable pageable) {
+        Specification<CatchPoint> spec = Specification.where(CatchPointSpecification.hasAddress(address))
+                .and(CatchPointSpecification.hasName(name))
+                .and(CatchPointSpecification.hasRouteId(routeId));
+
+        return catchPointRepository.findAll(spec, pageable);
     }
+
 
     @Override
     public List<CatchPoint> getCatchPointsByRouteId(int routeId) {
