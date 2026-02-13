@@ -64,8 +64,14 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public Page<Contact> getAllContactPage(String email, Pageable pageable) {
-        Specification<Contact> spec = Specification.where(ContactSpecification.hasEmail(email));
+    public Page<Contact> getAllContactPage(String email, String name, String title, String content, Pageable pageable) {
+        Specification<Contact> spec = Specification
+                .where(ContactSpecification.hasEmail(email))
+                .and(ContactSpecification.hasName(name))
+                .and(ContactSpecification.hasTitle(title))
+                .and(ContactSpecification.hasContent(content));
+
         return contactRepository.findAll(spec, pageable);
     }
+
 }

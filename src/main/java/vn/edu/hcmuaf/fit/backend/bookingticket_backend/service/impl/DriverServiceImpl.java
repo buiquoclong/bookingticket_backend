@@ -59,7 +59,7 @@ public class DriverServiceImpl implements DriverService {
         existingDriver.setName(driverDTO.getName());
         existingDriver.setEmail(driverDTO.getEmail());
         existingDriver.setPhone(driverDTO.getPhone());
-        existingDriver.setStatus(1);
+        existingDriver.setStatus(driverDTO.getStatus());
         existingDriver.setUpdatedAt(LocalDateTime.now());
         return driverRepository.save(existingDriver);
     }
