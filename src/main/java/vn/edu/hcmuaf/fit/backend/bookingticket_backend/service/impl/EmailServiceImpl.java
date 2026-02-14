@@ -92,4 +92,29 @@ public class EmailServiceImpl implements EmailService {
 
         mailSender.send(message);
     }
+
+    @Override
+    public void sendAccountCreatedByAdminEmail(String to, String name, String password) throws MessagingException {
+        Context context = new Context();
+        context.setVariable("name", name);
+        context.setVariable("email", to);
+        context.setVariable("password", password);
+
+        String content = templateEngine.process("create_user", context);
+
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(
+                message,
+                MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+                StandardCharsets.UTF_8.name()
+        );
+
+        helper.setFrom("roadlineboooking@gmail.com");
+        helper.setTo(to);
+        helper.setText(content, true);
+        helper.setSubject("Tài khoản của bạn đã được tạo thành công");
+
+        mailSender.send(message);
+    }
+
 }
