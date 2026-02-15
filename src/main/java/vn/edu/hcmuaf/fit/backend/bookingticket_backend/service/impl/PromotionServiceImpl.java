@@ -27,7 +27,11 @@ public class PromotionServiceImpl implements PromotionService {
     @Override
     public Promotion createPromotion(PromotionDTO promotionDTO) {
         Promotion promotion = new Promotion();
-        promotion.setCode(generateCode());
+        if (promotionDTO.getCode() != null && !promotionDTO.getCode().isEmpty()) {
+            promotion.setCode(promotionDTO.getCode());
+        } else {
+            promotion.setCode(generateCode());
+        }
         promotion.setDescription(promotionDTO.getDescription());
         promotion.setStartDay(promotionDTO.getStartDay());
         promotion.setEndDay(promotionDTO.getEndDay());
@@ -79,10 +83,15 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public Page<Promotion> getAllPromotionPage(String description, Pageable pageable) {
-        Specification<Promotion> spec = Specification.where(PromotionSpecifications.hasDes(description));
+    public Page<Promotion> getAllPromotionPage(String code, String description, LocalDateTime startDay, LocalDateTime endDay, Pageable pageable) {
+        Specification<Promotion> spec = Specification.where(PromotionSpecifications.hasCode(code))
+                .and(PromotionSpecifications.hasDescription(description))
+                .and(PromotionSpecifications.hasStartDayAfter(startDay))
+                .and(PromotionSpecifications.hasEndDayBefore(endDay));
+
         return promotionRepository.findAll(spec, pageable);
     }
+
 
     @Override
     public String checkPromotionCode(String code) {
