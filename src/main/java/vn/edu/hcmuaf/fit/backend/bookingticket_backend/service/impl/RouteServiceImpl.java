@@ -88,10 +88,27 @@ public class RouteServiceImpl implements RouteService {
     }
 
     @Override
-    public Page<Route> getAllRoutePage(String name, Pageable pageable) {
-        Specification<Route> spec = Specification.where(RouteSpecification.hasName(name));
+    public Page<Route> getAllRoutePage(
+            String name,
+            String khoangCach,
+            String timeOfRoute,
+            Integer status,
+            Integer diemdi,
+            Integer diemden,
+            Pageable pageable) {
+
+        Specification<Route> spec = Specification
+                .where(RouteSpecification.hasName(name))
+                .and(RouteSpecification.hasKhoangCach(khoangCach))
+                .and(RouteSpecification.hasTimeOfRoute(timeOfRoute))
+                .and(RouteSpecification.hasStatus(status))
+                .and(RouteSpecification.hasDiemDi(diemdi))
+                .and(RouteSpecification.hasDiemDen(diemden));
+
         return routeRepository.findAll(spec, pageable);
     }
+
+
 
     @Override
     public List<Route> getActiveRoutes() {
