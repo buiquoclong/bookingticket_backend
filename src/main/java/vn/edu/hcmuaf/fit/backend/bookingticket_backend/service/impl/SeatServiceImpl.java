@@ -1,28 +1,36 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.dto.SeatDTO;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.exception.ResourceNotFoundException;
-import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.KindVehicle;
-import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Seat;
-import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Trip;
-import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.Vehicle;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.model.*;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.KindVehicleRepository;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.SeatRepository;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.SeatReservationRepository;
+import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.WaitingSeatRepository;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.specification.SeatSpecifications;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.repository.specification.TripSpecifications;
 import vn.edu.hcmuaf.fit.backend.bookingticket_backend.service.SeatService;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class SeatServiceImpl implements SeatService {
     private SeatRepository seatRepository;
     private KindVehicleRepository kindVehicleRepository;
+    @Autowired
+    private SeatReservationRepository seatReservationRepository;
+    @Autowired
+    private WaitingSeatRepository waitingSeatRepository;
+
 
 //    public SeatServiceImpl(SeatRepository seatRepository) {
 //        this.seatRepository = seatRepository;
@@ -56,12 +64,42 @@ public class SeatServiceImpl implements SeatService {
         return seatRepository.findAllByKindVehicleId(kindVehicleId);
     }
 
-    // phân trang
     @Override
-    public Page<Seat> getAllSeatPage(String name, String kindVehicleName, Pageable pageable) {
-        Specification<Seat> spec = Specification.where(SeatSpecifications.hasName(name)
-                .and(SeatSpecifications.hasUserKindVehicleName(kindVehicleName)));
+    public Page<Seat> getAllSeatPage(String name, Integer status, Integer kindVehicleId, Pageable pageable) {
+        Specification<Seat> spec = Specification.where(SeatSpecifications.hasName(name))
+                .and(SeatSpecifications.hasStatus(status))
+                .and(SeatSpecifications.hasKindVehicleId(kindVehicleId));
+
         return seatRepository.findAll(spec, pageable);
+    }
+
+    @Override
+    public List<SeatDTO> getSeatsByTrip(int tripId, int kindVehicleId) {
+        List<Seat> seats = seatRepository.findAllByKindVehicleId(kindVehicleId);
+        List<SeatReservation> reservedSeats = seatReservationRepository.findByTrip_Id(tripId);
+        List<WaitingSeat> waitingSeats = waitingSeatRepository.findByTrip_Id(tripId);
+
+        return seats.stream().map(seat -> {
+            boolean isReserved = reservedSeats.stream()
+                    .anyMatch(r -> r.getSeat().getId() == seat.getId());
+            boolean isWaiting = waitingSeats.stream()
+                    .anyMatch(w -> w.getSeat().getId() == seat.getId());
+
+            int status = (isReserved || isWaiting) ? 1 : 0;
+
+            return new SeatDTO(seat.getId(), seat.getName(), status);
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean checkSeatsConflict(int tripId, List<Integer> seatIds) {
+        if (seatIds == null || seatIds.isEmpty()) {
+            return false;
+        }
+        boolean existsReserved = seatReservationRepository.existsByTripIdAndSeatIdIn(tripId, seatIds);
+        boolean existsWaiting = waitingSeatRepository.existsByTripIdAndSeatIdIn(tripId, seatIds);
+
+        return existsReserved || existsWaiting;
     }
 
     @Override
