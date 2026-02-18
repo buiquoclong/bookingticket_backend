@@ -76,25 +76,61 @@ public class TripServiceImpl implements TripService {
 
     @Override
     public Trip updateTripByID(TripDTO tripDTO, int id) {
-        Trip existingTrip = tripRepository.findById(id).orElseThrow(()->
+        Trip existingTrip = tripRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("Trip", "Id", id));
-        Route route =  routeRepository.findById(tripDTO.getRouteId()).orElseThrow(() ->
-                new ResourceNotFoundException("Route", "Id", tripDTO.getRouteId()));
-        Vehicle vehicle =  vehicleRepository.findById(tripDTO.getVehicleId()).orElseThrow(() ->
-                new ResourceNotFoundException("Vehicle", "Id", tripDTO.getVehicleId()));
-        Driver driver =  driverRepository.findById(tripDTO.getDriverId()).orElseThrow(() ->
-                new ResourceNotFoundException("Driver", "Id", tripDTO.getDriverId()));
-        existingTrip.setRoute(route);
-        existingTrip.setVehicle(vehicle);
-        existingTrip.setDayStart(tripDTO.getDayStart());
-        existingTrip.setTimeStart(tripDTO.getTimeStart());
-        existingTrip.setPrice(tripDTO.getPrice());
-        existingTrip.setDriver(driver);
-        existingTrip.setEmptySeat(tripDTO.getEmptySeat());
-        existingTrip.setStatus(tripDTO.getStatus());
+
+        // ✅ Nếu có routeId thì mới cập nhật
+        if (tripDTO.getRouteId() > 0) {
+            Route route = routeRepository.findById(tripDTO.getRouteId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Route", "Id", tripDTO.getRouteId()));
+            existingTrip.setRoute(route);
+        }
+
+        // ✅ Nếu có vehicleId thì mới cập nhật
+        if (tripDTO.getVehicleId() > 0) {
+            Vehicle vehicle = vehicleRepository.findById(tripDTO.getVehicleId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Vehicle", "Id", tripDTO.getVehicleId()));
+            existingTrip.setVehicle(vehicle);
+        }
+
+        // ✅ Nếu có driverId thì mới cập nhật
+        if (tripDTO.getDriverId() > 0) {
+            Driver driver = driverRepository.findById(tripDTO.getDriverId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Driver", "Id", tripDTO.getDriverId()));
+            existingTrip.setDriver(driver);
+        }
+
+        // ✅ Kiểm tra ngày khởi hành
+        if (tripDTO.getDayStart() != null) {
+            existingTrip.setDayStart(tripDTO.getDayStart());
+        }
+
+        // ✅ Kiểm tra giờ khởi hành
+        if (tripDTO.getTimeStart() != null) {
+            existingTrip.setTimeStart(tripDTO.getTimeStart());
+        }
+
+        // ✅ Kiểm tra giá vé
+        if (tripDTO.getPrice() > 0) {
+            existingTrip.setPrice(tripDTO.getPrice());
+        }
+
+        // ✅ Kiểm tra số ghế trống
+        if (tripDTO.getEmptySeat() > 0) {
+            existingTrip.setEmptySeat(tripDTO.getEmptySeat());
+        }
+
+        // ✅ Kiểm tra trạng thái
+        if (tripDTO.getStatus() > 0) {
+            existingTrip.setStatus(tripDTO.getStatus());
+        }
+
+        // ✅ Luôn cập nhật thời gian chỉnh sửa
         existingTrip.setUpdatedAt(LocalDateTime.now());
+
         return tripRepository.save(existingTrip);
     }
+
 
     @Override
     public void deleteTripByID(int id) {
@@ -157,5 +193,12 @@ public class TripServiceImpl implements TripService {
         Specification<Trip> spec = Specification.where(TripSpecifications.hasRouteId(routeId)
                 .and(TripSpecifications.hasDayStart(dayStart)));
         return tripRepository.findAll(spec, pageable);
+    }
+
+    @Override
+    public void updateTripSeats(int tripId, List<Integer> seatIds) {
+        Trip trip = tripRepository.findById(tripId).orElseThrow();
+        trip.setEmptySeat(trip.getEmptySeat() - seatIds.size());
+        tripRepository.save(trip);
     }
 }
