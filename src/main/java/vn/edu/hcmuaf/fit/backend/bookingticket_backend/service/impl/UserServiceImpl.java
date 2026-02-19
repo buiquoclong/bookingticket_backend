@@ -57,31 +57,29 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String createUser(UserDTO userDTO) {
-        String result = "";
         if (userRepository.existsByEmail(userDTO.getEmail())) {
-            result += "Email đã tồn tại";
-        }else {
-            String confirmToken = String.format("%06d", new Random().nextInt(999999));
-            User user = new User();
-            user.setName(userDTO.getName());
-            user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-            user.setEmail(userDTO.getEmail());
-            user.setPhone(userDTO.getPhone());
-            user.setRole(userDTO.getRole());
-            user.setStatus(userDTO.getStatus());
-            user.setType(userDTO.getType());
-            user.setConfirmToken(confirmToken);
-            user.setCreatedAt(LocalDateTime.now());
-            user.setUpdatedAt(LocalDateTime.now());
-            User savedUser = userRepository.save(user);
-            try {
-                emailService.sendVerificationEmail(userDTO.getEmail(), confirmToken);
-                result = String.valueOf(savedUser.getId());
-            } catch (MessagingException e) {
-                result = "Tài khoản đã được tạo nhưng gửi email xác nhận thất bại.";
-            }
+            return "Email đã tồn tại";
         }
-        return result;
+
+        String confirmToken = String.format("%06d", new Random().nextInt(999999));
+        User user = new User();
+        user.setName(userDTO.getName());
+        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        user.setEmail(userDTO.getEmail());
+        user.setPhone(userDTO.getPhone());
+        user.setRole(userDTO.getRole());
+        user.setStatus(userDTO.getStatus());
+        user.setType(userDTO.getType());
+        user.setConfirmToken(confirmToken);
+        user.setCreatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
+        User savedUser = userRepository.save(user);
+        try {
+            emailService.sendVerificationEmail(userDTO.getEmail(), confirmToken);
+            return String.valueOf(savedUser.getId());
+        } catch (MessagingException e) {
+            return  "Tài khoản đã được tạo nhưng gửi email xác nhận thất bại.";
+        }
     }
 
 
@@ -98,17 +96,39 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User updateUserByID(UserDTO userDTO, int id) {
-        User existingUser = userRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("User", "Id", id));
-        existingUser.setName(userDTO.getName());
-        existingUser.setPassword(userDTO.getPassword());
-        existingUser.setEmail(userDTO.getEmail());
-        existingUser.setPhone(userDTO.getPhone());
-        existingUser.setRole(userDTO.getRole());
-        existingUser.setStatus(userDTO.getStatus());
-        existingUser.setType(userDTO.getType());
-        existingUser.setConfirmToken(userDTO.getConfirmToken());
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "Id", id));
+
+        // Chỉ cập nhật nếu giá trị khác null (hoặc khác rỗng với String)
+        if (userDTO.getName() != null && !userDTO.getName().isEmpty()) {
+            existingUser.setName(userDTO.getName());
+        }
+        if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
+            existingUser.setPassword(userDTO.getPassword()); // nhớ mã hóa nếu cần
+        }
+        if (userDTO.getEmail() != null && !userDTO.getEmail().isEmpty()) {
+            existingUser.setEmail(userDTO.getEmail());
+        }
+        if (userDTO.getPhone() != null && !userDTO.getPhone().isEmpty()) {
+            existingUser.setPhone(userDTO.getPhone());
+        }
+        if (userDTO.getType() != null && !userDTO.getType().isEmpty()) {
+            existingUser.setType(userDTO.getType());
+        }
+        if (userDTO.getConfirmToken() != null && !userDTO.getConfirmToken().isEmpty()) {
+            existingUser.setConfirmToken(userDTO.getConfirmToken());
+        }
+
+        // Cập nhật các trường kiểu int nếu khác 0 (hoặc bạn có thể dùng Integer để nullable)
+        if (userDTO.getRole() != 0) {
+            existingUser.setRole(userDTO.getRole());
+        }
+        if (userDTO.getStatus() != 0) {
+            existingUser.setStatus(userDTO.getStatus());
+        }
+
         existingUser.setUpdatedAt(LocalDateTime.now());
+
         return userRepository.save(existingUser);
     }
 
@@ -183,21 +203,22 @@ public class UserServiceImpl implements UserService {
     @Override
     public String forgotPassword(String email) {
         User user = userRepository.findByEmail(email);
-        if (user != null) {
-            // Tạo mật khẩu mới
-            String newPassword = generatePassword(8);
-            // Cập nhật mật khẩu mới vào cơ sở dữ liệu
-            user.setPassword(passwordEncoder.encode(newPassword));
-            userRepository.save(user);
-            // Gửi email thông báo về mật khẩu mới
-            try {
-                emailService.sendForgotPasswordEmail(email, newPassword);
-                return "Mật khẩu mới đã được gửi đến địa chỉ email của bạn.";
-            } catch (MessagingException e) {
-                return "Đã xảy ra lỗi khi gửi email, vui lòng thử lại sau.";
-            }
-        } else {
-            return "Không tìm thấy người dùng với địa chỉ email này.";
+
+        if (user == null) {
+            return "USER_NOT_FOUND";
+        }
+
+        // Tạo mật khẩu mới
+        String newPassword = generatePassword(8);
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        try {
+            emailService.sendForgotPasswordEmail(email, newPassword);
+            return "SUCCESS";
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            return "EMAIL_ERROR";
         }
     }
 
@@ -248,4 +269,63 @@ public class UserServiceImpl implements UserService {
         }
         return user;
     }
+
+    @Override
+    public String confirmAccount(int userId, String token) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "Id", userId));
+
+        if (user.getConfirmToken() == null) {
+            return "Tài khoản này không có mã xác thực hoặc đã được xác thực trước đó";
+        }
+
+        if (!user.getConfirmToken().equals(token)) {
+            return "Mã xác thực không hợp lệ hoặc đã hết hạn";
+        }
+
+        // ✅ Nếu mã hợp lệ
+        user.setStatus(2); // 2 = Đã xác thực
+        user.setConfirmToken(null);
+        user.setUpdatedAt(LocalDateTime.now());
+        userRepository.save(user);
+
+        return "Xác thực tài khoản thành công";
+    }
+
+
+    @Override
+    public String createUserByAdmin(UserDTO userDTO) {
+        // Kiểm tra trùng email
+        if (userRepository.existsByEmail(userDTO.getEmail())) {
+            return "Email đã tồn tại";
+        }
+
+        // Tạo mật khẩu ngẫu nhiên
+        String randomPassword = generatePassword(8);
+
+        // Tạo token xác nhận
+        String confirmToken = String.format("%06d", new Random().nextInt(999999));
+
+        User user = new User();
+        user.setName(userDTO.getName());
+        user.setEmail(userDTO.getEmail());
+        user.setPhone(userDTO.getPhone());
+        user.setRole(userDTO.getRole());
+        user.setPassword(passwordEncoder.encode(randomPassword));
+        user.setStatus(1); // ✅ 1 = đang hoạt động
+        user.setType("ĐĂNG KÝ");
+        user.setConfirmToken(null);
+        user.setCreatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
+
+        User savedUser = userRepository.save(user);
+
+        try {
+            emailService.sendAccountCreatedByAdminEmail(userDTO.getEmail(), userDTO.getName(), randomPassword);
+            return String.valueOf(savedUser.getId());
+        } catch (MessagingException e) {
+            return  "Tài khoản đã được tạo nhưng gửi email xác nhận thất bại.";
+        }
+    }
+
 }
