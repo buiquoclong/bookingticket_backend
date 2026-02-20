@@ -83,12 +83,17 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     @Override
-    public Page<Vehicle> getAllVehiclePage(String name, String kindVehiclename, String vehicleNumber, Pageable pageable) {
-        Specification<Vehicle> spec = Specification.where(VehicleSpecifications.hasName(name)
-                .and(VehicleSpecifications.hasUserKindVehicleName(kindVehiclename))
-                .and(VehicleSpecifications.hasvehicleNumber(vehicleNumber)));
+    public Page<Vehicle> getAllVehiclePage(String name, Integer kindVehicleId, String vehicleNumber, Integer value, Integer status, Pageable pageable) {
+        Specification<Vehicle> spec = Specification
+                .where(VehicleSpecifications.hasName(name))
+                .and(VehicleSpecifications.hasKindVehicleId(kindVehicleId))
+                .and(VehicleSpecifications.hasVehicleNumber(vehicleNumber))
+                .and(VehicleSpecifications.hasValue(value))
+                .and(VehicleSpecifications.hasStatus(status));
+
         return vehicleRepository.findAll(spec, pageable);
     }
+
 
     @Override
     public Vehicle getVehicleByID(int id) {
@@ -105,7 +110,9 @@ public class VehicleServiceImpl implements VehicleService {
         existingVehicle.setName(vehicleDTO.getName());
         existingVehicle.setKindVehicle(kindVehicle);
         existingVehicle.setVehicleNumber(vehicleDTO.getVehicleNumber());
+        System.out.println(vehicleDTO.getVehicleNumber());
         existingVehicle.setValue(vehicleDTO.getValue());
+        System.out.println(vehicleDTO.getValue());
         existingVehicle.setStatus(vehicleDTO.getStatus());
         existingVehicle.setUpdatedAt(LocalDateTime.now());
 
