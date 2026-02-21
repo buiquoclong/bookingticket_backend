@@ -46,6 +46,11 @@ public class WaitingSeatServiceImpl implements WaitingSeatService {
     }
 
     @Override
+    public void deleteWaitingSeatsBatch(int tripId, List<Integer> seatIds) {
+        waitingSeatRepository.deleteByTripIdAndSeatIds(tripId, seatIds);
+    }
+
+    @Override
     public List<WaitingSeat> getAllWaitingSeat() {
         return waitingSeatRepository.findAll();
     }
