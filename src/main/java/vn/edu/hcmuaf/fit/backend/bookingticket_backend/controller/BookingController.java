@@ -56,10 +56,6 @@ public class BookingController {
     public List<Booking> getAllBookings(){return bookingService.getAllBooking();}
 
     // Create a new Booking
-//    @PostMapping
-//    public ResponseEntity<Booking> createBooking(@RequestBody BookingDTO bookingDTO){
-//        return new ResponseEntity<>(bookingService.createBooking(bookingDTO), HttpStatus.CREATED);
-//    }
     @PostMapping("/create")
     public ResponseEntity<?> createBooking(@RequestBody BookingRequest request) {
         try {
