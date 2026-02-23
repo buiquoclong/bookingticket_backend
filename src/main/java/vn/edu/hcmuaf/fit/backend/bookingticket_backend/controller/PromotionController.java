@@ -169,8 +169,6 @@ public class PromotionController {
     // check Mã giảm giá
     @GetMapping("/check")
     public ResponseEntity<String> checkPromotionCode(@RequestParam String code) {
-//        String discount = promotionService.checkPromotionCode(code);
-//        return new ResponseEntity<>(discount, HttpStatus.OK);
         String discount = promotionService.checkPromotionCode(code);
         return new ResponseEntity<>(discount, HttpStatus.OK);
     }
