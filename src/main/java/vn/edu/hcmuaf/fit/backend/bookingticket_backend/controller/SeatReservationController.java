@@ -31,10 +31,6 @@ public class SeatReservationController {
     public List<SeatReservation> getAllSeatReservations(){return seatReservationService.getAllSeatReservation();}
 
     //get by trip
-//    @GetMapping("/trip/{tripId}")
-//    public List<SeatReservation> getSeatReservationsByTripId(@PathVariable("tripId") int tripId) {
-//        return seatReservationService.getSeatReservationsByTripId(tripId);
-//    }
     @GetMapping("/trip/{tripId}")
     public List<SeatReservation> getSeatReservationsByTripId(@PathVariable("tripId") int tripId) {
         return seatReservationService.getSeatReservationsByTripId(tripId);
