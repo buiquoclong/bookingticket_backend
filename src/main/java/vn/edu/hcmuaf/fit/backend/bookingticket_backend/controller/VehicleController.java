@@ -52,15 +52,6 @@ public class VehicleController {
     @PostMapping
     public ResponseEntity<Vehicle> createVehicle(@RequestBody VehicleDTO vehicleDTO, HttpServletRequest request){
 
-//        String token = jwtTokenUtils.extractJwtFromRequest(request);
-//        if (token == null) {
-//            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-//        }
-//
-//        int userId = jwtTokenUtils.extractUserId(token);
-//        LogDTO logData =  logService.convertToLogDTO(userId, "Tạo phương tiện tên: "+ vehicleDTO.getName(), 1);
-//        logService.createLog(logData);
-
         String token = jwtTokenUtils.extractJwtFromRequest(request);
         if (token == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
