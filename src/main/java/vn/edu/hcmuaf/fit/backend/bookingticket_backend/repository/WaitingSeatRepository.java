@@ -21,6 +21,5 @@ public interface WaitingSeatRepository extends JpaRepository<WaitingSeat, Intege
     @Transactional
     @Query("DELETE FROM WaitingSeat w WHERE w.trip.id = :tripId AND w.seat.id IN :seatIds")
     void deleteByTripIdAndSeatIds(@Param("tripId") int tripId, @Param("seatIds") List<Integer> seatIds);
-    // Xóa WaitingSeat theo tripId và seatId
     void deleteByTrip_IdAndSeat_Id(int tripId, int seatId);
 }
