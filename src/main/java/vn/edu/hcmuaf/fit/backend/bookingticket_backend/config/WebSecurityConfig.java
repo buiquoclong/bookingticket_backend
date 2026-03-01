@@ -34,8 +34,6 @@ public class WebSecurityConfig {
     @Autowired
     private UserService userService;
 
-//    @Autowired
-//    private UserDetailServiceImpl userDetailsService;
 
     @Autowired
     private PasswordEncoderConfig passwordEncoderConfig;
@@ -76,35 +74,10 @@ public class WebSecurityConfig {
 
         return http.build();
     }
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http.csrf().disable();
-//        http
-//                .cors().and().csrf().disable()
-//                .authorizeRequests()
-//                .requestMatchers("/**", "/error", "/oauth2/**").permitAll()
-//                .anyRequest().authenticated()
-//                .and()
-//                .oauth2Login()
-//                .successHandler(new AuthenticationSuccessHandler() {
-//                    @Override
-//                    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-//                        CustomOAuth2User oauthUser = (CustomOAuth2User) authentication.getPrincipal();
-//                        String email = oauthUser.getAttribute("email");
-//                        String username = oauthUser.getAttribute("name");
-//                        User user = userService.processOAuthPostLogin(email, username);
-//
-//                        String token = jwtTokenUtil.generateToken(user);
-//                        // Lưu token trong session
-//                        request.getSession().setAttribute("token", token);
-//                        response.sendRedirect("http://localhost:3000/");
-//                    }
-//                });
-//
-//        return http.build();
-//    }
-public OAuth2AuthorizationRequestResolver customOAuth2AuthorizationRequestResolver() {
-    return new CustomAuthorizationRequestResolver(clientRegistrationRepository);
-}
+
+    public OAuth2AuthorizationRequestResolver customOAuth2AuthorizationRequestResolver() {
+        return new CustomAuthorizationRequestResolver(clientRegistrationRepository);
+    }
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
