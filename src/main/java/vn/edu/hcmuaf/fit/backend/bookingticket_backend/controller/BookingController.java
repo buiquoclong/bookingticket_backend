@@ -42,10 +42,6 @@ public class BookingController {
     @Autowired
     private LogService logService;
 
-//    public BookingController(BookingService BookingService) {
-//        this.BookingService = BookingService;
-//    }
-
 
     public BookingController(BookingService bookingService) {
         this.bookingService = bookingService;
