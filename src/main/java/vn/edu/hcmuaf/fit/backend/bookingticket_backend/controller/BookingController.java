@@ -35,8 +35,6 @@ import java.util.Map;
 @CrossOrigin("http://localhost:3000")
 public class BookingController {
     private BookingService bookingService;
-//    @Autowired
-//    private EmailService emailService;
     @Autowired
     private JwtTokenUtils jwtTokenUtils;
     @Autowired
