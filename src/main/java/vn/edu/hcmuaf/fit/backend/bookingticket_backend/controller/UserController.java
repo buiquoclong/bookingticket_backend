@@ -41,8 +41,12 @@ public class UserController {
 
     // Login
     @PostMapping("login")
-    public String loginToken(@RequestBody LoginDTO loginDTO){
-        return userService.login(loginDTO);
+    public ResponseEntity<?> loginToken(@RequestBody LoginDTO loginDTO){
+        String token = userService.login(loginDTO);
+
+        return ResponseEntity.ok(Map.of(
+                "token", token
+        ));
     }
 
 
