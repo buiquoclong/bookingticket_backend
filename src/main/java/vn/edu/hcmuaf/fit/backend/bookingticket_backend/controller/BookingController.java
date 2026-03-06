@@ -34,6 +34,7 @@ import java.util.Map;
 @RequestMapping("api/booking")
 @CrossOrigin("http://localhost:3000")
 public class BookingController {
+    @Autowired
     private BookingService bookingService;
     @Autowired
     private JwtTokenUtils jwtTokenUtils;
@@ -41,13 +42,15 @@ public class BookingController {
     private LogService logService;
 
 
-    public BookingController(BookingService bookingService) {
-        this.bookingService = bookingService;
-    }
+//    public BookingController(BookingService bookingService) {
+//        this.bookingService = bookingService;
+//    }
 
     // Get all Booking
     @GetMapping
-    public List<Booking> getAllBookings(){return bookingService.getAllBooking();}
+    public List<Booking> getAllBookings() {
+        return bookingService.getAllBooking();
+    }
 
     // Create a new Booking
     @PostMapping("/create")
@@ -62,7 +65,7 @@ public class BookingController {
 
     // Nhân viên đặt vé
     @PostMapping("/for-emp")
-    public ResponseEntity<Booking> createBookingForEmployee(@RequestBody  BookingRequest bookingRequest, HttpServletRequest request){
+    public ResponseEntity<Booking> createBookingForEmployee(@RequestBody BookingRequest bookingRequest, HttpServletRequest request) {
         String token = jwtTokenUtils.extractJwtFromRequest(request);
         if (token == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -83,7 +86,7 @@ public class BookingController {
             bookingRequest.setSendMail(false); // không gửi mail nếu không cần
             Booking createBooking = bookingService.createBooking(bookingRequest);
 
-            LogDTO logData =  logService.convertToLogDTO(userId, "Đặt vé", 1);
+            LogDTO logData = logService.convertToLogDTO(userId, "Đặt vé", 1);
             logService.createLog(logData);
             return new ResponseEntity<>(createBooking, HttpStatus.CREATED);
         } catch (Exception e) {
@@ -94,7 +97,7 @@ public class BookingController {
 
     // Get Booking by id
     @GetMapping("{id}")
-    public ResponseEntity<Booking> getBookingById(@PathVariable ("id") int id){
+    public ResponseEntity<Booking> getBookingById(@PathVariable("id") int id) {
         return new ResponseEntity<>(bookingService.getBookingByID(id), HttpStatus.OK);
     }
 
@@ -135,7 +138,7 @@ public class BookingController {
             @RequestParam(required = false) Integer isPaid,
             @RequestParam(required = false) Integer roundTrip) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<Booking> bookingPage = bookingService.getAllBookingPage(pageable, id, userName, email, phone, userId , kindPay, isPaid, roundTrip);
+        Page<Booking> bookingPage = bookingService.getAllBookingPage(pageable, id, userName, email, phone, userId, kindPay, isPaid, roundTrip);
         Map<String, Object> response = new HashMap<>();
         response.put("bookings", bookingPage.getContent());
         response.put("currentPage", bookingPage.getNumber());
@@ -192,7 +195,7 @@ public class BookingController {
 
     // Delete booking by id
     @DeleteMapping("{id}")
-    public ResponseEntity<String> deleteBookingById(@PathVariable ("id") int id){
+    public ResponseEntity<String> deleteBookingById(@PathVariable("id") int id) {
         bookingService.deleteBookingByID(id);
         return new ResponseEntity<>("Booking " + id + " is deleted successfully", HttpStatus.OK);
     }
