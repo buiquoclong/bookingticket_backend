@@ -1,5 +1,6 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,11 +20,12 @@ import java.util.Map;
 @RequestMapping("api/booking_detail")
 @CrossOrigin("http://localhost:3000")
 public class BookingDetailController {
+    @Autowired
     private BookingDetailService bookingDetailService;
 
-    public BookingDetailController(BookingDetailService bookingDetailService) {
-        this.bookingDetailService = bookingDetailService;
-    }
+//    public BookingDetailController(BookingDetailService bookingDetailService) {
+//        this.bookingDetailService = bookingDetailService;
+//    }
 
     //Get all BookingDetail
     @GetMapping
