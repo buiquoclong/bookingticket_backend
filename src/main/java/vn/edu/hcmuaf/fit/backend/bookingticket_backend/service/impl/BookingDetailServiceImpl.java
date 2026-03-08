@@ -125,29 +125,6 @@ public class BookingDetailServiceImpl implements BookingDetailService {
         return new PageImpl<>(allBookingDetails, pageable, allBookingDetails.size());
     }
 
-//    @Override
-//    public Page<BookingDetail> getBookingDetailsByUserId(int userId, Pageable pageable, String id) {
-//        User user = userRepository.findById(userId).orElseThrow(() ->
-//                new ResourceNotFoundException("User", "Id", userId));
-//        List<Booking> bookings = user.getBookings();
-//        List<BookingDetail> allBookingDetails = new ArrayList<>();
-//        for (Booking booking : bookings) {
-//            allBookingDetails.addAll(booking.getBookingDetails());
-//        }
-//
-//        // Sử dụng Specification để lọc theo các tiêu chí
-//        if (id == null|| id.isEmpty()) {
-//            return new PageImpl<>(allBookingDetails, pageable, allBookingDetails.size());
-//        }else {
-//            List<BookingDetail> filteredBookingDetails = allBookingDetails.stream()
-//                    .filter(bookingDetail -> bookingDetail.getId().contains(id))
-//                    .collect(Collectors.toList());
-//
-//            return new PageImpl<>(filteredBookingDetails, pageable, allBookingDetails.size());
-//
-//        }
-//
-//    }
 @Override
 public Page<BookingDetail> getBookingDetailsByUserId(int userId, Pageable pageable, String id) {
     User user = userRepository.findById(userId).orElseThrow(() ->
