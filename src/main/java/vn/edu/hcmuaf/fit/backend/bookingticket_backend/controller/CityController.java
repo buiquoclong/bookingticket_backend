@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -43,7 +44,7 @@ public class CityController {
     public List<City> getAllCities(){return cityService.getAllCity();}
 
     // Create a new City
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<City> createCity(@RequestPart("city") CityDTO cityDTO, @RequestPart(value = "file", required = false) MultipartFile file, HttpServletRequest request) {
         String token = jwtTokenUtils.extractJwtFromRequest(request);
         if (token == null) {
