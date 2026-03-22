@@ -1,5 +1,6 @@
 package vn.edu.hcmuaf.fit.backend.bookingticket_backend.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,11 +21,12 @@ import java.util.Map;
 @RequestMapping("api/log")
 @CrossOrigin("http://localhost:3000")
 public class LogController {
+    @Autowired
     private LogService logService;
 
-    public LogController(LogService logService) {
-        this.logService = logService;
-    }
+//    public LogController(LogService logService) {
+//        this.logService = logService;
+//    }
 
     // Get all Log
     @GetMapping
